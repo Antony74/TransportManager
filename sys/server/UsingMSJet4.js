@@ -41,6 +41,7 @@ function createRecordset()
     return win32ole.client.Dispatch('ADODB.Recordset');
 }
 
+
 function copyFile(source, target, doneCopying)
 {
     var streamIn = fs.createReadStream(source);
@@ -86,7 +87,8 @@ function ensureDatabaseExists(doneEnsuringDatabaseExists)
                     var db = openAccessDatabase(sDatabaseFilename);
 
                     arrSql = String(sSql).split(";");
-                    for (var n = 0; n < arrSql.length - 1; ++n) {
+                    for (var n = 0; n < arrSql.length - 1; ++n)
+                    {
                         var statement = arrSql[n];
                         db.Execute(statement);
                     }
@@ -101,6 +103,13 @@ function ensureDatabaseExists(doneEnsuringDatabaseExists)
         }
     });
 }
+
+//
+// And that should be all the JET database related stuff above, now for some 
+// utility functions which are Windows specific.
+//
+
+var exec = require('child_process').exec;
 
 function ensureShortcutExists()
 {
@@ -121,12 +130,82 @@ function ensureShortcutExists()
     });
 }
 
+function launchWebbrowser(url)
+{
+    exec('start ' + url);
+}
+
+function tasklist(tasklistFinished)
+{
+    exec('tasklist', function(error, stdout, stderr)
+    {
+        if (error !== null)
+        {
+            console.log('exec error: ' + error);
+        }
+
+        if (stderr.length > 0)
+        {
+            console.log(stderr);
+        }
+
+        var arrLines = stdout.split("\n");
+        var arrFiltered = [];
+        var arrPIDs = [];
+
+        arrLines.forEach(function(sLine)
+        {
+            if (sLine.substr(0, 8) == "node.exe")
+            {
+                var nPID = parseInt(sLine.substr(10, 25));
+                if (nPID != process.pid)
+                {
+                    arrFiltered.push(sLine.trim());
+                    arrPIDs.push(parseInt(sLine.substr(10, 25)));
+                }
+            }
+        });
+
+        tasklistFinished(arrFiltered.join("\r\n"), arrPIDs);
+    });
+}
+
+function taskkill(arrPIDS, taskkillFinished)
+{
+    var sCmd = 'taskkill /F ';
+    
+    arrPIDS.forEach(function(nPID)
+    {
+        sCmd += '/PID ' + nPID + ' ';
+    });
+
+    exec(sCmd, function(error, stdout, stderr)
+    {
+        if (error !== null)
+        {
+            console.log('exec error: ' + error);
+        }
+
+        if (stderr.length > 0)
+        {
+            console.log(stderr);
+        }
+        
+        console.log(stdout);
+        taskkillFinished();
+    });
+
+}
+
 //
 // Main exports
 //
 
 exports.ensureShortcutExists = ensureShortcutExists;
 exports.ensureDatabaseExists = ensureDatabaseExists;
+exports.launchWebbrowser = launchWebbrowser;
+exports.tasklist = tasklist;
+exports.taskkill = taskkill;
 
 //
 // Also export a bunch of JET stuff for the GetSchema.js script to use
