@@ -1,6 +1,9 @@
 ##TransportManager
 
-A database app for community driving schemes - primarily Didcot Volunteer Centre.
+A database app for community driving schemes - initially and primarily developed for Didcot Volunteer Centre.
+This is a classic three tier application, with web-front-end and middle-layer both
+written in JavaScript.  Not currently intended for remote use (across a
+Local-Area-Network would be fine).
 
 
 ####Licence
