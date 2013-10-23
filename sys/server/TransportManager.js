@@ -32,7 +32,7 @@ server.on("listening", function()
 {
     bServerIsRunning = true;
     console.log("Server has been started (" + sServerUrl + ")");
-    platform.ensureDatabaseExists(function()
+    platform.ensureDatabaseIsReady(function()
     {
         promptForCommand();
     });

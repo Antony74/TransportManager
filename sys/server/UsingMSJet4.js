@@ -65,40 +65,94 @@ function copyFile(source, target, doneCopying)
     streamIn.pipe(streamOut);
 }
 
-function ensureDatabaseExists(doneEnsuringDatabaseExists)
+function runSQL(sFilenameSql, doneRunning)
+{
+    console.log("Running " + sFilenameSql);
+
+    // Load the SQL
+    fs.readFile(sFilenameSql, function(err, sSql)
+    {
+        if (err) throw err;
+
+        // Run the SQL on the empty database
+        var db = openAccessDatabase(sDatabaseFilename);
+
+        arrSql = String(sSql).split(";");
+        for (var n = 0; n < arrSql.length - 1; ++n)
+        {
+            var statement = arrSql[n].trimLeft();
+            if (statement.charAt(0) != "#")
+            {
+                db.Execute(statement);
+            }
+        }
+
+        db.Close();
+        doneRunning();
+    });
+}
+
+function ensureDatabaseUpdate1(doneEnsuring)
+{
+    var sFilenameSqlU1 = __dirname + "../../TransportManager_u1.sql";
+    var bFound = false;
+
+    var db = openAccessDatabase(sDatabaseFilename);
+    var TablesSchema = db.OpenSchema(adSchemaIndexes);
+    while (TablesSchema.EOF == false)
+    {
+        var sIndexName = String(TablesSchema.Fields("INDEX_NAME").Value);
+
+        if (sIndexName == "FKDestinationsTypeID")
+        {
+            bFound = true;
+        }
+        
+        TablesSchema.MoveNext();
+    }
+
+    db.Close();
+
+    if (bFound)
+    {
+        doneEnsuring();
+    }
+    else
+    {
+        console.log("Database is not up to date... updating");
+        runSQL(sFilenameSqlU1, doneEnsuring);
+    }
+}
+
+function ensureDatabaseIsReady(doneEnsuring)
 {
     var sFilenameEmpty = __dirname + "/Blank2002Database.mdb";
     var sFilenameSql = __dirname + "../../TransportManager.sql";
 
-    fs.exists(sDatabaseFilename, function(bExists) {
-        if (bExists) {
-            console.log("Database ready");
-            doneEnsuringDatabaseExists();
+    fs.exists(sDatabaseFilename, function(bExists)
+    {
+        if (bExists)
+        {
+            ensureDatabaseUpdate1(function()
+            {
+                console.log("Database ready");
+                doneEnsuring();
+            });
         }
-        else {
+        else
+        {
             console.log("Database not found... creating empty database");
 
             // Copy empty database
-            copyFile(sFilenameEmpty, sDatabaseFilename, function() {
-                // Load the SQL
-                fs.readFile(sFilenameSql, function(err, sSql) {
-                    if (err) throw err;
-
-                    // Run the SQL on the empty database
-                    var db = openAccessDatabase(sDatabaseFilename);
-
-                    arrSql = String(sSql).split(";");
-                    for (var n = 0; n < arrSql.length - 1; ++n)
+            copyFile(sFilenameEmpty, sDatabaseFilename, function()
+            {
+                runSQL(sFilenameSql, function()
+                {
+                    ensureDatabaseUpdate1(function()
                     {
-                        var statement = arrSql[n];
-                        db.Execute(statement);
-                    }
-
-                    db.Close();
-
-                    console.log("Database ready");
-                    doneEnsuringDatabaseExists();
-
+                        console.log("Database ready");
+                        doneEnsuring();
+                    });
                 });
             });
         }
@@ -203,7 +257,7 @@ function taskkill(arrPIDS, taskkillFinished)
 //
 
 exports.ensureShortcutExists = ensureShortcutExists;
-exports.ensureDatabaseExists = ensureDatabaseExists;
+exports.ensureDatabaseIsReady = ensureDatabaseIsReady;
 exports.launchWebbrowser = launchWebbrowser;
 exports.tasklist = tasklist;
 exports.taskkill = taskkill;
