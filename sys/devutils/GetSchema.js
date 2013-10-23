@@ -2,7 +2,9 @@ var fs = require('fs');
 var win32ole = require('../server/node_modules/win32ole');
 var platform = require('../server/usingMSJet4.js');
 var jet = platform.jet;
+
 var arrPrimaryKeys = [];
+var arrIndices = [];
 
 function getSchema(sFilename)
 {
@@ -38,11 +40,41 @@ function getIndices(sFilename)
         var sIndexName = String(TablesSchema.Fields("INDEX_NAME").Value);
         var sTableName = String(TablesSchema.Fields("TABLE_NAME").Value);
         var sColumnName = String(TablesSchema.Fields("COLUMN_NAME").Value);
+        var nNulls = parseInt(TablesSchema.Fields("NULLS").Value);
+        var nUnique = parseInt(TablesSchema.Fields("UNIQUE").Value);
 
         if (sIndexName == "PrimaryKey")
         {
             arrPrimaryKeys[sTableName] = sColumnName;
         }
+        else
+        {
+            if (typeof arrIndices[sTableName] == "undefined")
+            {
+                arrIndices[sTableName] = [];
+            }
+
+            var sSql;
+
+            if (nUnique)
+            {
+                sSql = "CREATE UNIQUE INDEX ";
+            }
+            else
+            {
+                sSql = "CREATE INDEX ";
+            }
+
+            sSql += sIndexName + " ON " + sTableName + "(" + sColumnName + ")";
+
+            if (!nNulls)
+            {
+                sSql += " WITH DISALLOW NULL";
+            }
+            sSql += ";";
+
+            arrIndices[sTableName].push(sSql);
+        }            
         
         TablesSchema.MoveNext();
     }
@@ -120,7 +152,13 @@ function getTable(db, sTablename)
 
     sSql += arrFields.join(",\r\n");
     sSql += ");";
-    sSql += "\r\n";
+    var sIndices = arrIndices[sTablename].join("\r\n");
+    if (sIndices.length)
+    {
+        sSql += "\r\n\r\n";
+        sSql += sIndices;
+    }
+    sSql += "\r\n\r\n";
 
     rs.Close();
 
