@@ -2,6 +2,7 @@ var fs = require('fs');
 var win32ole = require('../server/node_modules/win32ole');
 var platform = require('../server/usingMSJet4.js');
 var jet = platform.jet;
+var arrPrimaryKeys = [];
 
 function getSchema(sFilename)
 {
@@ -23,7 +24,30 @@ function getSchema(sFilename)
         TablesSchema.MoveNext();
     }
 
+    db.Close();
+
     return sSql;
+}
+
+function getIndices(sFilename)
+{
+    var db = jet.openAccessDatabase(sFilename);
+    var TablesSchema = db.OpenSchema(jet.adSchemaIndexes);
+    while (TablesSchema.EOF == false)
+    {
+        var sIndexName = String(TablesSchema.Fields("INDEX_NAME").Value);
+        var sTableName = String(TablesSchema.Fields("TABLE_NAME").Value);
+        var sColumnName = String(TablesSchema.Fields("COLUMN_NAME").Value);
+
+        if (sIndexName == "PrimaryKey")
+        {
+            arrPrimaryKeys[sTableName] = sColumnName;
+        }
+        
+        TablesSchema.MoveNext();
+    }
+
+    db.Close();
 }
 
 function getTransportManagerSchema(sFilename)
@@ -39,6 +63,8 @@ function getTransportManagerSchema(sFilename)
     sSql += getTable(db, "DriverVacation");
     sSql += getTable(db, "JobLog");
     sSql += getTable(db, "Jobs");
+
+    db.Close();
 
     return sSql;
 }
@@ -58,6 +84,7 @@ function getTable(db, sTablename)
     for (var nField = 0; nField < rs.Fields.Count; ++nField)
     {
         var fld = rs.Fields(nField);
+        var sFieldname = String(fld.Name);
         var typeInfo = parseInt(fld.Type);
 
         switch (typeInfo)
@@ -83,7 +110,12 @@ function getTable(db, sTablename)
             break;
         }
 
-        arrFields.push("    " + fld.Name + " " + typeInfo);
+        if (arrPrimaryKeys[sTablename] == sFieldname)
+        {
+            typeInfo = "AUTOINCREMENT(1,1) NOT NULL PRIMARY KEY";
+        }
+
+        arrFields.push("    " + sFieldname + " " + typeInfo);
     }
 
     sSql += arrFields.join(",\r\n");
@@ -99,7 +131,8 @@ var sFilenameExisting = "./TransportManager.mdb";
 var sFilenameSql = "../TransportManager.sql";
 var sFilenameClone = "../../TransportManager.mdb"
 
-//var sSql = getSchema(sFilenameExisting);
+getIndices(sFilenameExisting);
+
 var sSql = getTransportManagerSchema(sFilenameExisting);
 
 fs.writeFile(sFilenameSql, sSql);

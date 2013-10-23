@@ -7,6 +7,7 @@ var sDatabaseFilename = __dirname + "/../../TransportManager.mdb";
 // Define the ADO constants that we need
 
 // SchemaEnumConstants
+var adSchemaIndexes = 12;
 var adSchemaTables = 20;
 
 // CursorTypeEnum constants
@@ -217,6 +218,7 @@ exports.jet.openAccessDatabase = openAccessDatabase;
 exports.jet.createRecordset = createRecordset;
 
 // SchemaEnumConstants
+exports.jet.adSchemaIndexes = adSchemaIndexes;
 exports.jet.adSchemaTables = adSchemaTables;
 
 // CursorTypeEnum constants

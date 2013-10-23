@@ -1,6 +1,6 @@
 
 CREATE TABLE Clients(
-    ClientID INTEGER,
+    ClientID AUTOINCREMENT(1,1) NOT NULL PRIMARY KEY,
     Title TEXT(5),
     Firstname TEXT(15),
     Initial TEXT(1),
@@ -17,7 +17,7 @@ CREATE TABLE Clients(
     IsActive YESNO);
 
 CREATE TABLE Destinations(
-    DestinationID INTEGER,
+    DestinationID AUTOINCREMENT(1,1) NOT NULL PRIMARY KEY,
     TypeID INTEGER,
     Name TEXT(30),
     AddressLine1 TEXT(25),
@@ -26,7 +26,7 @@ CREATE TABLE Destinations(
     Postcode TEXT(10));
 
 CREATE TABLE DestinationType(
-    DestinationTypeID INTEGER,
+    DestinationTypeID AUTOINCREMENT(1,1) NOT NULL PRIMARY KEY,
     DestinationLevel1 TEXT(30),
     DestinationLevel2 TEXT(30));
 
@@ -65,7 +65,7 @@ CREATE TABLE Drivers(
     Sun YESNO);
 
 CREATE TABLE DriverVacation(
-    VacationID INTEGER,
+    VacationID AUTOINCREMENT(1,1) NOT NULL PRIMARY KEY,
     VacationEntryDateTime DATE,
     DriverID INTEGER,
     VacationFrom DATE,
@@ -85,7 +85,7 @@ CREATE TABLE JobLog(
     CallResolution TEXT(50));
 
 CREATE TABLE Jobs(
-    JobID INTEGER,
+    JobID AUTOINCREMENT(1,1) NOT NULL PRIMARY KEY,
     JobEntryDateTime DATE,
     ClientID INTEGER,
     DestinationID INTEGER,
