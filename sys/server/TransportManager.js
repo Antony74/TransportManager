@@ -1,7 +1,9 @@
 
 var http = require('http');
+var url = require('url');
 var static = require('node-static');
 var platform = require("./UsingMSJet4.js");
+var schema = require("./Schema.js");
 var server = null;
 var port = 8080;
 var sServerUrl = "http://localhost:" + port + "/";
@@ -23,7 +25,33 @@ var staticServer = new static.Server(__dirname + "/../htdocs");
 
 function handleRequest(request, response)
 {
-    staticServer.serve(request, response);
+    var parsed = url.parse(request.url, true);
+    if (parsed.pathname == "/selectSql")
+    {
+//        response.write(JSON.stringify(parsed));
+        var sTable = parsed.query.table;
+        if (schema.isValidTable(sTable))
+        {
+            var oOutput = platform.selectSql(sTable);
+            response.write(JSON.stringify(oOutput));
+        }
+        else
+        {
+            var oError = {"Error": "Table name " + sTable + " not recognised"};
+            response.write(JSON.stringify(oError));
+        }
+        response.end();
+    }
+    else
+    {
+        for (sTable in schema.getTables())
+        {
+            response.write('<A href="selectSql?table=' + sTable + '">' + sTable + '</A><BR/>\r\n');
+        }
+        response.end();
+
+//        staticServer.serve(request, response);
+    }
 }
 
 server = http.createServer(handleRequest);

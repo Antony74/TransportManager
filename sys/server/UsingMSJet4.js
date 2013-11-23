@@ -159,6 +159,34 @@ function ensureDatabaseIsReady(doneEnsuring)
     });
 }
 
+function selectSql(sTable)
+{
+    var arr = [];
+    var db = openAccessDatabase(sDatabaseFilename);
+    var rs = createRecordset();
+    
+    rs.Open(sTable, db);
+    rs.MoveFirst();
+    
+    while(rs.EOF == false)
+    {
+        var oRecord = {};
+        oRecord[rs.Fields(0).Name.toString()] = rs.Fields(0).Value.toString();
+
+//        for (var nField = 0; nField < rs.Fields.Count; ++nField)
+//        {
+//            oRecord[rs.Fields(nField).Name.toString()] = rs.Fields(nField).Value.toString();
+//        }
+        
+        arr.push(oRecord);
+        rs.MoveNext();
+    }
+    
+    rs.close();
+    db.close();
+    return arr;
+}
+
 //
 // And that should be all the JET database related stuff above, now for some 
 // utility functions which are Windows specific.
@@ -261,6 +289,7 @@ exports.ensureDatabaseIsReady = ensureDatabaseIsReady;
 exports.launchWebbrowser = launchWebbrowser;
 exports.tasklist = tasklist;
 exports.taskkill = taskkill;
+exports.selectSql = selectSql;
 
 //
 // Also export a bunch of JET stuff for the GetSchema.js script to use

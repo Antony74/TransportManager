@@ -2,34 +2,10 @@ var fs = require('fs');
 var win32ole = require('../server/node_modules/win32ole');
 var platform = require('../server/usingMSJet4.js');
 var jet = platform.jet;
+var schema = require('../server/Schema.js');
 
 var arrPrimaryKeys = [];
 var arrIndices = [];
-
-function getSchema(sFilename)
-{
-    var sSql = "";
-
-    var db = jet.openAccessDatabase(sFilename);
-
-    var TablesSchema = db.OpenSchema(jet.adSchemaTables);
-    while (TablesSchema.EOF == false)
-    {
-        var sTablename = String(TablesSchema.Fields("TABLE_NAME").Value);
-        var sTableType = String(TablesSchema.Fields("TABLE_TYPE").Value);
-
-        if (sTableType == "TABLE")
-        {
-            sSql += getTable(db, sTablename);
-        }
-
-        TablesSchema.MoveNext();
-    }
-
-    db.Close();
-
-    return sSql;
-}
 
 function getIndices(sFilename)
 {
@@ -87,14 +63,11 @@ function getTransportManagerSchema(sFilename)
     var sSql = "";
 
     var db = jet.openAccessDatabase(sFilename);
-    sSql += getTable(db, "Clients");
-    sSql += getTable(db, "Destinations");
-    sSql += getTable(db, "DestinationType");
-    sSql += getTable(db, "DriverExclusionList");
-    sSql += getTable(db, "Drivers");
-    sSql += getTable(db, "DriverVacation");
-    sSql += getTable(db, "JobLog");
-    sSql += getTable(db, "Jobs");
+
+    for (var sTable in schema.getTables())
+    {
+        sSql += getTable(db, sTable);
+    }
 
     db.Close();
 
