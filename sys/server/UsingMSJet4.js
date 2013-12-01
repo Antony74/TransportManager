@@ -171,12 +171,11 @@ function selectSql(sTable)
     while(rs.EOF == false)
     {
         var oRecord = {};
-        oRecord[rs.Fields(0).Name.toString()] = rs.Fields(0).Value.toString();
 
-//        for (var nField = 0; nField < rs.Fields.Count; ++nField)
-//        {
-//            oRecord[rs.Fields(nField).Name.toString()] = rs.Fields(nField).Value.toString();
-//        }
+        for (var nField = 0; nField < rs.Fields.Count; ++nField)
+        {
+            oRecord[rs.Fields(nField).Name.toString()] = rs.Fields(nField).Value.toString();
+        }
         
         arr.push(oRecord);
         rs.MoveNext();
