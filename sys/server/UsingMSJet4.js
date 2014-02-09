@@ -29,6 +29,11 @@ var adBoolean = 11;
 var adVarWChar = 202;
 var adLongVarWChar = 203;
 
+// BookmarkEnum
+var adBookmarkCurrent = 0;
+var adBookmarkFirst = 1;
+var adBookmarkLast = 2;
+
 function openAccessDatabase(sFilename)
 {
     var db = win32ole.client.Dispatch('ADODB.Connection');
@@ -159,28 +164,47 @@ function ensureDatabaseIsReady(doneEnsuring)
     });
 }
 
-function selectSql(sTable)
+function selectSql(sTable, nStart)
 {
     var arr = [];
     var db = openAccessDatabase(sDatabaseFilename);
     var rs = createRecordset();
     
-    rs.Open(sTable, db);
-    rs.MoveFirst();
-    
-    while(rs.EOF == false)
-    {
-        var oRecord = {};
+    rs.Open(sTable, db, adOpenStatic);
 
-        for (var nField = 0; nField < rs.Fields.Count; ++nField)
-        {
-            oRecord[rs.Fields(nField).Name.toString()] = rs.Fields(nField).Value.toString();
-        }
-        
-        arr.push(oRecord);
-        rs.MoveNext();
+    console.log(nStart);
+    console.log(nRecordCount);
+
+    var nRecordCount = nStart < rs.RecordCount;
+
+    if (nRecordCount == -1)
+    {
+        console.log("Problem getting RecordCount");
     }
-    
+    else if (nStart < nRecordCount)
+    {
+        rs.Move(nStart, adBookmarkFirst);
+        
+        var nRecords = 20;
+        
+        console.log(rs.EOF);
+        
+        while(rs.EOF == false && nRecords > 0)
+        {
+            var oRecord = {};
+
+            for (var nField = 0; nField < rs.Fields.Count; ++nField)
+            {
+                oRecord[rs.Fields(nField).Name.toString()] = rs.Fields(nField).Value.toString();
+            }
+            
+            arr.push(oRecord);
+
+            --nRecords;
+            rs.MoveNext();
+        }
+    }
+        
     rs.close();
     db.close();
     return arr;
@@ -289,6 +313,7 @@ exports.launchWebbrowser = launchWebbrowser;
 exports.tasklist = tasklist;
 exports.taskkill = taskkill;
 exports.selectSql = selectSql;
+exports.sDatabaseFilename = sDatabaseFilename;
 
 //
 // Also export a bunch of JET stuff for the GetSchema.js script to use

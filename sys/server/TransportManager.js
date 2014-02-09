@@ -30,9 +30,15 @@ function handleRequest(request, response)
     {
 //        response.write(JSON.stringify(parsed));
         var sTable = parsed.query.table;
+        var nStart = parseInt(parsed.query.start, 10);
+        if (Number.isNaN(nStart))
+        {
+            nStart = 0;
+        }
+        
         if (schema.isValidTable(sTable))
         {
-            var oOutput = platform.selectSql(sTable);
+            var oOutput = platform.selectSql(sTable, nStart);
             response.write(JSON.stringify(oOutput));
         }
         else
