@@ -50,13 +50,7 @@ function handleRequest(request, response)
     }
     else
     {
-        for (sTable in schema.getTables())
-        {
-            response.write('<A href="selectSql?table=' + sTable + '">' + sTable + '</A><BR/>\r\n');
-        }
-        response.end();
-
-//        staticServer.serve(request, response);
+        staticServer.serve(request, response);
     }
 }
 
