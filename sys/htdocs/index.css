@@ -1,0 +1,28 @@
+
+table
+{
+	border-collapse:collapse;
+}
+
+table, th, td
+{
+	border: 1px solid #0077DD;
+	padding: 5px;
+}
+
+th
+{
+	color: #FFFFFF;
+	background-color: #0077DD;
+}
+
+tr
+{
+	background-color: #F0F7FF;
+}
+
+.trAlt
+{
+	background-color: #FEFFFF;
+}
+
