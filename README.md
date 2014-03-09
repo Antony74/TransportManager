@@ -38,7 +38,7 @@ This is just for reference, no action is required, these are included automatica
 * node-static (https://github.com/cloudhead/node-static)
 * JQuery (http://jquery.com/)
 * JQueryUI (http://jqueryui.com/)
-* FullCalander (http://arshaw.com/fullcalendar/)
+* FullCalandar (http://arshaw.com/fullcalendar/)
 
 
 ####Installation
