@@ -1,7 +1,10 @@
 if (typeof phantom == 'undefined')
 {
     var usage = 'Usage: phantomjs GenerateIcons.js\r\n';
-    usage +=    'Sorry, are you trying to use a different JavaScript engine?';
+    usage +=    'Sorry, are you trying to use a different JavaScript engine?\r\n\r\n';
+    usage +=    'To install with npm then run:\r\n';
+    usage +=    'npm install\r\n';
+    usage +=    'node_modules\\phantomjs\\lib\\phantom\\phantomjs generateicons.js';
 
     if      (typeof alert   != 'undefined') (function(){alert(usage);       })();
     else if (typeof console != 'undefined') (function(){console.log(usage); })();
