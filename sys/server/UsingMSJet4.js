@@ -172,9 +172,6 @@ function selectSql(sTable, nStart)
     
     rs.Open(sTable, db, adOpenStatic);
 
-    console.log(nStart);
-    console.log(nRecordCount);
-
     var nRecordCount = nStart < rs.RecordCount;
 
     if (nRecordCount == -1)
@@ -186,8 +183,6 @@ function selectSql(sTable, nStart)
         rs.Move(nStart, adBookmarkFirst);
         
         var nRecords = 20;
-        
-        console.log(rs.EOF);
         
         while(rs.EOF == false && nRecords > 0)
         {

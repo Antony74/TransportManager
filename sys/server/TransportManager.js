@@ -62,7 +62,21 @@ server.on("listening", function()
     console.log("Server has been started (" + sServerUrl + ")");
     platform.ensureDatabaseIsReady(function()
     {
-        promptForCommand();
+        var nCommands = 0;
+    
+        process.argv.forEach(function(sParam)
+        {
+            if (sParam.substring(0,1) == "-")
+            {
+                ++nCommands;
+                onServerCommand(sParam.substring(1));
+            }
+        });
+
+        if (nCommands == 0)
+        {
+            promptForCommand();
+        }
     });
 });
 
