@@ -47,8 +47,6 @@ else (function()
 
     page.open('icons.html', function()
     {
-        page.render('icons.png');
-
         // Inject a function into the webpage that returns the bounding box of each canvas element
         var rects = page.evaluate(function(arrIcons)
         {
@@ -74,7 +72,9 @@ else (function()
             width:  rect.width  * page.zoomFactor,
             height: rect.height * page.zoomFactor
           };
+
           page.render('../htdocs/icons/' + id + '.png');
+          page.render('../htdocs/icons/' + id + '.ico');
       }
       
       phantom.exit();

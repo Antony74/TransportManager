@@ -226,7 +226,9 @@ function ensureShortcutExists()
         {
             fs.writeFile(sShortcutFile, "[InternetShortcut]\r\n"
                                       + "URL=file://" + __dirname + "\\TransportManager.bat\r\n"
-                                      + "WorkingDir=" + __dirname + "\r\n");
+                                      + "WorkingDir=" + __dirname + "\r\n"
+                                      + "IconFile=" + __dirname + "\\..\\htdocs\\icons\\Car.ico\r\n"
+                                      + "IconIndex=0\r\n");
         }
     });
 }
