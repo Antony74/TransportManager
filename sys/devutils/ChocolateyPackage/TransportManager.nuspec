@@ -3,7 +3,7 @@
   <metadata>
     <id>TransportManager</id>
     <title>Transport Manager</title>
-    <version>0.1.0</version>
+    <version>0.1.0-dev</version>
     <authors>Antony Bartlett</authors>
     <description>A database app for community driving schemes</description>
     <projectUrl>https://github.com/Antony74/TransportManager</projectUrl>
@@ -13,7 +13,7 @@
     <dependencies>
       <dependency id="git" />
       <dependency id="nodejs" />
-      <dependency id="MSAccess2010-redist" />
+      <!--dependency id="MSAccess2010-redist" /-->
     </dependencies>
   </metadata>
   <files>
