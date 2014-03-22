@@ -1,4 +1,33 @@
 
+if (typeof process == 'undefined' || process.versions == 'undefined' || process.versions.node == 'undefined')
+{
+    var usage = 'Sorry, Transport Manager can currently only be run on Windows and using ';
+    usage +=    'a 32-bit build of Node.js, are you trying to use a different ';
+    usage +=    'JavaScript engine?';
+
+    if      (typeof console != 'undefined') (function(){console.log(usage); })();
+    else if (typeof alert   != 'undefined') (function(){alert(usage);       })();
+    else if (typeof WScript != 'undefined') (function(){WScript.echo(usage);})();
+}
+else (function() {
+
+if (process.arch != 'ia32' || process.platform != 'win32')
+{
+    console.log("");
+    console.log("Sorry, Transport Manager can currently only be run on Windows and using");
+    console.log("a 32-bit build of Node.js");
+    console.log("");
+    console.log("Expected: process.arch='ia32', process.platform='win32'");
+    console.log("Found:    process.arch='" + process.arch + "', process.platform='" + process.platform + "'");
+    console.log("");
+    console.log("If you are using the Chocolately Package Manager, then the required install");
+    console.log("and run commands respectively are:");
+    console.log("");
+    console.log("cinst nodejs-win32.commandline");
+    console.log("node-win32 TransportManager.js");
+    return;
+}
+
 var http = require('http');
 var url = require('url');
 var static = require('node-static');
@@ -207,4 +236,6 @@ function onServerCommand(sCmd)
 
     promptForCommand();
 }
+
+})();
 
