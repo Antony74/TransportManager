@@ -24,4 +24,4 @@ else
 
 cd sys\server
 npm install
-node TransportManager.js -Q
+node-win32 TransportManager.js -Q

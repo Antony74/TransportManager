@@ -1,4 +1,3 @@
-
 var fs = require('fs');
 var win32ole = require('win32ole');
 
@@ -217,8 +216,17 @@ function ensureShortcutExists()
     // Ensure we have a shortcut to make it easier to run this program.  Obviously
     // it's annoying having to run once without a shortcut, but it has to contain
     // an absolute path which we can't know in advance.  Also it can't contain
-    // a parameter so we go via a batch file.  Unfortunately his is the best I can
+    // a parameter so we go via a batch file.  Unfortunately this is the best I can
     // do right now.
+    var sBatchFile = __dirname + "/TransportManager.bat";
+    fs.exists(sBatchFile, function(bExists)
+    {
+        if (bExists == false)
+        {
+            fs.writeFile(sBatchFile, "@" + process.execPath + " " + __dirname + "\\TransportManager.js");
+        }
+    });
+
     var sShortcutFile = __dirname + "/../../TransportManager.url";
     fs.exists(sShortcutFile, function(bExists)
     {

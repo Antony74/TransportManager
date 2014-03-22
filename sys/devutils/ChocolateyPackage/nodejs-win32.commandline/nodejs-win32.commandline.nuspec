@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>nodejs-win32.commandline</id>
+    <version>0.10.26-test2</version>
+    <title>Node JS (Win32 CommandLine)</title>
+    <authors>Joyent</authors>
+    <owners>Antony Bartlett</owners>
+    <licenseUrl>https://github.com/joyent/node/blob/master/LICENSE</licenseUrl>
+    <projectUrl>http://nodejs.org</projectUrl>
+    <iconUrl>https://github.com/ferventcoder/chocolateyautomaticpackages/raw/master/nodejs/nodejs.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Node JS - Evented I/O for v8 JavaScript. Node's goal is to provide an easy way to build scalable network programs.
+
+This package simply copies a Win32 build of Node.exe to a subfolder within the Chocolatey folder.  The command to run it is 'Node-win32', so as to ensure that scripts which require access to legacy binary functionality (such as Microsoft Jet 4.0) can be run via 'Node-win32' without fear of failure due to a different build of Node being on the system, while at the same time other scripts run with the usual 'Node' command are not stuck with the 32-bit build of Node if that is not what is desired.
+
+Does not include NPM.</description>
+    <summary>(An explicitly win32 build of) Node JS - Evented I/O for v8 JavaScript.</summary>
+    <tags>nodejs node javascript win32</tags>
+  </metadata>
+</package>
