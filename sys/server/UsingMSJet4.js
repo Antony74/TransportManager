@@ -223,7 +223,7 @@ function ensureShortcutExists()
     {
         if (bExists == false)
         {
-            fs.writeFile(sBatchFile, "@" + process.execPath + " " + __dirname + "\\TransportManager.js");
+            fs.writeFile(sBatchFile, '@"' + process.execPath + '" "' + __dirname + '\\TransportManager.js"');
         }
     });
 
