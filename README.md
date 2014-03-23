@@ -1,6 +1,6 @@
 ##TransportManager
 
-A database app for community driving schemes - initially and primarily developed for Didcot Volunteer Centre.
+A database app for community driving schemes - initially developed for Didcot Volunteer Centre.
 This is a classic three tier application, with web-front-end and middle-layer both
 written in JavaScript.  Not currently intended for remote use (across a
 Local-Area-Network would be fine).
@@ -10,46 +10,65 @@ Local-Area-Network would be fine).
 
 MIT (https://github.com/Antony74/TransportManager/blob/master/sys/Licence.txt)
 
+Includes a number of third-party components each of which is subject to its own licence.
+
 
 ####Status
 
-Early development.
+In development.
 
 
-####Requirements
+####Operating System
 
-* Windows
-* Microsoft JET Database Engine (http://www.microsoft.com/en-us/download/details.aspx?id=13255)
-* Node.js (http://nodejs.org/)
-* git (http://git-scm.com/)
-
-Database and Operating System dependent code will be kept in a seperate file to make less
-difficult to write a sustitute if desired.  Many Windows systems will already have
-Microsoft JET Database Engine - indeed I haven't found one without it to test this part
-of the installation process.  Git is suggested for convenience, but there
-are obviously other means of deployment such and downloading and extracting from a zip file.
-
-
-####Other libraries automatically included
-
-This is just for reference, no action is required, these are included automatically when you follow the install instructions.
-
-* node-win32ole (http://idobatter.github.io/node-win32ole/)
-* node-static (https://github.com/cloudhead/node-static)
-* JQuery (http://jquery.com/)
-* JQueryUI (http://jqueryui.com/)
-* FullCalendar (http://arshaw.com/fullcalendar/)
+Currently Windows only.  Database and Operating System dependent code is kept in a seperate file to make less
+difficult to write a sustitute if desired.
 
 
 ####Installation
 
-As stated in the requirements, you need a Windows computer with Microsoft JET, Node.js and git installed on it.
-Installing TransportManager and running it for the first time should simply be a matter of bringing up a
-command prompt and entering each of these commands in turn:
+Use of the [Chocolatey](https://chocolatey.org/) package management system is recommended for ease of installation.
 
-    git clone https://github.com/Antony74/TransportManager.git
+Start by bringing up a command prompt.  If you do not already have Chocolatey installed, the command to get and install it is:
+
+    @powershell -NoProfile -ExecutionPolicy unrestricted -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%systemdrive%\chocolatey\bin
+
+This is long so you'll want to copy and paste it.  Once Chocolatey is installed, the command to install Transport Manager is
+
+    cinst TransportManager -Pre 
+
+Don't worry - it's just those two commands and installation is complete!
+
+Transport Manager is installed to C:\TransportManager
+
+(It's not too difficult to move this folder elsewhere, but there is a .url and a .bat file that would need updating or deleting, and you will not be able to use Chocolatey to keep it the Transport Manager program up to date... use git instead).
+
+
+####Installation without Chocolatey
+
+If you would prefer not to use the Chocolatey package manager for installation then you will need to ensure a 32-bit Windows build of [Node.js](http://nodejs.org/) has been downloaded and installed.  You will also need to clone this repository or download the files within it (e.g. git clone https://github.com/Antony74/TransportManager.git)
+
+After that the following commands are required to finish off the installation and run the Transport Manager for the first time (note that npm is the package manager included with Node.js).
+
     cd TransportManager\sys\Server
-    npm install node-static
+    npm install
     node TransportManager.js
 
-    
+
+####Dependency list
+
+For reference here is the full list of the third party components used:
+
+* Windows
+* Microsoft JET Database Engine 4.0 (included with Windows since Windows XP Service Pack 2, I believe)
+* Chocolatey (optional.  https://chocolatey.org/)
+* Node.js (installed by Chocolatey.  http://nodejs.org/)
+* git (optional; installed by Chocolatey.  http://git-scm.com/)
+* node-win32ole (included in this repository.  http://idobatter.github.io/node-win32ole/)
+* node-static (installed by npm, triggered by Chocolatey.  https://github.com/cloudhead/node-static)
+* JQuery (included in this repository.  http://jquery.com/)
+* JQueryUI (included in this repository.  http://jqueryui.com/)
+* FullCalendar (included in this repository.  http://arshaw.com/fullcalendar/)
+* Faker (required for development only; install using npm.  https://www.npmjs.org/package/Faker)
+* PhantomJS (required for development only; install using Chocolatey or npm or manually.   http://phantomjs.org/)
+* Processing.js (required for development only; included in this repository.  http://processingjs.org/)
+
