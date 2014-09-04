@@ -203,11 +203,6 @@ function ensureShortcutExists()
     });
 }
 
-function launchWebbrowser(url)
-{
-    exec('start ' + url);
-}
-
 function tasklist(tasklistFinished)
 {
     exec('tasklist', function(error, stdout, stderr)
@@ -228,7 +223,7 @@ function tasklist(tasklistFinished)
 
         arrLines.forEach(function(sLine)
         {
-            if (sLine.substr(0, 8) == "node.exe")
+            if (sLine.toLowerCase().substr(0, 8) == "node.exe")
             {
                 var nPID = parseInt(sLine.substr(10, 25));
                 if (nPID != process.pid)
@@ -243,44 +238,14 @@ function tasklist(tasklistFinished)
     });
 }
 
-function taskkill(arrPIDS, taskkillFinished)
-{
-    var sCmd = 'taskkill /F ';
-    
-    arrPIDS.forEach(function(nPID)
-    {
-        sCmd += '/PID ' + nPID + ' ';
-    });
-
-    exec(sCmd, function(error, stdout, stderr)
-    {
-        if (error !== null)
-        {
-            console.log('exec error: ' + error);
-        }
-
-        if (stderr.length > 0)
-        {
-            console.log(stderr);
-        }
-        
-        console.log(stdout);
-        taskkillFinished();
-    });
-
-}
-
 //
 // Main exports
 //
 
 exports.ensureShortcutExists = ensureShortcutExists;
 exports.ensureDatabaseIsReady = ensureDatabaseIsReady;
-exports.launchWebbrowser = launchWebbrowser;
 exports.tasklist = tasklist;
-exports.taskkill = taskkill;
 exports.selectSql = selectSql;
-exports.sDatabaseFilename = sDatabaseFilename;
 
 //
 // Also export a bunch of JET stuff for the GetSchema.js script to use
