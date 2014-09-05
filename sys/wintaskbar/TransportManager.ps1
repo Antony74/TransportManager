@@ -11,11 +11,11 @@ $oTaskbarIcon.Visible = $True;
 
 $sCmd = [system.io.file]::ReadAllText("..\server\TransportManager.bat");
 
-$arrWords = $sCmd.Split(" ");
+$arrWords = $sCmd.Split('"');
 
 $oInfo = New-Object System.Diagnostics.ProcessStartInfo;
-$oInfo.FileName  = $arrWords[0].Trim("@");
-$oInfo.Arguments = $arrWords[1].Trim();
+$oInfo.FileName  = $arrWords[1];
+$oInfo.Arguments = $arrWords[3];
 $oInfo.UseShellExecute = $False;
 $oInfo.RedirectStandardOutput = $True;
 $oInfo.RedirectStandardError = $True;
