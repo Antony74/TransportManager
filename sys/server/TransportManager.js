@@ -69,12 +69,27 @@ function handleRequest(request, response)
             var oError = {"Error": "Table name " + sTable + " not recognised"};
             response.write(JSON.stringify(oError));
         }
-        response.end();
+    }
+    else if (parsed.pathname == "/quitTransportManager")
+    {
+        console.log("Quitting");
+        response.end("OK");
+        request.connection.end();   //close the socket
+        request.connection.destroy; //close it really
+        server.close();
+        return;
     }
     else
     {
-        staticServer.serve(request, response);
+        request.addListener('end', function () {
+            staticServer.serve(request, response);
+        }).resume();
+        return;
     }
+
+    response.end();
+    request.connection.end();   //close the socket
+    request.connection.destroy; //close it really
 }
 
 server = http.createServer(handleRequest);
@@ -121,16 +136,6 @@ server.on("error", function(e)
 
 server.listen(port, 'localhost');
 
-// There's currently no way of sending a quit message, but when there is, this is what action will be taken
-function OnQuit(sCmd)
-{
-    console.log("Quiting");
-    if (bServerIsRunning)
-    {
-        server.close();
-    }
-    return;
-}
 
 })();
 
