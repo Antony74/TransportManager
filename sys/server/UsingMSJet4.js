@@ -96,38 +96,6 @@ function runSQL(sFilenameSql, doneRunning)
     });
 }
 
-function ensureDatabaseUpdate1(doneEnsuring)
-{
-    var sFilenameSqlU1 = __dirname + "../../TransportManager_u1.sql";
-    var bFound = false;
-
-    var db = openAccessDatabase(sDatabaseFilename);
-    var TablesSchema = db.OpenSchema(adSchemaIndexes);
-    while (TablesSchema.EOF == false)
-    {
-        var sIndexName = String(TablesSchema.Fields("INDEX_NAME").Value);
-
-        if (sIndexName == "FKDestinationsTypeID")
-        {
-            bFound = true;
-        }
-        
-        TablesSchema.MoveNext();
-    }
-
-    db.Close();
-
-    if (bFound)
-    {
-        doneEnsuring();
-    }
-    else
-    {
-        console.log("Database is not up to date... updating");
-        runSQL(sFilenameSqlU1, doneEnsuring);
-    }
-}
-
 function ensureDatabaseIsReady(doneEnsuring)
 {
     var sFilenameEmpty = __dirname + "/Blank2002Database.mdb";
@@ -137,11 +105,8 @@ function ensureDatabaseIsReady(doneEnsuring)
     {
         if (bExists)
         {
-            ensureDatabaseUpdate1(function()
-            {
-                console.log("Database ready");
-                doneEnsuring();
-            });
+            console.log("Database ready");
+            doneEnsuring();
         }
         else
         {
@@ -152,11 +117,8 @@ function ensureDatabaseIsReady(doneEnsuring)
             {
                 runSQL(sFilenameSql, function()
                 {
-                    ensureDatabaseUpdate1(function()
-                    {
-                        console.log("Database ready");
-                        doneEnsuring();
-                    });
+                    console.log("Database ready");
+                    doneEnsuring();
                 });
             });
         }
@@ -241,11 +203,6 @@ function ensureShortcutExists()
     });
 }
 
-function launchWebbrowser(url)
-{
-    exec('start ' + url);
-}
-
 function tasklist(tasklistFinished)
 {
     exec('tasklist', function(error, stdout, stderr)
@@ -266,7 +223,7 @@ function tasklist(tasklistFinished)
 
         arrLines.forEach(function(sLine)
         {
-            if (sLine.substr(0, 8) == "node.exe")
+            if (sLine.toLowerCase().substr(0, 8) == "node.exe")
             {
                 var nPID = parseInt(sLine.substr(10, 25));
                 if (nPID != process.pid)
@@ -281,44 +238,14 @@ function tasklist(tasklistFinished)
     });
 }
 
-function taskkill(arrPIDS, taskkillFinished)
-{
-    var sCmd = 'taskkill /F ';
-    
-    arrPIDS.forEach(function(nPID)
-    {
-        sCmd += '/PID ' + nPID + ' ';
-    });
-
-    exec(sCmd, function(error, stdout, stderr)
-    {
-        if (error !== null)
-        {
-            console.log('exec error: ' + error);
-        }
-
-        if (stderr.length > 0)
-        {
-            console.log(stderr);
-        }
-        
-        console.log(stdout);
-        taskkillFinished();
-    });
-
-}
-
 //
 // Main exports
 //
 
 exports.ensureShortcutExists = ensureShortcutExists;
 exports.ensureDatabaseIsReady = ensureDatabaseIsReady;
-exports.launchWebbrowser = launchWebbrowser;
 exports.tasklist = tasklist;
-exports.taskkill = taskkill;
 exports.selectSql = selectSql;
-exports.sDatabaseFilename = sDatabaseFilename;
 
 //
 // Also export a bunch of JET stuff for the GetSchema.js script to use
