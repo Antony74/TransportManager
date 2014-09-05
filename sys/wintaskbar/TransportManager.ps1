@@ -1,32 +1,50 @@
 #
 # usage: powershell -ExecutionPolicy unrestricted ./TransportManager.ps1
 #
+# A thin GUI wrapper for tucking away our main server process neatly away on the Windows task bar.
+#
 
 Add-Type -AssemblyName System.Windows.Forms;
+
+#
+# Create a "Stop" menu item
+#
 
 $MenuItem = New-Object System.Windows.Forms.MenuItem("Stop");
 
 $MenuItem.Add_Click({
 	Write-Host "Stopping";
 
-	$r = [System.Net.WebRequest]::Create("http://localhost:8080/quitTransportManager")
-	$resp = $r.GetResponse()
-	$reqstream = $resp.GetResponseStream()
-	$sr = new-object System.IO.StreamReader $reqstream
-	$result = $sr.ReadToEnd()
-	write-host $result
+	$job = Start-Job({
+		$request = [System.Net.WebRequest]::Create("http://localhost:8080/quitTransportManager");
+		$reader = new-object System.IO.StreamReader $request.GetResponse().GetResponseStream();
+		$result = $reader.ReadToEnd();
+	});
 
-	$oProcess.dispose();
+	Receive-Job -wait $job;
+	$job.Dispose();
 });
 
+#
+# Create menu and add items
+#
+
 $ContextMenu = New-Object System.Windows.Forms.ContextMenu;
-$ContextMenu.MenuItems.AddRange($MenuItem);
+[Void]$ContextMenu.MenuItems.Add($MenuItem);
+
+#
+# Create taskbar icon
+#
 
 $oTaskbarIcon = New-Object System.Windows.Forms.NotifyIcon;
 $oTaskbarIcon.Icon = "..\htdocs\icons\Car.ico";
 $oTaskbarIcon.ContextMenu = $ContextMenu;
 
 $oTaskbarIcon.Visible = $True;
+
+#
+# Run the server (parse the batch file for a command line to use)
+#
 
 $sCmd = [system.io.file]::ReadAllText("..\server\TransportManager.bat");
 
@@ -44,6 +62,11 @@ $oProcess.StartInfo = $oInfo;
 
 [Void]$oProcess.Start();
 
+#
+# Create a sort of event loop so that we can display the server log
+# at the same time as processing application events
+#
+
 $timer = New-Object System.Windows.Forms.Timer;
 $timer.Interval = 100;
 $timer.Add_Tick({
@@ -52,7 +75,7 @@ $timer.Add_Tick({
 
 	$bDone = $False;
 
-	while ( (!$bDone) -and ($oProcess.StandardOutput -ne $null) )
+	while (!$bDone)
 	{
 		$char = $oProcess.StandardOutput.Peek();
 
@@ -80,6 +103,10 @@ $timer.Add_Tick({
 
 	[System.Windows.Forms.Application]::Exit();
 });
+
+#
+# Now we're all set up and good to run
+#
 
 $timer.Start();
 
