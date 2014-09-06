@@ -1,20 +1,57 @@
 #
-# usage: powershell -ExecutionPolicy unrestricted ./TransportManager.ps1
+# usage: powershell -ExecutionPolicy unrestricted ./TransportManager.ps1 -serverExe [path-to-node.exe] -serverArgument [path-to-TransportManager.js]
 #
 # A thin GUI wrapper for tucking away our main server process neatly away on the Windows task bar.
 #
 
+param(
+	[string] $serverExe,
+	[string] $serverArgument);
+
 Add-Type -AssemblyName System.Windows.Forms;
+
+#
+# If we don't have our server parameters, parse them out of the batch file
+#
+
+if ( ($serverExe -eq "") -or ($serverArgument -eq "") )
+{
+	$sCmd = [system.io.file]::ReadAllText("..\server\TransportManager.bat");
+	$arrWords = $sCmd.Split('"');
+	$serverExe = $arrWords[1];
+	$serverArgument = $arrWords[3];
+}
+
+#
+# Create a "Transport Manager" menu item
+#
+
+$menuTransportManager = New-Object System.Windows.Forms.MenuItem("Transport Manager");
+
+$menuTransportManager.Add_Click({
+	Start-Process -FilePath "cmd" -ArgumentList @("/c", "start", "http://localhost:8080");
+});
+
+#
+# Create a "Server Log" menu item
+#
+
+$menuServerLog = New-Object System.Windows.Forms.MenuItem("Server Log");
+
+$menuServerLog.Add_Click({
+});
 
 #
 # Create a "Stop" menu item
 #
 
-$MenuItem = New-Object System.Windows.Forms.MenuItem("Stop");
+$menuStop = New-Object System.Windows.Forms.MenuItem("Stop");
 
-$MenuItem.Add_Click({
+$menuStop.Add_Click({
 	Write-Host "Stopping";
 
+	# If we want the server to close nicely we need to close the connection we make to it cleanly.
+	# Putting our request a seperate job is one way of achieving this.
 	$job = Start-Job({
 		$request = [System.Net.WebRequest]::Create("http://localhost:8080/quitTransportManager");
 		$reader = new-object System.IO.StreamReader $request.GetResponse().GetResponseStream();
@@ -26,11 +63,13 @@ $MenuItem.Add_Click({
 });
 
 #
-# Create menu and add items
+# Create menu and add the items
 #
 
 $ContextMenu = New-Object System.Windows.Forms.ContextMenu;
-[Void]$ContextMenu.MenuItems.Add($MenuItem);
+[Void]$ContextMenu.MenuItems.Add($menuTransportManager);
+[Void]$ContextMenu.MenuItems.Add($menuServerLog);
+[Void]$ContextMenu.MenuItems.Add($menuStop);
 
 #
 # Create taskbar icon
@@ -46,13 +85,9 @@ $oTaskbarIcon.Visible = $True;
 # Run the server (parse the batch file for a command line to use)
 #
 
-$sCmd = [system.io.file]::ReadAllText("..\server\TransportManager.bat");
-
-$arrWords = $sCmd.Split('"');
-
 $oInfo = New-Object System.Diagnostics.ProcessStartInfo;
-$oInfo.FileName  = $arrWords[1];
-$oInfo.Arguments = $arrWords[3];
+$oInfo.FileName  = $serverExe;
+$oInfo.Arguments = $serverArgument;
 $oInfo.UseShellExecute = $False;
 $oInfo.RedirectStandardOutput = $True;
 $oInfo.RedirectStandardError = $True;
