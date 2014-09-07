@@ -11,6 +11,13 @@ param(
 Add-Type -AssemblyName System.Windows.Forms;
 
 #
+# Control-C doesn't work very will in conjunction with Timers - you get a System.Management.Automation.PipelineStoppedException.
+# Unless there's anything that can be done about it, I prefer ignoring control-c rather than letting it make that particular mess.
+#
+
+[console]::TreatControlCAsInput = $true;
+
+#
 # Pull in a bunch of native win32 stuff so that we can hide on minimise, and disable the close button
 #
 
