@@ -11,6 +11,41 @@ param(
 Add-Type -AssemblyName System.Windows.Forms;
 
 #
+# Pull in a bunch of native win32 stuff so that we can hide on minimise, and disable the close button
+#
+
+$MethodsCall = '
+[DllImport("user32.dll")] public static extern long GetSystemMenu(IntPtr hWnd, bool bRevert);
+[DllImport("user32.dll")] public static extern bool EnableMenuItem(long hMenuItem, long wIDEnableItem, long wEnable);
+[DllImport("user32.dll")] public static extern bool ShowWindow(long hWnd, int nCmdShow);
+[DllImport("user32.dll")] public static extern long GetWindowLong(long hWnd, long nIndex);
+[DllImport("user32.dll")] public static extern bool SetWindowText(long hWnd, string sText);
+';
+ 
+Add-Type -MemberDefinition $MethodsCall -name NativeMethods -namespace Win32;
+ 
+$MF_DISABLED = 0x00000002L;
+$SC_CLOSE    = 0xF060;
+$GWL_STYLE   = -16;
+$WS_MINIMIZE = 0x20000000L;
+$SW_HIDE     = 0;
+$SW_SHOW     = 5;
+$SW_RESTORE  = 9;
+
+$hwnd = [System.Diagnostics.Process]::GetCurrentProcess().MainWindowHandle;
+
+if ($hwnd)
+{
+	[Void][Win32.NativeMethods]::SetWindowText($hwnd, "Transport Manager");
+
+	# Get system menu of our main window
+	$hMenu = [Win32.NativeMethods]::GetSystemMenu($hwnd, 0);
+
+	# Disable the close button
+	[Void][Win32.NativeMethods]::EnableMenuItem($hMenu, $SC_CLOSE, $MF_DISABLED);
+}
+
+#
 # If we don't have our server parameters, parse them out of the batch file
 #
 
@@ -39,19 +74,43 @@ $menuTransportManager.Add_Click({
 $menuServerLog = New-Object System.Windows.Forms.MenuItem("Server Log");
 
 $menuServerLog.Add_Click({
+	if ($hwnd)
+	{
+		[Void][Win32.NativeMethods]::ShowWindow($hWnd, $SW_RESTORE);
+		$global:bServerLogVisible = $true;
+	}
 });
 
 #
 # Create a "Stop" menu item
 #
 
+$global:bForceStop = $false;
+
 $menuStop = New-Object System.Windows.Forms.MenuItem("Stop");
 
 $menuStop.Add_Click({
 	Write-Host "Stopping";
 
-	# If we want the server to close nicely we need to close the connection we make to it cleanly.
+	#
+	# Give the server 15 seconds to stop nicely, then set the variable to force it to stop
+	#
+
+	$timerForce = New-Object System.Windows.Forms.Timer;
+	$timerForce.Interval = 15000;
+	$timerForce.Add_Tick({
+		$this.Stop();
+		$global:bForceStop = $true;
+	});
+
+	$timerForce.Start();
+
+	#
+	# Send the server the http request to try to get it to stop nicely.
+	# We need to close our request nicely or the server wont close nicely.
 	# Putting our request a seperate job is one way of achieving this.
+	#
+
 	$job = Start-Job({
 		$request = [System.Net.WebRequest]::Create("http://localhost:8080/quitTransportManager");
 		$reader = new-object System.IO.StreamReader $request.GetResponse().GetResponseStream();
@@ -97,16 +156,65 @@ $oProcess.StartInfo = $oInfo;
 
 [Void]$oProcess.Start();
 
+$global:bServerLogVisible = $true;
+
 #
 # Create a sort of event loop so that we can display the server log
 # at the same time as processing application events
 #
 
-$timer = New-Object System.Windows.Forms.Timer;
-$timer.Interval = 100;
-$timer.Add_Tick({
+$timerStartup = New-Object System.Windows.Forms.Timer;
+$timerStartup.Interval = 100;
+$timerStartup.Add_Tick({
 
-	$timer.Stop();
+	$timerStartup.Stop();
+
+	#
+	# Hide the server log window ten seconds after we start
+	#
+
+	$timerInitialHide = New-Object System.Windows.Forms.Timer;
+	$timerInitialHide.Interval = 10000;
+
+	$timerInitialHide.Add_Tick({
+
+		$timerInitialHide.Stop();	
+
+		if (!$oProcess.HasExited)
+		{
+			[Void][Win32.NativeMethods]::ShowWindow($hWnd, $SW_HIDE);
+			$global:bServerLogVisible = $false;
+		}
+	});
+
+	$timerInitialHide.Start();
+
+	#
+	# Poll the window so we can hide it if it's minimised
+	#
+
+	$timerPoll = New-Object System.Windows.Forms.Timer;
+	$timerPoll.Interval = 100;
+
+	$timerPoll.Add_Tick({
+
+		if ($global:bServerLogVisible -and $hwnd)
+		{
+			$nStyle = [Win32.NativeMethods]::GetWindowLong($hwnd, $GWL_STYLE);
+
+			if ($nStyle -band $WS_MINIMIZE)
+			{
+				[Void][Win32.NativeMethods]::ShowWindow($hWnd, $SW_HIDE);
+				$global:bServerLogVisible = $false;
+			}
+		}
+	});
+
+	$timerPoll.Start();
+
+	#
+	# Now we can get on with the event loop
+	#
 
 	$bDone = $False;
 
@@ -124,10 +232,22 @@ $timer.Add_Tick({
 			if ($oProcess.HasExited)
 			{
 				$bDone = $True;
+
+				if ($oProcess.ExitCode -ne 0)
+				{
+					[Void][Win32.NativeMethods]::ShowWindow($hWnd, $SW_RESTORE);
+					[System.Windows.Forms.MessageBox]::Show("Transport Manager exited with an error")
+				}
 			}
 			else
 			{
 				[System.Windows.Forms.Application]::DoEvents();
+			}
+
+			if ($global:bForceStop -eq $true)
+			{
+				$oProcess.Kill();
+				$bDone = $true;
 			}
 		}
 		else
@@ -143,7 +263,7 @@ $timer.Add_Tick({
 # Now we're all set up and good to run
 #
 
-$timer.Start();
+$timerStartup.Start();
 
 [System.Windows.Forms.Application]::Run();
 

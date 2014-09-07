@@ -115,6 +115,7 @@ server.on("error", function(e)
     if (e.code == 'EADDRINUSE')
     {
         console.log('Port ' + port + ' is already in use');
+        process.on('exit', function() { process.exit(1); });
 
         platform.tasklist(function(sText, arrPIDS)
         {
