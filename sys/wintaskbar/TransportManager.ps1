@@ -233,6 +233,15 @@ $timerStartup.Add_Tick({
 		{
 			$char = $oProcess.StandardOutput.Read();
 		}
+		else
+		{
+			$char = $oProcess.StandardError.Peek();
+
+			if ($char -ne -1)
+			{
+				$char = $oProcess.StandardError.Read();
+			}
+		}
 
 		if ($char -eq -1)
 		{

@@ -38,6 +38,7 @@ var port = 8080;
 var sServerUrl = "http://localhost:" + port + "/";
 var bServerIsRunning = false;
 
+console.error(""); // Just to get the error stream pumping
 console.log("");
 console.log("    T R A N S P O R T   M A N A G E R");
 console.log("");
@@ -115,19 +116,11 @@ server.on("error", function(e)
     if (e.code == 'EADDRINUSE')
     {
         console.log('Port ' + port + ' is already in use');
-        process.on('exit', function() { process.exit(1); });
+        console.log("");
+        console.log("This usually happens because another instance of the server is already");
+        console.log("running on this computer.");
 
-        platform.tasklist(function(sText, arrPIDS)
-        {
-            if (arrPIDS.length > 0)
-            {
-                console.log("This usually happens because another instance of the server is already");
-                console.log("running on this computer.");
-                console.log("");
-                console.log(sText);
-                console.log("");
-            }
-        });
+        process.on('exit', function() { process.exit(1); });
     }
     else
     {

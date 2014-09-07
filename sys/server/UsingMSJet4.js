@@ -171,8 +171,6 @@ function selectSql(sTable, nStart)
 // utility functions which are Windows specific.
 //
 
-var exec = require('child_process').exec;
-
 function ensureShortcutExists()
 {
     // Ensure we have a shortcut to make it easier to run this program.  Obviously
@@ -203,48 +201,12 @@ function ensureShortcutExists()
     });
 }
 
-function tasklist(tasklistFinished)
-{
-    exec('tasklist', function(error, stdout, stderr)
-    {
-        if (error !== null)
-        {
-            console.log('exec error: ' + error);
-        }
-
-        if (stderr.length > 0)
-        {
-            console.log(stderr);
-        }
-
-        var arrLines = stdout.split("\n");
-        var arrFiltered = [];
-        var arrPIDs = [];
-
-        arrLines.forEach(function(sLine)
-        {
-            if (sLine.toLowerCase().substr(0, 8) == "node.exe")
-            {
-                var nPID = parseInt(sLine.substr(10, 25));
-                if (nPID != process.pid)
-                {
-                    arrFiltered.push(sLine.trim());
-                    arrPIDs.push(parseInt(sLine.substr(10, 25)));
-                }
-            }
-        });
-
-        tasklistFinished(arrFiltered.join("\r\n"), arrPIDs);
-    });
-}
-
 //
 // Main exports
 //
 
 exports.ensureShortcutExists = ensureShortcutExists;
 exports.ensureDatabaseIsReady = ensureDatabaseIsReady;
-exports.tasklist = tasklist;
 exports.selectSql = selectSql;
 
 //
