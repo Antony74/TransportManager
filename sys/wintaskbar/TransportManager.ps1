@@ -8,6 +8,8 @@ param(
 	[string] $serverExe,
 	[string] $serverArgument);
 
+$sScriptDir = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition;
+
 Add-Type -AssemblyName System.Windows.Forms;
 
 #
@@ -58,10 +60,10 @@ if ($hwnd)
 
 if ( ($serverExe -eq "") -or ($serverArgument -eq "") )
 {
-	$sCmd = [system.io.file]::ReadAllText("..\server\TransportManager.bat");
-	$arrWords = $sCmd.Split('"');
-	$serverExe = $arrWords[1];
-	$serverArgument = $arrWords[3];
+	$sCmd = [system.io.file]::ReadAllText("$sScriptDir\..\server\TransportManager.bat");
+	$arrQuotedThings = $sCmd.Split('"');
+	$serverExe = $arrQuotedThings[1];
+	$serverArgument = $arrQuotedThings[3];
 }
 
 #
@@ -142,7 +144,7 @@ $ContextMenu = New-Object System.Windows.Forms.ContextMenu;
 #
 
 $oTaskbarIcon = New-Object System.Windows.Forms.NotifyIcon;
-$oTaskbarIcon.Icon = "..\htdocs\icons\Car.ico";
+$oTaskbarIcon.Icon = New-Object System.Drawing.Icon("$sScriptDir\..\htdocs\icons\Car.ico");
 $oTaskbarIcon.ContextMenu = $ContextMenu;
 
 $oTaskbarIcon.Visible = $True;

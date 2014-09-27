@@ -183,7 +183,7 @@ function ensureShortcutExists()
     {
         if (bExists == false)
         {
-            fs.writeFile(sBatchFile, 'powershell -ExecutionPolicy unrestricted ../wintaskbar/TransportManager.ps1 -serverExe "' + process.execPath + '" -serverArgument "' + __dirname + '\\TransportManager.js"');
+            fs.writeFile(sBatchFile, 'start powershell -ExecutionPolicy unrestricted ' + __dirname + '/../wintaskbar/TransportManager.ps1 -serverExe "' + process.execPath + '" -serverArgument "' + __dirname + '\\TransportManager.js"');
         }
     });
 
