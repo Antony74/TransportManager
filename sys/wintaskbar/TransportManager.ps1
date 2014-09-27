@@ -147,6 +147,15 @@ $oTaskbarIcon = New-Object System.Windows.Forms.NotifyIcon;
 $oTaskbarIcon.Icon = New-Object System.Drawing.Icon("$sScriptDir\..\htdocs\icons\Car.ico");
 $oTaskbarIcon.ContextMenu = $ContextMenu;
 
+$oTaskbarIcon.Add_MouseDoubleClick({
+	param($sender, $mouseEventArgs);	
+	
+	if ($mouseEventArgs.Button -eq [System.Windows.Forms.MouseButtons]::Left)
+	{
+		Start-Process -FilePath "cmd" -ArgumentList @("/c", "start", "http://localhost:8080");
+	}
+});
+
 $oTaskbarIcon.Visible = $True;
 
 #
@@ -177,26 +186,6 @@ $timerStartup.Interval = 100;
 $timerStartup.Add_Tick({
 
 	$timerStartup.Stop();
-
-	#
-	# Hide the server log window ten seconds after we start
-	#
-
-	$timerInitialHide = New-Object System.Windows.Forms.Timer;
-	$timerInitialHide.Interval = 10000;
-
-	$timerInitialHide.Add_Tick({
-
-		$timerInitialHide.Stop();	
-
-		if (!$oProcess.HasExited)
-		{
-			[Void][Win32.NativeMethods]::ShowWindow($hWnd, $SW_HIDE);
-			$global:bServerLogVisible = $false;
-		}
-	});
-
-	$timerInitialHide.Start();
 
 	#
 	# Poll the window so we can hide it if it's minimised
