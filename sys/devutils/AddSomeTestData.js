@@ -29,9 +29,12 @@ platform.ensureDatabaseIsReady(function()
     var rsClients = jet.createRecordset();
     rsClients.Open("Clients", db, jet.adOpenStatic, jet.adLockOptimistic, jet.adCmdTableDirect);
     
-    for (var n = 0; n < 8; ++n)
+    if (rsClients.RecordCount == 0)
     {
-        addTestClient(rsClients);
+        for (var n = 0; n < 8; ++n)
+        {
+            addTestClient(rsClients);
+        }
     }
 
     rsClients.Close();
