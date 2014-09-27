@@ -142,19 +142,28 @@ var sFilenameExisting = "./TransportManager.mdb";
 var sFilenameSql = "../TransportManager.sql";
 var sFilenameClone = "../../TransportManager.mdb"
 
-getIndices(sFilenameExisting);
+var bExists = fs.existsSync(sFilenameExisting);
 
-var sSql = getTransportManagerSchema(sFilenameExisting);
-
-fs.writeFile(sFilenameSql, sSql);
-
-// If the main database is present, get it's schema too so we can check they're the same
-fs.exists(sFilenameClone, function(bExists)
+if (bExists)
 {
+    getIndices(sFilenameExisting);
+
+    var sSql = getTransportManagerSchema(sFilenameExisting);
+
+    fs.writeFile(sFilenameSql, sSql);
+
+    // If the main database is present, get its schema too so we can check they're the same
+    bExists = fs.existsSync(sFilenameClone)
+
     if (bExists)
     {
         sSql = getTransportManagerSchema(sFilenameClone);
         fs.writeFile(sFilenameSql + "2", sSql);
     }
-});
+}
+else
+{
+    console.log("File " + sFilenameExisting + " was not found");
+}
+
 

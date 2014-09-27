@@ -210,13 +210,15 @@ exports.ensureDatabaseIsReady = ensureDatabaseIsReady;
 exports.selectSql = selectSql;
 
 //
-// Also export a bunch of JET stuff for the GetSchema.js script to use
+// Also export a bunch of JET stuff for the devutils scripts to use
 //
 
 exports.jet = function() { }
 
 exports.jet.openAccessDatabase = openAccessDatabase;
 exports.jet.createRecordset = createRecordset;
+
+exports.jet.sDatabaseFilename = sDatabaseFilename;
 
 // SchemaEnumConstants
 exports.jet.adSchemaIndexes = adSchemaIndexes;

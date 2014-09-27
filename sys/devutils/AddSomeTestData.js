@@ -24,7 +24,7 @@ function addTestClient(rs)
 
 platform.ensureDatabaseIsReady(function()
 {
-    var db = jet.openAccessDatabase(platform.sDatabaseFilename);
+    var db = jet.openAccessDatabase(jet.sDatabaseFilename);
     
     var rsClients = jet.createRecordset();
     rsClients.Open("Clients", db, jet.adOpenStatic, jet.adLockOptimistic, jet.adCmdTableDirect);
