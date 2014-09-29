@@ -248,6 +248,7 @@ $timerStartup.Add_Tick({
 			}
 			else
 			{
+				wait-event -Timeout 1;
 				[System.Windows.Forms.Application]::DoEvents();
 			}
 
