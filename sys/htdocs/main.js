@@ -1,6 +1,7 @@
 $(document).ready(function()
 {
     $('#radio').buttonset();
+    $('#radio span').css("width", "100px");
 
     $.getJSON('selectSql?query=' + encodeURIComponent('select * from clients'), function(data, textStatus, jqXHR)
     {
