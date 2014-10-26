@@ -24,7 +24,16 @@ $(document).ready(function()
             
             for(var fld in rs)
             {
-                sHtml += '<td>' + rs[fld] + '</td>\n';
+                var value = rs[fld];
+
+                if (value === null || value === '')
+                {
+                    sHtml += '<td>&nbsp;</td>\n';
+                }
+                else
+                {
+                    sHtml += '<td>' + value + '</td>\n';
+                }
             }
 
             sHtml += '</tr>\n';
