@@ -2,7 +2,7 @@ $(document).ready(function()
 {
     $('#radio').buttonset();
 
-    $.getJSON('selectSql?table=Clients', function(data, textStatus, jqXHR)
+    $.getJSON('selectSql?query=' + encodeURIComponent('select * from clients'), function(data, textStatus, jqXHR)
     {
         var sHtml = '';
     

@@ -2,7 +2,7 @@ var fs = require('fs');
 var win32ole = require('../server/node_modules/win32ole');
 var platform = require('../server/usingMSJet4.js');
 var jet = platform.jet;
-var schema = require('../server/Schema.js');
+var schema = require('./Schema.js');
 
 var arrPrimaryKeys = [];
 var arrIndices = [];

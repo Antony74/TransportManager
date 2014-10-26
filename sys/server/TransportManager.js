@@ -32,7 +32,7 @@ var http = require('http');
 var url = require('url');
 var static = require('node-static');
 var platform = require("./UsingMSJet4.js");
-var schema = require("./Schema.js");
+var parser = require("./SelectStatementParser.js");
 var server = null;
 var port = 8080;
 var sServerUrl = "http://localhost:" + port + "/";
@@ -53,23 +53,34 @@ function handleRequest(request, response)
     if (parsed.pathname == "/selectSql")
     {
 //        response.write(JSON.stringify(parsed));
-        var sTable = parsed.query.table;
+        var sQuery = parsed.query.query;
         var nStart = parseInt(parsed.query.start, 10);
         if (Number.isNaN(nStart))
         {
             nStart = 0;
         }
-        
-        if (schema.isValidTable(sTable))
+
+        response.setHeader("Content-Type", "application/json");
+
+        var bParsedOK = false;
+
+        try
         {
-            var oOutput = platform.selectSql(sTable, nStart);
-            response.write(JSON.stringify(oOutput));
+            parser.parse(sQuery);
+            bParsedOK = true;
         }
-        else
+        catch(e)
         {
-            var oError = {"Error": "Table name " + sTable + " not recognised"};
-            response.write(JSON.stringify(oError));
+            var oError = {"Error": e.toString()};
+            response.write(JSON.stringify(oError, null, 4));
         }
+
+        if (bParsedOK)
+        {
+            var oOutput = platform.selectSql(sQuery, nStart);
+            response.write(JSON.stringify(oOutput, null, 4));
+        }
+
     }
     else if (parsed.pathname == "/quitTransportManager")
     {
