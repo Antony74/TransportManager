@@ -145,7 +145,7 @@ function selectSql(sQuery, nStart)
         
         var nRecords = 20;
         
-        while(rs.EOF == false && nRecords > 0)
+        while(rs.EOF == false && nRecords > 1)
         {
             var oRecord = {};
 
