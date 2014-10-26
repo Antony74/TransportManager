@@ -52,7 +52,6 @@ function handleRequest(request, response)
     var parsed = url.parse(request.url, true);
     if (parsed.pathname == "/selectSql")
     {
-//        response.write(JSON.stringify(parsed));
         var sQuery = parsed.query.query;
         var nStart = parseInt(parsed.query.start, 10);
         if (Number.isNaN(nStart))
@@ -86,8 +85,8 @@ function handleRequest(request, response)
     {
         console.log("Quitting");
         response.end("OK");
-        request.connection.end();   //close the socket
-        request.connection.destroy; //close it really
+        request.connection.end();     //close the socket
+        request.connection.destroy(); //close it really
         server.close();
         return;
     }

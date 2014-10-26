@@ -125,21 +125,21 @@ function ensureDatabaseIsReady(doneEnsuring)
     });
 }
 
-function selectSql(sTable, nStart)
+function selectSql(sQuery, nStart)
 {
     var arr = [];
     var db = openAccessDatabase(sDatabaseFilename);
     var rs = createRecordset();
     
-    rs.Open(sTable, db, adOpenStatic);
+    rs.Open(sQuery, db, adOpenStatic);
 
-    var nRecordCount = nStart < rs.RecordCount;
+    var nRecordCount = rs.RecordCount;
 
     if (nRecordCount == -1)
     {
         console.log("Problem getting RecordCount");
     }
-    else if (nStart < nRecordCount)
+    else if (nStart < nRecordCount && nStart >= 0)
     {
         rs.Move(nStart, adBookmarkFirst);
         
