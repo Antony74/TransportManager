@@ -127,11 +127,39 @@ function ensureDatabaseIsReady(doneEnsuring)
 
 function selectSql(sQuery, nStart)
 {
-    var arr = [];
+    var oRoot = {"query": sQuery, "start": nStart, "more": false};
+    var arrRecords = [];
+    var oFields = {};
     var db = openAccessDatabase(sDatabaseFilename);
     var rs = createRecordset();
     
     rs.Open(sQuery, db, adOpenStatic);
+
+    var nTotalSize = 0;
+
+    for (var nField = 0; nField < rs.Fields.Count; ++nField)
+    {
+        var adoField = rs.Fields(nField);
+        var nSize = parseInt(rs.Fields(nField).DefinedSize.toString());
+
+        if (nSize < 5)
+        {
+            nSize = 5;
+        }
+        else if (nSize > 25)
+        {
+            nSize = 25;
+        }
+
+        nTotalSize += nSize;
+
+        oFields[adoField.Name.toString()] = nSize;
+    }
+
+    for (sField in oFields)
+    {
+        oFields[sField] = Math.ceil(oFields[sField] * 100/ nTotalSize) + "%";
+    }
 
     var nRecordCount = rs.RecordCount;
 
@@ -154,16 +182,25 @@ function selectSql(sQuery, nStart)
                 oRecord[rs.Fields(nField).Name.toString()] = rs.Fields(nField).Value.toString();
             }
             
-            arr.push(oRecord);
+            arrRecords.push(oRecord);
 
             --nRecords;
             rs.MoveNext();
+        }
+
+        if (rs.EOF == false)
+        {
+            oRoot["more"] = true;
         }
     }
         
     rs.close();
     db.close();
-    return arr;
+
+    oRoot["fields"] = oFields;
+    oRoot["records"] = arrRecords;
+
+    return oRoot;
 }
 
 //

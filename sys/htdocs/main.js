@@ -1,25 +1,30 @@
 $(document).ready(function()
 {
     $('#radio').buttonset();
-    $('#radio span').css("width", "100px");
+    $('#radio span').css('width', '100px');
 
-    $.getJSON('selectSql?query=' + encodeURIComponent('select * from clients'), function(data, textStatus, jqXHR)
+    function gotJSON(root, textStatus, jqXHR)
     {
-        var sHtml = '';
-    
-        sHtml += '<tr>\n';
+        var arrFields  = root['fields'];
+        var arrRecords = root['records'];
 
-        // Those fieldnames are still going to have to come from somewhere if there are zero records
-        for(var fld in data[0])
+        var sHtml = '';
+ 
+        if (root["start"] == 0)
         {
-            sHtml += '<th>' + fld + '</th>\n';
+            sHtml += '<tr>\n';
+
+            for(var fld in arrFields)
+            {
+                sHtml += '<th style="width:' + arrFields[fld] + '">' + fld + '</th>\n';
+            }
+
+            sHtml += '</tr>\n';
         }
 
-        sHtml += '</tr>\n';
-
-        for(var n in data)
+        for(var n in arrRecords)
         {
-            var rs = data[n];
+            var rs = arrRecords[n];
 
             sHtml += '<tr>\n';
             
@@ -40,9 +45,14 @@ $(document).ready(function()
             sHtml += '</tr>\n';
         }
         
-        $('#tableClients').html(sHtml);
-        
-        $('tr:even').addClass('trAlt');
-    });
+        $('#tableClients').append(sHtml);
+
+        if (root['more'])
+        {
+            $.getJSON('selectSql?query=' + encodeURIComponent(root['query']) + '&start=' + encodeURIComponent(root['start'] + arrRecords.length), gotJSON);
+        }
+    }
+
+    $.getJSON('selectSql?query=' + encodeURIComponent('select * from clients'), gotJSON);
 });
 
