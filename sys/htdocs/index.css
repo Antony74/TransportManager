@@ -26,3 +26,26 @@ tr
 	background-color: #FFFFFF;
 }
 
+#filterDiv
+{
+    padding: 10px;
+}
+
+#filterCaption
+{
+    font-weight: normal;
+    font-size: medium;
+}
+
+#filterText
+{
+    width: 200px;
+}
+
+#filterCancel
+{
+    background-color: #0077DD;
+    color: #2222FF;
+    border-color: #2222FF;
+}
+

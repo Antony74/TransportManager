@@ -3,6 +3,11 @@ $(document).ready(function()
     $('#radio').buttonset();
     $('#radio span').css('width', '100px');
 
+    $('#filterCancel').click(function()
+    {
+        $('#filterText').val('');
+    });
+
     function gotJSON(root, textStatus, jqXHR)
     {
         var arrFields  = root['fields'];
@@ -45,7 +50,7 @@ $(document).ready(function()
             sHtml += '</tr>\n';
         }
         
-        $('#tableClients').append(sHtml);
+        $('#mainDataTable').append(sHtml);
 
         if (root['more'])
         {
