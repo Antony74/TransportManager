@@ -1,5 +1,6 @@
 var fs = require('fs');
 var win32ole = require('win32ole');
+var dface = require('dface');
 
 var sDatabaseFilename = __dirname + "/../../TransportManager.mdb";
 
@@ -127,80 +128,7 @@ function ensureDatabaseIsReady(doneEnsuring)
 
 function selectSql(sQuery, nStart)
 {
-    var oRoot = {"query": sQuery, "start": nStart, "more": false};
-    var arrRecords = [];
-    var oFields = {};
-    var db = openAccessDatabase(sDatabaseFilename);
-    var rs = createRecordset();
-    
-    rs.Open(sQuery, db, adOpenStatic);
-
-    var nTotalSize = 0;
-
-    for (var nField = 0; nField < rs.Fields.Count; ++nField)
-    {
-        var adoField = rs.Fields(nField);
-        var nSize = parseInt(rs.Fields(nField).DefinedSize.toString());
-
-        if (nSize < 5)
-        {
-            nSize = 5;
-        }
-        else if (nSize > 25)
-        {
-            nSize = 25;
-        }
-
-        nTotalSize += nSize;
-
-        oFields[adoField.Name.toString()] = nSize;
-    }
-
-    for (sField in oFields)
-    {
-        oFields[sField] = Math.ceil(oFields[sField] * 100/ nTotalSize) + "%";
-    }
-
-    var nRecordCount = rs.RecordCount;
-
-    if (nRecordCount == -1)
-    {
-        console.log("Problem getting RecordCount");
-    }
-    else if (nStart < nRecordCount && nStart >= 0)
-    {
-        rs.Move(nStart, adBookmarkFirst);
-        
-        var nRecords = 20;
-        
-        while(rs.EOF == false && nRecords > 1)
-        {
-            var oRecord = {};
-
-            for (var nField = 0; nField < rs.Fields.Count; ++nField)
-            {
-                oRecord[rs.Fields(nField).Name.toString()] = rs.Fields(nField).Value.toString();
-            }
-            
-            arrRecords.push(oRecord);
-
-            --nRecords;
-            rs.MoveNext();
-        }
-
-        if (rs.EOF == false)
-        {
-            oRoot["more"] = true;
-        }
-    }
-        
-    rs.close();
-    db.close();
-
-    oRoot["fields"] = oFields;
-    oRoot["records"] = arrRecords;
-
-    return oRoot;
+    return dface.selectSql(sDatabaseFilename, sQuery, nStart);
 }
 
 //
