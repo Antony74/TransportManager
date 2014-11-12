@@ -59,7 +59,7 @@ $(document).ready(function()
                 currentFilter = [];
                 var arrRecords = currentData['records'];
 
-                for(var n in rs)
+                for(var n in arrRecords)
                 {
                     var rs = arrRecords[n];
 
