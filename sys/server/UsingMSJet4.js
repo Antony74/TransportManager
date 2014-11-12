@@ -128,7 +128,7 @@ function ensureDatabaseIsReady(doneEnsuring)
 
 function selectSql(sQuery, nStart)
 {
-    return dface.selectSql(sDatabaseFilename, sQuery, nStart);
+    return dface.selectSql(sDatabaseFilename, sQuery, nStart, 20);
 }
 
 //
