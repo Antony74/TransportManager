@@ -65,7 +65,7 @@ function handleRequest(request, response)
 
         try
         {
-            parser.parse(sQuery);
+            parser.parse(sQuery.toLowerCase());
             bParsedOK = true;
         }
         catch(e)
