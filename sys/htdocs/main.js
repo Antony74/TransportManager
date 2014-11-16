@@ -2,10 +2,70 @@ $(document).ready(function()
 {
     var currentData = null;
     var currentFilter = null;
+    var currentSort = -1;
+    var currentSortAscending = true;
     var sTableHeader = '';
 
     $('#radio').buttonset();
     $('#radio span').css('width', '100px');
+
+    function getCompareFunction(sFieldname, bAscending)
+    {
+        var nLessThan = bAscending ? -1 :  1;
+        var nMoreThan = bAscending ?  1 : -1;
+    
+        return function(recA, recB)
+        {
+            if (recA[sFieldname] < recB[sFieldname])
+            {
+                return nLessThan;
+            }
+            else if (recA[sFieldname] > recB[sFieldname])
+            {
+                return nMoreThan;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
+    function onTableHeaderClick()
+    {
+        var nIndex = $(this).index();
+        var sFieldname = currentData['fields'][$(this).index()].name;
+        if (currentSort == nIndex)
+        {
+            currentSortAscending = !currentSortAscending;
+        }
+        else
+        {
+            currentSort = nIndex;
+            currentSortAscending = true;
+        }
+
+        if (currentFilter == null)
+        {
+            currentFilter = currentData.records.concat();
+        }
+
+        currentFilter.sort(getCompareFunction(sFieldname, currentSortAscending));
+        displayRecords(currentFilter, false);
+        
+        if (currentSortAscending)
+        {
+            $('#mainDataTable th:nth-child(' + (nIndex+1) + ')').html(sFieldname + "&nbsp;&#x25BC;");
+        }
+        else
+        {
+            $('#mainDataTable th:nth-child(' + (nIndex+1) + ')').html(sFieldname + "&nbsp;&#x25B2;");
+        }
+    }
+
+    function onTableCellClick()
+    {
+    }
 
     function displayRecords(arrRecords, bAppend)
     {
@@ -42,6 +102,9 @@ $(document).ready(function()
         {
             $('#mainDataTable').empty().append(sTableHeader + sHtml);
         }
+
+        $('#mainDataTable th').click(onTableHeaderClick);
+        $('#mainDataTable td').click(onTableCellClick);
     }
 
     function updateFilter()
@@ -52,6 +115,7 @@ $(document).ready(function()
 
             if (sFilter == '')
             {
+                currentFilter = null;
                 displayRecords(currentData['records'], false);
             }
             else
@@ -111,7 +175,7 @@ $(document).ready(function()
 
             for(var fld in arrFields)
             {
-                sTableHeader += '<th style="width:' + arrFields[fld] + '">' + fld + '</th>\n';
+                sTableHeader += '<th style="width:' + arrFields[fld].width + '">' + arrFields[fld].name + '</th>\n';
             }
 
             sTableHeader += '</tr>\n';
