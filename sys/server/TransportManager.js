@@ -38,10 +38,9 @@ var port = 8080;
 var sServerUrl = "http://localhost:" + port + "/";
 var bServerIsRunning = false;
 
-console.error(""); // Just to get the error stream pumping
-console.log("");
-console.log("    T R A N S P O R T   M A N A G E R");
-console.log("");
+process.stdout.write("\r\n");
+process.stdout.write("    T R A N S P O R T   M A N A G E R\r\n");
+process.stdout.write("\r\n");
 
 platform.ensureShortcutExists();
 
@@ -83,7 +82,7 @@ function handleRequest(request, response)
     }
     else if (parsed.pathname == "/quitTransportManager")
     {
-        console.log("Quitting");
+        process.stdout.write("Quitting\r\n");
         response.end("OK");
         request.connection.end();     //close the socket
         request.connection.destroy(); //close it really
@@ -108,7 +107,7 @@ server = http.createServer(handleRequest);
 server.on("listening", function()
 {
     bServerIsRunning = true;
-    console.log("Server has been started (" + sServerUrl + ")");
+    process.stdout.write("Server has been started (" + sServerUrl + ")\r\n");
     platform.ensureDatabaseIsReady(function()
     {
         process.argv.forEach(function(sParam)
@@ -125,10 +124,10 @@ server.on("error", function(e)
 {
     if (e.code == 'EADDRINUSE')
     {
-        console.log('Port ' + port + ' is already in use');
-        console.log("");
-        console.log("This usually happens because another instance of the server is already");
-        console.log("running on this computer.");
+        process.stdout.write('Port ' + port + ' is already in use\r\n');
+        process.stdout.write("\r\n");
+        process.stdout.write("This usually happens because another instance of the server is already\r\n");
+        process.stdout.write("running on this computer.\r\n");
 
         process.on('exit', function() { process.exit(1); });
     }

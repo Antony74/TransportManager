@@ -216,51 +216,38 @@ $timerStartup.Add_Tick({
 
 	$bDone = $False;
 
+	$task = $oProcess.StandardOutput.ReadLineAsync();
+
 	while (!$bDone -and $oProcess.StandardOutput)
 	{
-		$char = $oProcess.StandardOutput.Peek();
-
-		if ($char -ne -1)
+		if ($task.IsCompleted)
 		{
-			$char = $oProcess.StandardOutput.Read();
-		}
-		else
-		{
-			$char = $oProcess.StandardError.Peek();
-
-			if ($char -ne -1)
-			{
-				$char = $oProcess.StandardError.Read();
-			}
+			Write-Host $task.Result;
+			$task = $oProcess.StandardOutput.ReadLineAsync();
 		}
 
-		if ($char -eq -1)
+		if ($oProcess.HasExited)
 		{
-			if ($oProcess.HasExited)
-			{
-				$bDone = $True;
+			$bDone = $True;
 
-				if ($oProcess.ExitCode -ne 0)
-				{
-					[Void][Win32.NativeMethods]::ShowWindow($hWnd, $SW_RESTORE);
-					[System.Windows.Forms.MessageBox]::Show("Transport Manager exited with an error")
-				}
-			}
-			else
+			if ($oProcess.ExitCode -ne 0)
 			{
-				wait-event -Timeout 1;
-				[System.Windows.Forms.Application]::DoEvents();
-			}
+				Write-Host $oProcess.StandardError.ReadToEnd();
 
-			if ($global:bForceStop -eq $true)
-			{
-				$oProcess.Kill();
-				$bDone = $true;
+				[Void][Win32.NativeMethods]::ShowWindow($hWnd, $SW_RESTORE);
+				[System.Windows.Forms.MessageBox]::Show("Transport Manager exited with an error")
 			}
 		}
 		else
 		{
-			Write-Host -NoNewline "".PadLeft(1, $char);
+			wait-event -Timeout 1;
+			[System.Windows.Forms.Application]::DoEvents();
+		}
+
+		if ($global:bForceStop -eq $true)
+		{
+			$oProcess.Kill();
+			$bDone = $true;
 		}
 	}
 
