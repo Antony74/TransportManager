@@ -61,7 +61,7 @@ if ($hwnd)
 if ( ($serverExe -eq "") -or ($serverArgument -eq "") )
 {
 	$sCmd = [system.io.file]::ReadAllText("$sScriptDir\..\server\TransportManager.bat");
-	$arrQuotedThings = $sCmd.Split('"');
+	$arrQuotedThings = $sCmd.Split("'");
 	$serverExe = $arrQuotedThings[1];
 	$serverArgument = $arrQuotedThings[3];
 }
@@ -126,7 +126,7 @@ $menuStop.Add_Click({
 		$result = $reader.ReadToEnd();
 	});
 
-	Receive-Job -wait $job;
+	Receive-Job -Wait $job;
 	$job.Dispose();
 });
 
