@@ -216,7 +216,7 @@ $timerStartup.Add_Tick({
 
 	$bDone = $False;
 
-	while (!$bDone)
+	while (!$bDone -and $oProcess.StandardOutput)
 	{
 		$char = $oProcess.StandardOutput.Peek();
 
