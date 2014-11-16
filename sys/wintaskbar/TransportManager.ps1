@@ -1,23 +1,13 @@
 #
-# usage: powershell -ExecutionPolicy unrestricted ./TransportManager.ps1 -serverExe [path-to-node.exe] -serverArgument [path-to-TransportManager.js]
+# usage: powershell -ExecutionPolicy unrestricted 
 #
 # A thin GUI wrapper for tucking away our main server process neatly away on the Windows task bar.
 #
 
-param(
-	[string] $serverExe,
-	[string] $serverArgument);
-
 $sScriptDir = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition;
+$serverExe = "$sScriptDir\..\server\TransportManager2.bat";
 
 Add-Type -AssemblyName System.Windows.Forms;
-
-#
-# Control-C doesn't work very will in conjunction with Timers - you get a System.Management.Automation.PipelineStoppedException.
-# Unless there's anything that can be done about it, I prefer ignoring control-c rather than letting it make that particular mess.
-#
-
-[console]::TreatControlCAsInput = $true;
 
 #
 # Pull in a bunch of native win32 stuff so that we can hide on minimise, and disable the close button
@@ -52,18 +42,6 @@ if ($hwnd)
 
 	# Disable the close button
 	[Void][Win32.NativeMethods]::EnableMenuItem($hMenu, $SC_CLOSE, $MF_DISABLED);
-}
-
-#
-# If we don't have our server parameters, parse them out of the batch file
-#
-
-if ( ($serverExe -eq "") -or ($serverArgument -eq "") )
-{
-	$sCmd = [system.io.file]::ReadAllText("$sScriptDir\..\server\TransportManager.bat");
-	$arrQuotedThings = $sCmd.Split("'");
-	$serverExe = $arrQuotedThings[1];
-	$serverArgument = $arrQuotedThings[3];
 }
 
 #
@@ -159,15 +137,14 @@ $oTaskbarIcon.Add_MouseDoubleClick({
 $oTaskbarIcon.Visible = $True;
 
 #
-# Run the server (parse the batch file for a command line to use)
+# Run the server
 #
+
+write-host $serverExe;
 
 $oInfo = New-Object System.Diagnostics.ProcessStartInfo;
 $oInfo.FileName  = $serverExe;
-$oInfo.Arguments = $serverArgument;
-$oInfo.UseShellExecute = $False;
-$oInfo.RedirectStandardOutput = $True;
-$oInfo.RedirectStandardError = $True;
+$oInfo.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Normal;
 
 $oProcess = New-Object System.Diagnostics.Process;
 $oProcess.StartInfo = $oInfo;
@@ -216,24 +193,14 @@ $timerStartup.Add_Tick({
 
 	$bDone = $False;
 
-	$task = $oProcess.StandardOutput.ReadLineAsync();
-
-	while (!$bDone -and $oProcess.StandardOutput)
+	while (!$bDone)
 	{
-		if ($task.IsCompleted)
-		{
-			Write-Host $task.Result;
-			$task = $oProcess.StandardOutput.ReadLineAsync();
-		}
-
 		if ($oProcess.HasExited)
 		{
 			$bDone = $True;
 
 			if ($oProcess.ExitCode -ne 0)
 			{
-				Write-Host $oProcess.StandardError.ReadToEnd();
-
 				[Void][Win32.NativeMethods]::ShowWindow($hWnd, $SW_RESTORE);
 				[System.Windows.Forms.MessageBox]::Show("Transport Manager exited with an error")
 			}

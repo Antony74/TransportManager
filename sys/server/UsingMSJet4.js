@@ -148,7 +148,20 @@ function ensureShortcutExists()
     {
         if (bExists == false)
         {
-            fs.writeFile(sBatchFile, "start powershell -ExecutionPolicy unrestricted " + __dirname + "/../wintaskbar/TransportManager.ps1 -serverExe '" + process.execPath + "' -serverArgument '" + __dirname + "\\TransportManager.js'");
+            fs.writeFile(sBatchFile, 'start powershell -WindowStyle Hidden -ExecutionPolicy unrestricted "' + __dirname + '/../wintaskbar/TransportManager.ps1"');
+        }
+    });
+
+    sBatchFile2 =  __dirname + "/TransportManager2.bat";
+    fs.exists(sBatchFile2, function(bExists)
+    {
+        if (bExists == false)
+        {
+            var sScript = '';
+            sScript += '@echo off\r\n';
+            sScript += '"' + process.execPath + '" "' + __dirname + '\\TransportManager.js"\r\n';
+            sScript += 'if errorlevel 1 pause\r\n';
+            fs.writeFile(sBatchFile2, sScript);
         }
     });
 
