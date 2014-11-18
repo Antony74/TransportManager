@@ -207,7 +207,7 @@ $(document).ready(function()
                 if (form.length)
                 {
                     // This table has a dialog, does it have any inputs?
-                    if (form.children("input").length == 0)
+                    if (form.children().length == 0)
                     {
                         // No.  Let's create some.
                         var sForm = '<table width="100%">';
