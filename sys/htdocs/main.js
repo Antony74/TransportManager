@@ -4,6 +4,8 @@ $(document).ready(function()
     var currentFilter = null;
     var currentSort = -1;
     var currentSortAscending = true;
+    var currentTable = 'Clients';
+    var currentQuery = 'select * from Clients order by ClientID';
     var sTableHeader = '';
 
     $('#radio').buttonset();
@@ -65,6 +67,22 @@ $(document).ready(function()
 
     function onTableCellClick()
     {
+        var dlg = $("#dlg" +currentTable);
+        if (dlg.length)
+        {
+            var nRow = $(this).parent().index() - 1;
+
+            var oRecord = currentFilter ? currentFilter[nRow] : currentData.records[nRow];
+
+            for (sFieldname in oRecord)
+            {
+                var sValue = oRecord[sFieldname];
+
+                $('#' + currentTable + '_' + sFieldname).val(sValue);
+            }
+
+            dlg.dialog("open");
+        }
     }
 
     function displayRecords(arrRecords, bAppend)
@@ -133,7 +151,7 @@ $(document).ready(function()
 
                         if (value.contains(sFilter))
                         {
-                            currentFilter[n] = arrRecords[n];
+                            currentFilter.push(arrRecords[n]);
                             break;
                         }
                     }
@@ -157,48 +175,75 @@ $(document).ready(function()
 
     function gotJSON(root, textStatus, jqXHR)
     {
-        var arrFields  = root['fields'];
-        var arrRecords = root['records'];
-
-        if (currentData == null)
+        if (currentQuery == root['query'])
         {
-            currentData = root;
-        }
-        else
-        {
-            currentData['records'] = currentData['records'].concat(arrRecords);
-        }
+            var arrFields  = root['fields'];
+            var arrRecords = root['records'];
 
-        if (root['start'] == 0)
-        {
-            sTableHeader = '<tr>\n';
-
-            for(var fld in arrFields)
+            if (currentData == null)
             {
-                sTableHeader += '<th style="width:' + arrFields[fld].width + '">' + arrFields[fld].name + '</th>\n';
+                currentData = root;
+            }
+            else
+            {
+                currentData['records'] = currentData['records'].concat(arrRecords);
             }
 
-            sTableHeader += '</tr>\n';
+            if (root['start'] == 0)
+            {
+                sTableHeader = '<tr>\n';
 
-            displayRecords(arrRecords, false);                
-        }
-        else
-        {
-            displayRecords(arrRecords, true);                
-        }
+                for(var nFld in arrFields)
+                {
+                    sTableHeader += '<th style="width:' + arrFields[nFld].width + '">' + arrFields[nFld].name + '</th>\n';
+                }
 
-        if (root['more'])
-        {
-            $.getJSON('selectSql?query=' + encodeURIComponent(root['query']) + '&start=' + encodeURIComponent(root['start'] + arrRecords.length), gotJSON);
-        }
-        else
-        {
-            currentData['more'] = false;
-            updateFilter();
+                sTableHeader += '</tr>\n';
+
+                displayRecords(arrRecords, false);
+            
+                var form = $('#dlg' + currentTable + ' form');
+
+                if (form.length)
+                {
+                    // This table has a dialog, does it have any inputs?
+                    if (form.children("input").length == 0)
+                    {
+                        // No.  Let's create some.
+                        var sForm = '<table width="100%">';
+                        for(nFld in arrFields)
+                        {
+                            var sFieldname = arrFields[nFld].name;
+                            sForm += '<tr>';
+                            sForm += '<td>' + sFieldname + '</td>';
+                            sForm += ' <td><input type="Text" id="' + currentTable + '_' + sFieldname + '" style="width:95%"/></td>';
+                            sForm += '</tr>';
+                        }
+                        sForm += '</table>';
+                        form.append(sForm);
+
+                        $('#dlg' + currentTable).dialog({modal: true, autoOpen: false, width: 400});
+                    }
+                }
+            }
+            else
+            {
+                displayRecords(arrRecords, true);                
+            }
+
+            if (root['more'])
+            {
+                $.getJSON('selectSql?query=' + encodeURIComponent(root['query']) + '&start=' + encodeURIComponent(root['start'] + arrRecords.length), gotJSON);
+            }
+            else
+            {
+                currentData['more'] = false;
+                updateFilter();
+            }
         }
     }
 
-    $.getJSON('selectSql?query=' + encodeURIComponent('select * from clients order by ClientID'), gotJSON);
+    $.getJSON('selectSql?query=' + encodeURIComponent(currentQuery), gotJSON);
 
 });
 
