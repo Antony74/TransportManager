@@ -8,7 +8,7 @@ $(document).ready(function()
     var currentQuery = 'select * from Clients order by ClientID';
     var sTableHeader = '';
 
-    $('#radio').buttonset();
+    var mainButtonset = $('#radio').buttonset();
     $('#radio span').css('width', '100px');
 
     function getCompareFunction(sFieldname, bAscending)
@@ -243,7 +243,64 @@ $(document).ready(function()
         }
     }
 
-    $.getJSON('selectSql?query=' + encodeURIComponent(currentQuery), gotJSON);
+    function beginPopulateCalendar()
+    {
+        $('#mainDataTable').empty();
+
+        currentTable = '';
+        currentQuery = '';
+        currentData = null;
+        currentFilter = null;
+    }
+
+    function beginPopulateTable()
+    {
+        $('#mainDataTable').empty();
+
+        currentData = null;
+        currentFilter = null;
+        currentSort = -1;
+        currentSortAscending = true;
+        sTableHeader = '';
+
+        $.getJSON('selectSql?query=' + encodeURIComponent(currentQuery), gotJSON);
+    }
+
+    function beginPopulateJobs()
+    {
+        currentTable = 'Clients';
+        currentQuery = 'select * from Jobs order by JobID';
+        beginPopulateTable();
+    }
+
+    function beginPopulateClients()
+    {
+        currentTable = 'Clients';
+        currentQuery = 'select * from Clients order by ClientID';
+        beginPopulateTable();
+    }
+
+    function beginPopulateDrivers()
+    {
+        currentTable = 'Drivers';
+        currentQuery = 'select * from Drivers order by DriverID';
+        beginPopulateTable();
+    }
+
+    function beginPopulateDestinations()
+    {
+        currentTable = 'Destinations';
+        currentQuery = 'select * from Destinations order by DestinationID';
+        beginPopulateTable();
+    }
+
+    $('#radioCalendar').click(beginPopulateCalendar);
+    $('#radioJobs').click(beginPopulateJobs);
+    $('#radioClients').click(beginPopulateClients);
+    $('#radioDrivers').click(beginPopulateDrivers);
+    $('#radioDestinations').click(beginPopulateDestinations);
+
+    $('#radioClients').trigger('click');
 
 });
 

@@ -49,3 +49,8 @@ tr
     border-color: #2222FF;
 }
 
+.ui-state-active
+{
+    color:red;
+}
+
