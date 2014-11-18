@@ -199,8 +199,6 @@ $(document).ready(function()
                 }
 
                 sTableHeader += '</tr>\n';
-
-                displayRecords(arrRecords, false);
             
                 var form = $('#dlg' + currentTable + ' form');
 
@@ -224,6 +222,9 @@ $(document).ready(function()
 
                         $('#dlg' + currentTable).dialog({modal: true, autoOpen: false, width: 400});
                     }
+
+                    displayRecords(arrRecords, false);
+
                 }
             }
             else
