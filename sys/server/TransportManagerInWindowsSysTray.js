@@ -10,6 +10,7 @@ require('winsystraywrapper').run(
     'menu'      : [
                     {
                         'caption'  : 'Transport Manager',
+                        'default'  : true,
                         'function' : function()
                                      {
                                         spawn('cmd.exe', ['/c', 'start', 'http://localhost:8080']);
