@@ -1,7 +1,8 @@
 
 var spawn = require('child_process').spawn;
+var wrapper = require('winsystraywrapper');
 
-require('winsystraywrapper').run(
+wrapper.run(
 {
     'title'     : 'Transport Manager',
     'icon'      : __dirname + '/../htdocs/icons/Car.ico',
@@ -18,11 +19,11 @@ require('winsystraywrapper').run(
                     },
                     {
                         'caption'  : 'Server log',
-                        'function' : this.showLog
+                        'function' : wrapper.showLog
                     },
                     {
                         'caption'  : 'Stop',
-                        'function' : this.stop
+                        'function' : wrapper.stop
                     }
                   ]
 });
