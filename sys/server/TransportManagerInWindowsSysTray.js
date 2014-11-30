@@ -6,7 +6,7 @@ require('winsystraywrapper').run(
     'title'     : 'Transport Manager',
     'icon'      : __dirname + '/../htdocs/icons/Car.ico',
     'exe'       : process.execPath,
-    'arguments' : __dirname + '\TransportManager.js',
+    'arguments' : __dirname + '/TransportManager.js',
     'menu'      : [
                     {
                         'caption'  : 'Transport Manager',
