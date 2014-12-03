@@ -1,6 +1,7 @@
 
-var spawn = require('child_process').spawn;
 var wrapper = require('winsystraywrapper');
+var spawn = require('child_process').spawn;
+var http = require('http');
 
 wrapper.run(
 {
@@ -23,7 +24,26 @@ wrapper.run(
                     },
                     {
                         'caption'  : 'Stop',
-                        'function' : wrapper.stop
+                        'function' : function()
+                        {
+                            function requestFinished()
+                            {
+                                console.log("request finished");
+                                wrapper.waitForExit(5000);
+                                wrapper.stop();
+                            }
+                        
+                            var request = http.request({host:'localhost', port:8080, path:'/quitTransportManager'}, requestFinished);
+                            
+                            request.on('error', function(e)
+                            {
+                                console.log('problem with request: ' + e.message);
+                                requestFinished();
+                            });
+                            
+                            request.end();
+                            console.log("request started");
+                        }
                     }
                   ]
 });
