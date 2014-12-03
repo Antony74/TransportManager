@@ -3,7 +3,7 @@ var wrapper = require('winsystraywrapper');
 var spawn = require('child_process').spawn;
 var http = require('http');
 
-wrapper.run(
+var settings =
 {
     'title'     : 'Transport Manager',
     'icon'      : __dirname + '/../htdocs/icons/Car.ico',
@@ -46,6 +46,19 @@ wrapper.run(
                         }
                     }
                   ]
-});
+};
 
+wrapper.run(settings);
+
+var interval = setInterval(function()
+{
+    var persistSettings = settings;
+    var brc = wrapper.poll();
+    
+    if (brc == false)
+    {
+        clearInterval(interval);
+    }
+    
+}, 100);
 
