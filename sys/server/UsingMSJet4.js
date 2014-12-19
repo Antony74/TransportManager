@@ -143,40 +143,19 @@ function ensureShortcutExists()
     // an absolute path which we can't know in advance.  Also it can't contain
     // a parameter so we go via a batch file.  Unfortunately this is the best I can
     // do right now.
-    var sBatchFile = __dirname + "/TransportManager.bat";
-    fs.exists(sBatchFile, function(bExists)
-    {
-        if (bExists == false)
-        {
-            fs.writeFile(sBatchFile, 'start powershell -WindowStyle Hidden -ExecutionPolicy unrestricted "' + __dirname + '/../wintaskbar/TransportManager.ps1"');
-        }
-    });
 
-    sBatchFile2 =  __dirname + "/TransportManager2.bat";
-    fs.exists(sBatchFile2, function(bExists)
-    {
-        if (bExists == false)
-        {
-            var sScript = '';
-            sScript += '@echo off\r\n';
-            sScript += '"' + process.execPath + '" "' + __dirname + '\\TransportManager.js"\r\n';
-            sScript += 'if errorlevel 1 pause\r\n';
-            fs.writeFile(sBatchFile2, sScript);
-        }
-    });
+    sBatchFile =  __dirname + "/TransportManager.bat";
+    var sScript = '';
+    sScript += '@echo off\r\n';
+    sScript += '"' + process.execPath + '" "' + __dirname + '\\TransportManagerInWindowsSysTray.js"\r\n';
+    fs.writeFile(sBatchFile, sScript);
 
     var sShortcutFile = __dirname + "/../../TransportManager.url";
-    fs.exists(sShortcutFile, function(bExists)
-    {
-        if (bExists == false)
-        {
-            fs.writeFile(sShortcutFile, "[InternetShortcut]\r\n"
-                                      + "URL=file://" + __dirname + "\\TransportManager.bat\r\n"
-                                      + "WorkingDir=" + __dirname + "\r\n"
-                                      + "IconFile=" + __dirname + "\\..\\htdocs\\icons\\Car.ico\r\n"
-                                      + "IconIndex=0\r\n");
-        }
-    });
+    fs.writeFile(sShortcutFile, "[InternetShortcut]\r\n"
+                              + "URL=file://" + __dirname + "\\TransportManager.bat\r\n"
+                              + "WorkingDir=" + __dirname + "\r\n"
+                              + "IconFile=" + __dirname + "\\..\\htdocs\\icons\\Car.ico\r\n"
+                              + "IconIndex=0\r\n");
 }
 
 //
