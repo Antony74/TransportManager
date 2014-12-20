@@ -11,6 +11,8 @@ if (typeof process == 'undefined' || process.versions == 'undefined' || process.
 }
 else (function() {
 
+var ec = require('./ErrorCodes.js');
+
 if (process.arch != 'ia32' || process.platform != 'win32')
 {
     console.log("");
@@ -25,6 +27,9 @@ if (process.arch != 'ia32' || process.platform != 'win32')
     console.log("");
     console.log("cinst nodejs-win32.commandline");
     console.log("node-win32 TransportManager.js");
+    
+    ec.setExitCode(ec.PLATFORM_ISSUE);
+    
     return;
 }
 
@@ -129,7 +134,7 @@ server.on("error", function(e)
         process.stdout.write("This usually happens because another instance of the server is already\r\n");
         process.stdout.write("running on this computer.\r\n");
 
-        process.on('exit', function() { process.exit(1); });
+        ec.setExitCode(ec.PORT_IN_USE);
     }
     else
     {

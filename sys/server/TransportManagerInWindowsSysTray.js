@@ -10,6 +10,7 @@ wrapper.run(
     'exe'         : process.execPath,
     'arguments'   : __dirname + '/TransportManager.js',
     'hideHostWin' : true,
+    'errorCodes'  : require('./ErrorCodes.js').errorText,
     'menu'        : [
                       {
                           'caption'  : 'Transport Manager',
