@@ -56,37 +56,15 @@ forEachFileDoThing(sPathSrc, true, function(sFilenameSrc, bIsDir, done)
 
 }, function()
 {
+    var arrCmd = [];
 
-    // Now compile all .ts files
+    // Now find all .ts files
     forEachFileDoThing(sPathDest, true, function(sFilename, bIsDir, done)
     {
         if ( bIsDir == false && (sFilename.substr(sFilename.length - 3) == '.ts') && fileExcluded(sFilename) == false)
         {
-            console.log('tsc --module commonjs ' + sFilename);
-
-            compiler = spawn('tsc', ['--module', 'commonjs', sFilename]);
-
-            compiler.stdout.on('data', function(text)
-            {
-                process.stdout.write(text);
-            });
-    
-            compiler.stderr.on('data', function(text)
-            {
-                process.stdout.write(text);
-            });
-
-            compiler.on('exit', function(nExitCode)
-            {
-                if (nExitCode == 0)
-                {
-                    done();
-                }
-                else
-                {
-                    process.exit(nExitCode);
-                }
-            });
+            arrCmd.push(['tsc.cmd', '--module', 'commonjs', sFilename]);
+            done();
         }
         else
         {
@@ -94,7 +72,56 @@ forEachFileDoThing(sPathSrc, true, function(sFilenameSrc, bIsDir, done)
         }
     }, function()
     {
-        console.log('done');
+        // Now we launch tsc's one instance at a time for each .ts file, until we're done or the compiler finds an error.
+        launch();
+
+        function launch()
+        {
+            if (arrCmd.length)
+            {
+                var cmd = arrCmd.shift();
+
+                console.log(cmd.join(' '));
+
+                var sCmd = cmd.shift();
+
+                var compiler = spawn(sCmd, cmd);
+
+                compiler.stdout.on('data', function(data)
+                {
+                    process.stdout.write(data.toString());
+                });
+    
+                compiler.stderr.on('data', function(data)
+                {
+                    process.stdout.write(data.toString());
+                });
+
+                compiler.on('error', function(error)
+                {
+                    console.log("");
+                    console.log("Error running tsc.cmd");
+                    console.log("");
+                    console.log(error);
+                    console.log("");
+                    console.log("If you don't have TypeScript installed then you're probably looking");
+                    console.log("for this command:");
+                    console.log("npm install -g TypeScript");
+                });
+
+                compiler.on('exit', function(nExitCode)
+                {
+                    if (nExitCode == 0)
+                    {
+                        launch();
+                    }
+                });
+            }
+            else
+            {
+                console.log("Code varification completed sucessfully");
+            }
+        }
     });
     
 });
