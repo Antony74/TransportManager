@@ -1,3 +1,5 @@
+///<reference path='../interface/jqueryui.d.ts' />
+
 $(document).ready(function()
 {
     var currentData = null;
@@ -74,7 +76,7 @@ $(document).ready(function()
 
             var oRecord = currentFilter ? currentFilter[nRow] : currentData.records[nRow];
 
-            for (sFieldname in oRecord)
+            for (var sFieldname in oRecord)
             {
                 var sValue = oRecord[sFieldname];
 

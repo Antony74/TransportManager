@@ -1,3 +1,4 @@
+///<reference path='../interface/node.d.ts' />
 
 var Parser = require('jison').Parser;
 var fs = require('fs');

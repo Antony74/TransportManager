@@ -1,3 +1,4 @@
+///<reference path='../interface/node.d.ts' />
 
 exports.PLATFORM_ISSUE = 101;
 exports.PORT_IN_USE =    102;

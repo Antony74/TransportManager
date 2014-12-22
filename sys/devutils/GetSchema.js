@@ -1,3 +1,5 @@
+///<reference path='../interface/node.d.ts' />
+
 var fs = require('fs');
 var win32ole = require('../server/node_modules/win32ole');
 var platform = require('../server/usingMSJet4.js');
@@ -90,7 +92,7 @@ function getTable(db, sTablename)
     {
         var fld = rs.Fields(nField);
         var sFieldname = String(fld.Name);
-        var typeInfo = parseInt(fld.Type);
+        var typeInfo = parseInt(fld.Type).toString();
 
         switch (typeInfo)
         {

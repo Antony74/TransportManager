@@ -5,6 +5,8 @@
 // is all too easy to miss, so it is this third kind of error - semantic errors - which I am most concerned about making,
 // and this script should be an adequete means of catching them.
 
+///<reference path='../interface/node.d.ts' />
+
 var fs = require('fs');
 var spawn = require('child_process').spawn;
 
@@ -127,14 +129,18 @@ forEachFileDoThing(sPathSrc, true, function(sFilenameSrc, bIsDir, done)
 });
 
 //
-// fileExcluded
+// fileExcluded - unless something is clearly broken, looking for possible defects in third-party code is not my idea of fun! ;-)
 //
 function fileExcluded(sFilename)
 {
-    if ( (sFilename.indexOf(sPathDest + '/server/node_modules/node-static') != -1) 
-    ||   (sFilename.indexOf(sPathDest + '/server/node_modules/win32ole')    != -1)
-    ||   (sFilename.indexOf(sPathDest + '/devutils/node_modules/jison')     != -1)
-    ||   (sFilename.indexOf(sPathDest + '/devutils/node_modules/faker')     != -1) )
+    if ( (sFilename.indexOf(sPathDest + '/server/SelectStatementParser.ts')      != -1) 
+    ||   (sFilename.indexOf(sPathDest + '/server/node_modules/node-static')      != -1) 
+    ||   (sFilename.indexOf(sPathDest + '/server/node_modules/win32ole')         != -1)
+    ||   (sFilename.indexOf(sPathDest + '/devutils/node_modules/jison')          != -1)
+    ||   (sFilename.indexOf(sPathDest + '/devutils/GenerateIcons/processing.ts') != -1)
+    ||   (sFilename.indexOf(sPathDest + '/devutils/node_modules/faker')          != -1) 
+    ||   (sFilename.indexOf(sPathDest + '/htdocs/fullcalendar')                  != -1)
+    ||   (sFilename.indexOf(sPathDest + '/htdocs/jquery')                        != -1) )
     {
         return true;
     }

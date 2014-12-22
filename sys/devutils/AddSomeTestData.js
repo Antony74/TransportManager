@@ -1,3 +1,5 @@
+///<reference path='../interface/node.d.ts' />
+
 var win32ole = require('../server/node_modules/win32ole');
 var platform = require('../server/usingMSJet4.js');
 var jet = platform.jet;

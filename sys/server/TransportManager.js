@@ -1,5 +1,6 @@
+///<reference path='../interface/node.d.ts' />
 
-if (typeof process == 'undefined' || process.versions == 'undefined' || process.versions.node == 'undefined')
+if (typeof process == 'undefined' || typeof process.versions == 'undefined' || typeof process.versions.node == 'undefined')
 {
     var usage = 'Sorry, Transport Manager can currently only be run on Windows and using ';
     usage +=    'a 32-bit build of Node.js, are you trying to use a different ';
@@ -7,7 +8,7 @@ if (typeof process == 'undefined' || process.versions == 'undefined' || process.
 
     if      (typeof console != 'undefined') (function(){console.log(usage); })();
     else if (typeof alert   != 'undefined') (function(){alert(usage);       })();
-    else if (typeof WScript != 'undefined') (function(){WScript.echo(usage);})();
+    else if (typeof WScript != 'undefined') (function(){WScript.Echo(usage);})();
 }
 else (function() {
 
@@ -58,7 +59,7 @@ function handleRequest(request, response)
     {
         var sQuery = parsed.query.query;
         var nStart = parseInt(parsed.query.start, 10);
-        if (Number.isNaN(nStart))
+        if (isNaN(nStart))
         {
             nStart = 0;
         }
@@ -119,7 +120,16 @@ server.on("listening", function()
         {
             if (sParam.substring(0,1) == "-")
             {
-                onServerCommand(sParam.substring(1));
+                switch(sParam.substring(1).toUpperCase())
+                {
+                case "Q":
+                    console.log("Quiting");
+                    if (bServerIsRunning)
+                    {
+                        server.close();
+                    }
+                    return;
+                }
             }
         });
     });

@@ -1,3 +1,5 @@
+///<reference path='../interface/phantomjs.d.ts' />
+
 if (typeof phantom == 'undefined')
 {
     var usage = '\r\n'
@@ -8,13 +10,13 @@ if (typeof phantom == 'undefined')
 
     if      (typeof alert   != 'undefined') (function(){alert(usage);       })();
     else if (typeof console != 'undefined') (function(){console.log(usage); })();
-    else if (typeof WScript != 'undefined') (function(){WScript.echo(usage);})();
+    else if (typeof WScript != 'undefined') (function(){WScript.Echo(usage);})();
 }
 else (function()
 {
     var fs = require('fs');
     var iconDir = "GenerateIcons/"
-    myList = fs.list(iconDir);
+    var myList = fs.list(iconDir);
 
     var arrIcons = [];
     var sHtml = '<html><head><title>Icons for Transport Manager</title>\n'
@@ -54,7 +56,7 @@ else (function()
 
           for (var n in arrIcons)
           {
-            sIcon = arrIcons[n];
+            var sIcon = arrIcons[n];
             rects[sIcon] = document.getElementById(sIcon).getBoundingClientRect();
           }
 

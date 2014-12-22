@@ -1,3 +1,4 @@
+///<reference path='../interface/node.d.ts' />
 
 function getTables()
 {
@@ -16,7 +17,7 @@ function getTables()
     return tables;
 }
 
-tables = getTables();
+var tables = getTables();
 
 function isValidTable(sTable)
 {

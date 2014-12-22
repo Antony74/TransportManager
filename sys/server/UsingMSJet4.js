@@ -1,3 +1,5 @@
+///<reference path='../interface/node.d.ts' />
+
 var fs = require('fs');
 var win32ole = require('win32ole');
 var dface = require('dface');
@@ -82,10 +84,10 @@ function runSQL(sFilenameSql, doneRunning)
         // Run the SQL on the empty database
         var db = openAccessDatabase(sDatabaseFilename);
 
-        arrSql = String(sSql).split(";");
+        var arrSql = String(sSql).split(";");
         for (var n = 0; n < arrSql.length - 1; ++n)
         {
-            var statement = arrSql[n].trimLeft();
+            var statement = arrSql[n].trim();
             if (statement.charAt(0) != "#")
             {
                 db.Execute(statement);
@@ -144,7 +146,7 @@ function ensureShortcutExists()
     // a parameter so we go via a batch file.  Unfortunately this is the best I can
     // do right now.
 
-    sBatchFile =  __dirname + "/TransportManager.bat";
+    var sBatchFile =  __dirname + "/TransportManager.bat";
     var sScript = '';
     sScript += '@echo off\r\n';
     sScript += '"' + process.execPath + '" "' + __dirname + '\\TransportManagerInWindowsSysTray.js"\r\n';
