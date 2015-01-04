@@ -49,7 +49,7 @@ function generateDialog(sTablename)
             sForm     += '        <table width="100%">\r\n';
 
 
-            for(nFld in json.fields)
+            for(var nFld in json.fields)
             {
                 var sFieldname = arrFields[nFld].name;
 

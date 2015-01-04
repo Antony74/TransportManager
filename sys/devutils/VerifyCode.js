@@ -39,7 +39,13 @@ forEachFileDoThing(sPathSrc, true, function(sFilenameSrc, bIsDir, done)
 {
     var sFilenameDest = sFilenameSrc.replace(sPathSrc, sPathDest);
 
-    if (sFilenameDest.substr(sFilenameDest.length - 3) == '.js')
+    if (sFilenameDest.substr(sFilenameDest.length - 4) == '.ncb')
+    {
+        // Don't try to copy this file - Visual Studio might have it locked, and I'd rather not have to close Visual Studio before I run this script
+        done();
+        return; 
+    }
+    else if (sFilenameDest.substr(sFilenameDest.length - 3) == '.js')
     {
         sFilenameDest = sFilenameDest.substr(0, sFilenameDest.length - 3) + '.ts';
     }
