@@ -128,9 +128,12 @@ function ensureDatabaseIsReady(doneEnsuring)
     });
 }
 
-function selectSql(sQuery, nStart)
+function selectSql(obj)
 {
-    return dface.selectSql(sDatabaseFilename, sQuery, nStart, 20);
+    obj.databaseFilename = sDatabaseFilename;
+    obj.numberOfRecordsToGet = 20;
+
+    return dface.selectSql(obj);
 }
 
 //

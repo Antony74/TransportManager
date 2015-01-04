@@ -58,10 +58,17 @@ function handleRequest(request, response)
     if (parsed.pathname == "/selectSql")
     {
         var sQuery = parsed.query.query;
-        var nStart = parseInt(parsed.query.start, 10);
-        if (isNaN(nStart))
+        var nStartRecord = parseInt(parsed.query.startRecord, 10);
+        var nSchemaLevel = parseInt(parsed.query.schemaLevel, 10);
+
+        if (isNaN(nStartRecord))
         {
-            nStart = 0;
+            nStartRecord = 0;
+        }
+
+        if (isNaN(nSchemaLevel))
+        {
+            nSchemaLevel = 0;
         }
 
         response.setHeader("Content-Type", "application/json");
@@ -81,7 +88,13 @@ function handleRequest(request, response)
 
         if (bParsedOK)
         {
-            var oOutput = platform.selectSql(sQuery, nStart);
+            var oOutput = platform.selectSql(
+            {
+                'query'       : sQuery,
+                'startRecord' : nStartRecord,
+                'schemaLevel' : nSchemaLevel
+            });
+            
             response.write(JSON.stringify(oOutput, null, 4));
         }
 

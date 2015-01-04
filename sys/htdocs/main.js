@@ -179,7 +179,6 @@ $(document).ready(function()
     {
         if (currentQuery == root['query'])
         {
-            var arrFields  = root['fields'];
             var arrRecords = root['records'];
 
             if (currentData == null)
@@ -191,8 +190,10 @@ $(document).ready(function()
                 currentData['records'] = currentData['records'].concat(arrRecords);
             }
 
-            if (root['start'] == 0)
+            if (root['startRecord'] == 0)
             {
+                var arrFields  = root['fields'];
+                
                 sTableHeader = '<tr>\n';
 
                 for(var nFld in arrFields)
@@ -236,7 +237,7 @@ $(document).ready(function()
 
             if (root['more'])
             {
-                $.getJSON('selectSql?query=' + encodeURIComponent(root['query']) + '&start=' + encodeURIComponent(root['start'] + arrRecords.length), gotJSON);
+                $.getJSON('selectSql?query=' + encodeURIComponent(root['query']) + '&startRecord=' + encodeURIComponent(arrRecords.length + root['startRecord']), gotJSON);
             }
             else
             {
@@ -266,7 +267,7 @@ $(document).ready(function()
         currentSortAscending = true;
         sTableHeader = '';
 
-        $.getJSON('selectSql?query=' + encodeURIComponent(currentQuery), gotJSON);
+        $.getJSON('selectSql?schemaLevel=1&query=' + encodeURIComponent(currentQuery), gotJSON);
     }
 
     function beginPopulateJobs()
