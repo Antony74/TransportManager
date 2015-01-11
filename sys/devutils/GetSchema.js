@@ -9,6 +9,7 @@ var dface = require('../server/node_modules/dface');
 
 var arrPrimaryKeys = [];
 var arrIndices = [];
+var oIndices = {};
 
 function getIndices(sFilename)
 {
@@ -81,6 +82,17 @@ function getTable(db, sDatabaseFilename, sTablename)
 {
     var sSql = "";
 
+    var sPrimaryKey = "";
+
+    for (var nRecord in oIndices.records)
+    {
+        var oRecord = oIndices.records[nRecord];
+        if (oRecord.TABLE_NAME == sTablename && oRecord.INDEX_NAME == "PrimaryKey")
+        {
+            sPrimaryKey = oRecord.COLUMN_NAME;
+        }
+    }
+
     var oResult = dface.selectSql(
     {
         'databaseFilename'      : sDatabaseFilename,
@@ -109,7 +121,7 @@ function getTable(db, sDatabaseFilename, sTablename)
             typeInfo = "TEXT(" + fld.DefinedSize + ")";
         }
 
-        if (arrPrimaryKeys[sTablename] == sFieldname)
+        if (sPrimaryKey == sFieldname)
         {
             typeInfo = "AUTOINCREMENT(1,1) NOT NULL PRIMARY KEY";
         }
@@ -119,12 +131,50 @@ function getTable(db, sDatabaseFilename, sTablename)
 
     sSql += arrFields.join(",\r\n");
     sSql += ");";
-    var sIndices = arrIndices[sTablename].join("\r\n");
+
+    var arrIndices = [];
+
+    for (var nRecord in oIndices.records)
+    {
+        var oRecord = oIndices.records[nRecord];
+        if (oRecord.TABLE_NAME == sTablename && oRecord.INDEX_NAME != "PrimaryKey")
+        {
+            var sIndexName = oRecord.INDEX_NAME;
+            var sColumnName = oRecord.COLUMN_NAME;
+            var nNulls = oRecord.NULLS;
+            var nUnique = oRecord.UNIQUE;
+            
+            var sIndex = "";
+
+            if (nUnique)
+            {
+                sIndex += "CREATE UNIQUE INDEX ";
+            }
+            else
+            {
+                sIndex += "CREATE INDEX ";
+            }
+
+            sIndex += sIndexName + " ON " + sTablename + "(" + sColumnName + ")";
+
+            if (!nNulls)
+            {
+                sIndex += " WITH DISALLOW NULL";
+            }
+            sIndex += ";";
+            
+            arrIndices.push(sIndex);
+        }
+    }
+    
+    var sIndices = arrIndices.join("\r\n");
+
     if (sIndices.length)
     {
         sSql += "\r\n\r\n";
         sSql += sIndices;
     }
+
     sSql += "\r\n\r\n";
 
     rs.Close();
@@ -132,15 +182,15 @@ function getTable(db, sDatabaseFilename, sTablename)
     return sSql;
 }
 
-var sFilenameExisting = "./TransportManager.mdb";
-var sFilenameSql = "../TransportManager.sql";
-var sFilenameClone = "../../TransportManager.mdb"
+var sFilenameExisting = __dirname + "/TransportManager.mdb";
+var sFilenameSql = __dirname + "/../TransportManager.sql";
+var sFilenameClone = __dirname + "/../../TransportManager.mdb"
 
 var bExists = fs.existsSync(sFilenameExisting);
 
 if (bExists)
 {
-    getIndices(sFilenameExisting);
+    oIndices = dface.getIndices(sFilenameExisting);
 
     var sSql = getTransportManagerSchema(sFilenameExisting);
 

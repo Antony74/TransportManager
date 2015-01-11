@@ -16,7 +16,7 @@ CREATE TABLE Clients(
     Notes MEMO,
     IsActive YESNO);
 
-CREATE INDEX ClientID ON Clients(ClientID) WITH DISALLOW NULL;
+CREATE UNIQUE INDEX ClientID ON Clients(ClientID) WITH DISALLOW NULL;
 CREATE INDEX ClientAddressLine1 ON Clients(AddressLine1) WITH DISALLOW NULL;
 CREATE INDEX ClientForename ON Clients(Firstname) WITH DISALLOW NULL;
 CREATE INDEX ClientSurname ON Clients(Surname) WITH DISALLOW NULL;
