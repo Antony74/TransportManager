@@ -81,20 +81,20 @@ function runSQL(sFilenameSql, doneRunning)
     {
         if (err) throw err;
 
-        // Run the SQL on the empty database
-        var db = openAccessDatabase(sDatabaseFilename);
+        var arrSql1 = String(sSql).split(";");
+        var arrSql2 = [];
 
-        var arrSql = String(sSql).split(";");
-        for (var n = 0; n < arrSql.length - 1; ++n)
+        for (var n = 0; n < arrSql1.length - 1; ++n)
         {
-            var statement = arrSql[n].trim();
+            var statement = arrSql1[n].trim();
             if (statement.charAt(0) != "#")
             {
-                db.Execute(statement);
+                arrSql2.push(statement);
             }
         }
 
-        db.Close();
+        dface.runSql(sDatabaseFilename, arrSql2);
+
         doneRunning();
     });
 }
