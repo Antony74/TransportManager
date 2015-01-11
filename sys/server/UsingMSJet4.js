@@ -1,54 +1,9 @@
 ///<reference path='../interface/node.d.ts' />
 
 var fs = require('fs');
-var win32ole = require('win32ole');
 var dface = require('dface');
 
 var sDatabaseFilename = __dirname + "/../../TransportManager.mdb";
-
-// Define the ADO constants that we need
-
-// SchemaEnumConstants
-var adSchemaIndexes = 12;
-var adSchemaTables = 20;
-
-// CursorTypeEnum constants
-var adOpenStatic = 3;
-var adOpenKeyset = 1;
-
-// LockTypeEnum constants
-var adLockReadOnly = 1;
-var adLockOptimistic = 3;
-
-// CommandTypeEnum constants
-var adCmdTable = 2;
-var adCmdTableDirect = 512;
-
-// DataTypeEnum constants
-var adInteger = 3;
-var adDate = 7;
-var adBoolean = 11;
-var adVarWChar = 202;
-var adLongVarWChar = 203;
-
-// BookmarkEnum
-var adBookmarkCurrent = 0;
-var adBookmarkFirst = 1;
-var adBookmarkLast = 2;
-
-function openAccessDatabase(sFilename)
-{
-    var db = win32ole.client.Dispatch('ADODB.Connection');
-    db.Provider = "Microsoft.Jet.OLEDB.4.0";
-    db.Open(sFilename);
-    return db;
-}
-
-function createRecordset()
-{
-    return win32ole.client.Dispatch('ADODB.Recordset');
-}
-
 
 function copyFile(source, target, doneCopying)
 {
@@ -178,36 +133,3 @@ exports.ensureShortcutExists = ensureShortcutExists;
 exports.ensureDatabaseIsReady = ensureDatabaseIsReady;
 exports.selectSql = selectSql;
 
-//
-// Also export a bunch of JET stuff for the devutils scripts to use
-//
-
-exports.jet = function() { }
-
-exports.jet.openAccessDatabase = openAccessDatabase;
-exports.jet.createRecordset = createRecordset;
-
-exports.jet.sDatabaseFilename = sDatabaseFilename;
-
-// SchemaEnumConstants
-exports.jet.adSchemaIndexes = adSchemaIndexes;
-exports.jet.adSchemaTables = adSchemaTables;
-
-// CursorTypeEnum constants
-exports.jet.adOpenStatic = adOpenStatic;
-exports.jet.adOpenKeyset = adOpenKeyset;
-
-// LockTypeEnum constants
-exports.jet.adLockReadOnly = adLockReadOnly;
-exports.jet.adLockOptimistic = adLockOptimistic;
-
-// CommandTypeEnum constants
-exports.jet.adCmdTable = adCmdTable;
-exports.jet.adCmdTableDirect = adCmdTableDirect;
-
-// DataTypeEnum constants
-exports.jet.adInteger = adInteger;
-exports.jet.adDate = adDate;
-exports.jet.adBoolean = adBoolean;
-exports.jet.adVarWChar = adVarWChar;
-exports.jet.adLongVarWChar = adLongVarWChar;
