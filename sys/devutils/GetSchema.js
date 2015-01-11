@@ -5,6 +5,7 @@ var win32ole = require('../server/node_modules/win32ole');
 var platform = require('../server/usingMSJet4.js');
 var jet = platform.jet;
 var schema = require('./Schema.js');
+var dface = require('../server/node_modules/dface');
 
 var arrPrimaryKeys = [];
 var arrIndices = [];
@@ -68,7 +69,7 @@ function getTransportManagerSchema(sFilename)
 
     for (var sTable in schema.getTables())
     {
-        sSql += getTable(db, sTable);
+        sSql += getTable(db, sFilename, sTable);
     }
 
     db.Close();
@@ -76,9 +77,18 @@ function getTransportManagerSchema(sFilename)
     return sSql;
 }
 
-function getTable(db, sTablename)
+function getTable(db, sDatabaseFilename, sTablename)
 {
     var sSql = "";
+
+    var oResult = dface.selectSql(
+    {
+        'databaseFilename'      : sDatabaseFilename,
+        'numberOfRecordsToGet'  : 1,
+        'query'                 : 'select * from ' + sTablename,
+        'startRecord'           : 0,
+        'schemaLevel'           : 2
+    });
 
     var rs = jet.createRecordset();
     rs.Open(sTablename, db, jet.adOpenStatic, jet.adLockReadOnly, jet.adCmdTableDirect);
@@ -88,33 +98,15 @@ function getTable(db, sTablename)
 
     var arrFields = [];
 
-    for (var nField = 0; nField < rs.Fields.Count; ++nField)
+    for (var nField = 0; nField < oResult.fields.length; ++nField)
     {
-        var fld = rs.Fields(nField);
-        var sFieldname = String(fld.Name);
-        var typeInfo = parseInt(fld.Type).toString();
+        var fld = oResult.fields[nField];
+        var sFieldname = fld.name;
+        var typeInfo = fld.Type;
 
-        switch (typeInfo)
+        if (typeInfo == "TEXT")
         {
-        case jet.adInteger:
-            typeInfo = "INTEGER";
-            break;
-
-        case jet.adBoolean:
-            typeInfo = "YESNO";
-            break;
-
-        case jet.adVarWChar:
             typeInfo = "TEXT(" + fld.DefinedSize + ")";
-            break;
-
-        case jet.adLongVarWChar:
-            typeInfo = "MEMO";
-            break;
-
-        case jet.adDate:
-            typeInfo = "DATE";
-            break;
         }
 
         if (arrPrimaryKeys[sTablename] == sFieldname)

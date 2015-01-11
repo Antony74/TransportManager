@@ -133,7 +133,14 @@ function selectSql(obj)
     obj.databaseFilename = sDatabaseFilename;
     obj.numberOfRecordsToGet = 20;
 
-    return dface.selectSql(obj);
+    var result = dface.selectSql(obj);
+
+    if (typeof result.error == 'string')
+    {
+        console.log('Error getting data from database: ' + result.error);
+    }
+
+    return result;
 }
 
 //
