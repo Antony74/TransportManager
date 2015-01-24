@@ -7,12 +7,27 @@ var oTables = require('./Schema.js').getTables();
 var out = fs.createWriteStream(__dirname + '/../htdocs/raw/dialogs.html');
 
 out.write(generateHeader());
+out.write('<BR>\r\n');
+out.write('<p style="text-align:center">\r\n');
 
 for (var sTablename in oTables)
 {
     out.write(generateButton(sTablename));
 }
 
+out.write('</p>\r\n');
+out.write('\r\n');
+out.write('<script>\r\n');
+out.write('$(document).ready(function()\r\n');
+out.write('{\r\n');
+
+for (var sTablename in oTables)
+{
+    out.write(generateButtonScript(sTablename));
+}
+
+out.write('});\r\n');
+out.write('</script>\r\n');
 out.write('\r\n');
 
 for (var sTablename in oTables)
@@ -60,13 +75,20 @@ function generateFooter()
 //
 function generateButton(sTablename)
 {
-    var s = '<button id="' + sTablename + '">' + sTablename + '</button>\r\n';
-    s    += '<script>\r\n';
+    var s = '    <button id="' + sTablename + '">' + sTablename + '</button>\r\n';
+    return s;
+}
+
+//
+// generateButtonScript
+//
+function generateButtonScript(sTablename)
+{
+    var s = "    $('#dlg" + sTablename + "').dialog({modal: true, autoOpen: false, width: 400});\r\n";
     s    += "    $('#" + sTablename + "').click(function()\r\n";
     s    += "    {\r\n";
-    s    += "        $('#dlg" + sTablename + "').dialog({modal: true, autoOpen: true, width: 400});\r\n";
+    s    += "        $('#dlg" + sTablename + "').dialog('open');\r\n";
     s    += "    });\r\n";
-    s    += '</script>\r\n';
     return s;
 }
 
@@ -91,7 +113,7 @@ function generateDialog(sTablename)
 
     var sForm  = '<div id="dlg' + sTablename + '" title="' + sTablename + '">\r\n';
     sForm     += '    <form>\r\n';
-    sForm     += '        <table width="100%">\r\n';
+    sForm     += '        <table style="width:100%">\r\n';
 
 
     for(var nFld in json.fields)
