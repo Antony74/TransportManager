@@ -107,17 +107,36 @@ function generateDialog(sTablename)
         'numberOfRecordsToGet' : 20
     };
 
+    var oDays = {'Mon': null, 'Tue': null, 'Wed': null, 'Thu': null, 'Fri': null, 'Sat': null, 'Sun':null};
+
+    var oTitles =
+    {
+        'Clients'             : 'Client',
+        'Destinations'        : 'Destination',
+        'DestinationType'     : 'Destination Type',
+        'DriverExclusionList' : 'Driver Exclusion List',
+        'Drivers'             : 'Driver',
+        'DriverVacation'      : 'Driver Vacation',
+        'JobLog'              : 'Job Log',
+        'Jobs'                : 'Job',
+    }
+
+    var sTitle = sTablename;
+
+    if (typeof oTitles[sTablename] !== 'undefined')
+    {
+        sTitle = oTitles[sTablename];
+    }
+
     var json = dface.selectSql(options);
 
     var arrFields = json.fields;
 
     var nColumns = (arrFields.length >= 12) ? 2 : 1;
 
-    var sForm  = '<div id="dlg' + sTablename + '" title="' + sTablename + '">\r\n';
+    var sForm  = '<div id="dlg' + sTablename + '" title="' + sTitle + '">\r\n';
     sForm     += '    <form>\r\n';
     sForm     += '        <table style="width:100%">\r\n';
-    
-    var oDays = {'Mon': null, 'Tue': null, 'Wed': null, 'Thu': null, 'Fri': null, 'Sat': null, 'Sun':null};
 
     for(var nFld = 0; nFld < arrFields.length; ++nFld)
     {
