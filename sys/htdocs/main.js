@@ -2,6 +2,19 @@
 
 $(document).ready(function()
 {
+    $('#dialogs').load('raw/dialogs.html div', function()
+    {
+        $('#dialogs div').each(function()
+        {
+            $(this).dialog({modal: true, autoOpen: false, width: 800});
+        });
+
+        allReady();
+    });
+});
+
+function allReady()
+{
     var currentData = null;
     var currentFilter = null;
     var currentSort = -1;
@@ -203,32 +216,7 @@ $(document).ready(function()
 
                 sTableHeader += '</tr>\n';
             
-                var form = $('#dlg' + currentTable + ' form');
-
-                if (form.length)
-                {
-                    // This table has a dialog, does it have any inputs?
-                    if (form.children().length == 0)
-                    {
-                        // No.  Let's create some.
-                        var sForm = '<table width="100%">';
-                        for(nFld in arrFields)
-                        {
-                            var sFieldname = arrFields[nFld].name;
-                            sForm += '<tr>';
-                            sForm += '<td>' + sFieldname + '</td>';
-                            sForm += ' <td><input type="Text" id="' + currentTable + '_' + sFieldname + '" style="width:95%"/></td>';
-                            sForm += '</tr>';
-                        }
-                        sForm += '</table>';
-                        form.append(sForm);
-
-                        $('#dlg' + currentTable).dialog({modal: true, autoOpen: false, width: 400});
-                    }
-
-                    displayRecords(arrRecords, false);
-
-                }
+                displayRecords(arrRecords, false);
             }
             else
             {
@@ -306,5 +294,5 @@ $(document).ready(function()
 
     $('#radioClients').trigger('click');
 
-});
+}
 
