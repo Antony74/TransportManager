@@ -84,7 +84,7 @@ function generateButton(sTablename)
 //
 function generateButtonScript(sTablename)
 {
-    var s = "    $('#dlg" + sTablename + "').dialog({modal: true, autoOpen: false, width: 400});\r\n";
+    var s = "    $('#dlg" + sTablename + "').dialog({modal: true, autoOpen: false, width: 800});\r\n";
     s    += "    $('#" + sTablename + "').click(function()\r\n";
     s    += "    {\r\n";
     s    += "        $('#dlg" + sTablename + "').dialog('open');\r\n";
@@ -111,21 +111,51 @@ function generateDialog(sTablename)
 
     var arrFields = json.fields;
 
+    var nColumns = (arrFields.length >= 12) ? 2 : 1;
+
     var sForm  = '<div id="dlg' + sTablename + '" title="' + sTablename + '">\r\n';
     sForm     += '    <form>\r\n';
     sForm     += '        <table style="width:100%">\r\n';
+    
+    var oDays = {'Mon': null, 'Tue': null, 'Wed': null, 'Thu': null, 'Fri': null, 'Sat': null, 'Sun':null};
 
-
-    for(var nFld in json.fields)
+    for(var nFld = 0; nFld < arrFields.length; ++nFld)
     {
         var sFieldname = arrFields[nFld].name;
 
-        sForm += '            <tr>\r\n';
-        sForm += '                <td>' + sFieldname + '</td>\r\n';
-        sForm += '                <td><input type="Text" id="' + sTablename + '_' + sFieldname + '" style="width:95%"/></td>\r\n';
-        sForm += '            </tr>\r\n';
+        if (typeof oDays[sFieldname] === 'undefined')
+        {
+            if (nFld % nColumns == 0)
+            {
+                if (nFld != 0)
+                {
+                    sForm += '            </tr>\r\n';
+                }
+                sForm += '            <tr>\r\n';
+            }
+
+            sForm += '                <td>' + sFieldname + '</td>\r\n';
+            sForm += '                <td><input type="Text" id="' + sTablename + '_' + sFieldname + '" style="width:95%"/></td>\r\n';
+        }
     }
+    sForm     += '            </tr>\r\n';
     sForm     += '        </table>\r\n';
+
+    if (sTablename == "Drivers")
+    {
+        sForm += '        <table style="width:100%">\r\n';
+        sForm += '            <tr>\r\n';
+        sForm += '              <td>Mon</td><td><input type="Text" id="Drivers_Mon" style="width:95%"/></td>\r\n';
+        sForm += '              <td>Tue</td><td><input type="Text" id="Drivers_Tue" style="width:95%"/></td>\r\n';
+        sForm += '              <td>Wed</td><td><input type="Text" id="Drivers_Wed" style="width:95%"/></td>\r\n';
+        sForm += '              <td>Thu</td><td><input type="Text" id="Drivers_Thu" style="width:95%"/></td>\r\n';
+        sForm += '              <td>Fri</td><td><input type="Text" id="Drivers_Fri" style="width:95%"/></td>\r\n';
+        sForm += '              <td>Sat</td><td><input type="Text" id="Drivers_Sat" style="width:95%"/></td>\r\n';
+        sForm += '              <td>Sun</td><td><input type="Text" id="Drivers_Sun" style="width:95%"/></td>\r\n';
+        sForm += '            </tr>\r\n';
+        sForm += '        </table>\r\n';
+    }
+
     sForm     += '    </form>\r\n';
     sForm     += '</div>\r\n';
 

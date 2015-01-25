@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Transport Manager Dialogs</title>
+    <link rel="stylesheet" href="../ui-lightness/jquery-ui-1.10.3.custom.css">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="icon" type="image/png" href="../icons/Car.png">
+    <script src="../jquery-1.11.1.min.js"></script>
+    <script src="../jquery-ui-1.10.3.custom.min.js"></script>
+</head>
+<body>
+
+<BR>
+<p style="text-align:center">
+    <button id="Clients">Clients</button>
+    <button id="Destinations">Destinations</button>
+    <button id="DestinationType">DestinationType</button>
+    <button id="DriverExclusionList">DriverExclusionList</button>
+    <button id="Drivers">Drivers</button>
+    <button id="DriverVacation">DriverVacation</button>
+    <button id="JobLog">JobLog</button>
+    <button id="Jobs">Jobs</button>
+</p>
+
+<script>
+$(document).ready(function()
+{
+    $('#dlgClients').dialog({modal: true, autoOpen: false, width: 800});
+    $('#Clients').click(function()
+    {
+        $('#dlgClients').dialog('open');
+    });
+    $('#dlgDestinations').dialog({modal: true, autoOpen: false, width: 800});
+    $('#Destinations').click(function()
+    {
+        $('#dlgDestinations').dialog('open');
+    });
+    $('#dlgDestinationType').dialog({modal: true, autoOpen: false, width: 800});
+    $('#DestinationType').click(function()
+    {
+        $('#dlgDestinationType').dialog('open');
+    });
+    $('#dlgDriverExclusionList').dialog({modal: true, autoOpen: false, width: 800});
+    $('#DriverExclusionList').click(function()
+    {
+        $('#dlgDriverExclusionList').dialog('open');
+    });
+    $('#dlgDrivers').dialog({modal: true, autoOpen: false, width: 800});
+    $('#Drivers').click(function()
+    {
+        $('#dlgDrivers').dialog('open');
+    });
+    $('#dlgDriverVacation').dialog({modal: true, autoOpen: false, width: 800});
+    $('#DriverVacation').click(function()
+    {
+        $('#dlgDriverVacation').dialog('open');
+    });
+    $('#dlgJobLog').dialog({modal: true, autoOpen: false, width: 800});
+    $('#JobLog').click(function()
+    {
+        $('#dlgJobLog').dialog('open');
+    });
+    $('#dlgJobs').dialog({modal: true, autoOpen: false, width: 800});
+    $('#Jobs').click(function()
+    {
+        $('#dlgJobs').dialog('open');
+    });
+});
+</script>
+
+<div id="dlgClients" title="Clients">
+    <form>
+        <table style="width:100%">
+            <tr>
+                <td>ClientID</td>
+                <td><input type="Text" id="Clients_ClientID" style="width:95%"/></td>
+                <td>Title</td>
+                <td><input type="Text" id="Clients_Title" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>Firstname</td>
+                <td><input type="Text" id="Clients_Firstname" style="width:95%"/></td>
+                <td>Initial</td>
+                <td><input type="Text" id="Clients_Initial" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>Surname</td>
+                <td><input type="Text" id="Clients_Surname" style="width:95%"/></td>
+                <td>AddressLine1</td>
+                <td><input type="Text" id="Clients_AddressLine1" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>AddressLine2</td>
+                <td><input type="Text" id="Clients_AddressLine2" style="width:95%"/></td>
+                <td>Town</td>
+                <td><input type="Text" id="Clients_Town" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>Postcode</td>
+                <td><input type="Text" id="Clients_Postcode" style="width:95%"/></td>
+                <td>HomeNumber</td>
+                <td><input type="Text" id="Clients_HomeNumber" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>MobileNumber</td>
+                <td><input type="Text" id="Clients_MobileNumber" style="width:95%"/></td>
+                <td>EmailAddress</td>
+                <td><input type="Text" id="Clients_EmailAddress" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>IsWheelchair</td>
+                <td><input type="Text" id="Clients_IsWheelchair" style="width:95%"/></td>
+                <td>Notes</td>
+                <td><input type="Text" id="Clients_Notes" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>IsActive</td>
+                <td><input type="Text" id="Clients_IsActive" style="width:95%"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="dlgDestinations" title="Destinations">
+    <form>
+        <table style="width:100%">
+            <tr>
+                <td>DestinationID</td>
+                <td><input type="Text" id="Destinations_DestinationID" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>TypeID</td>
+                <td><input type="Text" id="Destinations_TypeID" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td><input type="Text" id="Destinations_Name" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>AddressLine1</td>
+                <td><input type="Text" id="Destinations_AddressLine1" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>AddressLine2</td>
+                <td><input type="Text" id="Destinations_AddressLine2" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>Town</td>
+                <td><input type="Text" id="Destinations_Town" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>Postcode</td>
+                <td><input type="Text" id="Destinations_Postcode" style="width:95%"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="dlgDestinationType" title="DestinationType">
+    <form>
+        <table style="width:100%">
+            <tr>
+                <td>DestinationTypeID</td>
+                <td><input type="Text" id="DestinationType_DestinationTypeID" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>DestinationLevel1</td>
+                <td><input type="Text" id="DestinationType_DestinationLevel1" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>DestinationLevel2</td>
+                <td><input type="Text" id="DestinationType_DestinationLevel2" style="width:95%"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="dlgDriverExclusionList" title="DriverExclusionList">
+    <form>
+        <table style="width:100%">
+            <tr>
+                <td>DriverID</td>
+                <td><input type="Text" id="DriverExclusionList_DriverID" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>ClientID</td>
+                <td><input type="Text" id="DriverExclusionList_ClientID" style="width:95%"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="dlgDrivers" title="Drivers">
+    <form>
+        <table style="width:100%">
+            <tr>
+                <td>DriverID</td>
+                <td><input type="Text" id="Drivers_DriverID" style="width:95%"/></td>
+                <td>Title</td>
+                <td><input type="Text" id="Drivers_Title" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>Firstname</td>
+                <td><input type="Text" id="Drivers_Firstname" style="width:95%"/></td>
+                <td>Surname</td>
+                <td><input type="Text" id="Drivers_Surname" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>DateofBirth</td>
+                <td><input type="Text" id="Drivers_DateofBirth" style="width:95%"/></td>
+                <td>AddressLine1</td>
+                <td><input type="Text" id="Drivers_AddressLine1" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>AddressLine2</td>
+                <td><input type="Text" id="Drivers_AddressLine2" style="width:95%"/></td>
+                <td>Town</td>
+                <td><input type="Text" id="Drivers_Town" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>Postcode</td>
+                <td><input type="Text" id="Drivers_Postcode" style="width:95%"/></td>
+                <td>HomeNumber</td>
+                <td><input type="Text" id="Drivers_HomeNumber" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>MobileNumber</td>
+                <td><input type="Text" id="Drivers_MobileNumber" style="width:95%"/></td>
+                <td>EmailAddress</td>
+                <td><input type="Text" id="Drivers_EmailAddress" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>RegistrationNumber</td>
+                <td><input type="Text" id="Drivers_RegistrationNumber" style="width:95%"/></td>
+                <td>LicenceNumber</td>
+                <td><input type="Text" id="Drivers_LicenceNumber" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>ExpiryDate</td>
+                <td><input type="Text" id="Drivers_ExpiryDate" style="width:95%"/></td>
+                <td>CarBrand</td>
+                <td><input type="Text" id="Drivers_CarBrand" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>CarModel</td>
+                <td><input type="Text" id="Drivers_CarModel" style="width:95%"/></td>
+                <td>IsWheelchair</td>
+                <td><input type="Text" id="Drivers_IsWheelchair" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>IsActive</td>
+                <td><input type="Text" id="Drivers_IsActive" style="width:95%"/></td>
+                <td>Notes</td>
+                <td><input type="Text" id="Drivers_Notes" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>LDO</td>
+                <td><input type="Text" id="Drivers_LDO" style="width:95%"/></td>
+            </tr>
+        </table>
+        <table style="width:100%">
+            <tr>
+              <td>Mon</td><td><input type="Text" id="Drivers_Mon" style="width:95%"/></td>
+              <td>Tue</td><td><input type="Text" id="Drivers_Tue" style="width:95%"/></td>
+              <td>Wed</td><td><input type="Text" id="Drivers_Wed" style="width:95%"/></td>
+              <td>Thu</td><td><input type="Text" id="Drivers_Thu" style="width:95%"/></td>
+              <td>Fri</td><td><input type="Text" id="Drivers_Fri" style="width:95%"/></td>
+              <td>Sat</td><td><input type="Text" id="Drivers_Sat" style="width:95%"/></td>
+              <td>Sun</td><td><input type="Text" id="Drivers_Sun" style="width:95%"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="dlgDriverVacation" title="DriverVacation">
+    <form>
+        <table style="width:100%">
+            <tr>
+                <td>VacationID</td>
+                <td><input type="Text" id="DriverVacation_VacationID" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>VacationEntryDateTime</td>
+                <td><input type="Text" id="DriverVacation_VacationEntryDateTime" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>DriverID</td>
+                <td><input type="Text" id="DriverVacation_DriverID" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>VacationFrom</td>
+                <td><input type="Text" id="DriverVacation_VacationFrom" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>VacationTo</td>
+                <td><input type="Text" id="DriverVacation_VacationTo" style="width:95%"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="dlgJobLog" title="JobLog">
+    <form>
+        <table style="width:100%">
+            <tr>
+                <td>JobID</td>
+                <td><input type="Text" id="JobLog_JobID" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>JobLogDateTime</td>
+                <td><input type="Text" id="JobLog_JobLogDateTime" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>UserID</td>
+                <td><input type="Text" id="JobLog_UserID" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>ClientID</td>
+                <td><input type="Text" id="JobLog_ClientID" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>DestinationID</td>
+                <td><input type="Text" id="JobLog_DestinationID" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>DriverID</td>
+                <td><input type="Text" id="JobLog_DriverID" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>JobStatus</td>
+                <td><input type="Text" id="JobLog_JobStatus" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>JobNextStep</td>
+                <td><input type="Text" id="JobLog_JobNextStep" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>CallSource</td>
+                <td><input type="Text" id="JobLog_CallSource" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>CallNumber</td>
+                <td><input type="Text" id="JobLog_CallNumber" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>CallResolution</td>
+                <td><input type="Text" id="JobLog_CallResolution" style="width:95%"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="dlgJobs" title="Jobs">
+    <form>
+        <table style="width:100%">
+            <tr>
+                <td>JobID</td>
+                <td><input type="Text" id="Jobs_JobID" style="width:95%"/></td>
+                <td>JobEntryDateTime</td>
+                <td><input type="Text" id="Jobs_JobEntryDateTime" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>ClientID</td>
+                <td><input type="Text" id="Jobs_ClientID" style="width:95%"/></td>
+                <td>DestinationID</td>
+                <td><input type="Text" id="Jobs_DestinationID" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>LinkedJobID</td>
+                <td><input type="Text" id="Jobs_LinkedJobID" style="width:95%"/></td>
+                <td>JobAppointmentDateTime</td>
+                <td><input type="Text" id="Jobs_JobAppointmentDateTime" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>JobIsDVOWheelchair</td>
+                <td><input type="Text" id="Jobs_JobIsDVOWheelchair" style="width:95%"/></td>
+                <td>Notes</td>
+                <td><input type="Text" id="Jobs_Notes" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>Status</td>
+                <td><input type="Text" id="Jobs_Status" style="width:95%"/></td>
+                <td>IsJobOneWay</td>
+                <td><input type="Text" id="Jobs_IsJobOneWay" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>PickUpSite</td>
+                <td><input type="Text" id="Jobs_PickUpSite" style="width:95%"/></td>
+                <td>DriverID</td>
+                <td><input type="Text" id="Jobs_DriverID" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>JobPickUpDateTime</td>
+                <td><input type="Text" id="Jobs_JobPickUpDateTime" style="width:95%"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+</body>
+</html>
