@@ -99,6 +99,10 @@ function handleRequest(request, response)
         }
 
     }
+    else if (parsed.pathname == "/updateDatabase")
+    {
+        response.write('{"OK":true}');
+    }
     else if (parsed.pathname == "/quitTransportManager")
     {
         process.stdout.write("Quitting\r\n");
@@ -117,8 +121,8 @@ function handleRequest(request, response)
     }
 
     response.end();
-    request.connection.end();   //close the socket
-    request.connection.destroy; //close it really
+    request.connection.end();     //close the socket
+    request.connection.destroy(); //close it really
 }
 
 server = http.createServer(handleRequest);

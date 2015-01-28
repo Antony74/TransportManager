@@ -4,10 +4,52 @@ $(document).ready(function()
 {
     $('#dialogs').load('raw/dialogs.html div', function()
     {
+        var nDialogWidth = 800;
+        var nButtonWidth = 85;
+
         $('#dialogs div').each(function()
         {
-            $(this).dialog({modal: true, autoOpen: false, width: 800});
+            $(this).dialog(
+            {
+                modal: true,
+                autoOpen: false,
+                width: nDialogWidth,
+                buttons:
+                [
+                    {
+                        text: "Apply",
+                        class: 'leftButton',
+                        icons: {primary: 'ui-icon-check'},
+                        width: nButtonWidth,
+                        click: function()
+                        {
+                            alert('to do');
+                        }
+                    },
+                    {
+                        text: "OK",
+                        icons: {primary: 'ui-icon-check'},
+                        width: nButtonWidth,
+                        click: function()
+                        {
+                            alert('to do');
+                        }
+                    },
+                    {
+                        text: "Cancel",
+                        width: nButtonWidth,
+                        icons: {primary: 'ui-icon-closethick'},
+                        click: function()
+                        {
+                            $(this).dialog('close');
+                        }
+                    },
+
+                ],
+            });
         });
+
+        $('.leftButton').css('margin-right', nDialogWidth - (nButtonWidth * 4.1));
 
         allReady();
     });
