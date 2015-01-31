@@ -29,6 +29,16 @@ if (fs.existsSync(sPathDest))
             fs.unlinkSync(sFilename);
         }
 
+        var startTime = (new Date()).getTime();
+        while(fs.existsSync(sFilename))
+        {
+            if ( (new Date()).getTime() > startTime + 3000)
+            {
+                console.log("Timed out waiting for " + sFilename);
+                break;
+            }
+        }
+
         done();
 
     }, function() {});
