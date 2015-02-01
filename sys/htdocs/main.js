@@ -101,8 +101,35 @@ function allReady()
             {
                 if (bChanged)
                 {
+                    var arrFieldNames = [];
+
+                    for (var sFieldName in oRecord)
+                    {
+                        arrFieldNames.push(sFieldName);
+                        oRecord[sFieldName] = $('#' + currentTable + '_' + sFieldName).val();
+                    }
+
+                    var oRow = $('#mainDataTable tr:nth-child(' + nRow + ')');
+
+                    oRow.find('td').each(function()
+                    {
+                        var sFieldName = arrFieldNames.shift();
+                        $(this).html(fieldValueAsHtml(oRecord[sFieldName]));
+                    });
                 }
             });
+        }
+    }
+
+    function fieldValueAsHtml(value)
+    {
+        if (value === null || value === '')
+        {
+            return '&nbsp;';
+        }
+        else
+        {
+            return value;
         }
     }
 
@@ -120,14 +147,7 @@ function allReady()
             {
                 var value = rs[fld];
 
-                if (value === null || value === '')
-                {
-                    sHtml += '<td>&nbsp;</td>\n';
-                }
-                else
-                {
-                    sHtml += '<td>' + value + '</td>\n';
-                }
+                sHtml += '<td>' + fieldValueAsHtml(value) + '</td>\n';
             }
 
             sHtml += '</tr>\n';
@@ -143,7 +163,7 @@ function allReady()
         }
 
         $('#mainDataTable th').click(onTableHeaderClick);
-        $('#mainDataTable td').click(onTableCellClick);
+        $('#mainDataTable td').dblclick(onTableCellClick);
     }
 
     function updateFilter()
