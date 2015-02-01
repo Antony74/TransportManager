@@ -98,10 +98,45 @@ function handleRequest(request, response)
             response.write(JSON.stringify(oOutput, null, 4));
         }
 
+        response.end();
+        request.connection.end();     //close the socket
+        request.connection.destroy(); //close it really
     }
     else if (parsed.pathname == "/updateDatabase")
     {
-        response.write('{"OK":true}');
+        var sPostedData = '';
+
+        request.on('data', function(data)
+        {
+            sPostedData += data;
+        });
+
+        request.on('end', function()
+        {
+            var oPostedData = {};
+            var bParsedOK = true;
+
+            try
+            {
+                oPostedData = JSON.parse(sPostedData);
+            }
+            catch(e)
+            {
+                var oError = {"Error": e.toString()};
+                response.write(JSON.stringify(oError, null, 4));
+                bParsedOK = false;
+            }
+
+            if (bParsedOK)
+            {
+                response.write('{"OK":true}');
+                console.log(oPostedData);
+            }
+
+            response.end();
+            request.connection.end();     //close the socket
+            request.connection.destroy(); //close it really
+        });
     }
     else if (parsed.pathname == "/quitTransportManager")
     {
@@ -110,19 +145,14 @@ function handleRequest(request, response)
         request.connection.end();     //close the socket
         request.connection.destroy(); //close it really
         server.close();
-        return;
     }
     else
     {
-        request.addListener('end', function () {
+        request.addListener('end', function()
+        {
             staticServer.serve(request, response);
         }).resume();
-        return;
     }
-
-    response.end();
-    request.connection.end();     //close the socket
-    request.connection.destroy(); //close it really
 }
 
 server = http.createServer(handleRequest);

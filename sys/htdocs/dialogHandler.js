@@ -9,6 +9,30 @@ function createDialogHandler(doneFn)
 
         var dialogClosedFn = null;
         var bDialogChanged = false;
+        var oRecord = {};
+        var dlg = null;
+
+//                            $(this).find('input').each(function()
+//                            {
+//                                alert($(this).val());
+//                            });
+
+        function commitChanges(bCloseDialog)
+        {
+            bDialogChanged = true;
+
+            $.post('updateDatabase', JSON.stringify(
+            {
+                'name': "John",
+                'time': {wait: 'what?'}
+            }));
+            
+            if (bCloseDialog)
+            {
+                dlg.dialog('close');
+                dialogClosedFn(bDialogChanged);
+            }
+        }
 
         $('#dialogs div').each(function()
         {
@@ -26,7 +50,7 @@ function createDialogHandler(doneFn)
                         width: nButtonWidth,
                         click: function()
                         {
-                            bDialogChanged = true;
+                            commitChanges(false);
                         }
                     },
                     {
@@ -35,13 +59,7 @@ function createDialogHandler(doneFn)
                         width: nButtonWidth,
                         click: function()
                         {
-//                            $(this).find('input').each(function()
-//                            {
-//                                alert($(this).val());
-//                            });
-
-                            $(this).dialog('close');
-                            dialogClosedFn(true);
+                            commitChanges(true);
                         }
                     },
                     {
@@ -63,11 +81,12 @@ function createDialogHandler(doneFn)
 
         doneFn(
         {
-            doDialog: function(currentTable, doneFn)
+            doDialog: function(currentTable, _oRecord, _dialogClosedFn)
             {
                 bDialogChanged = false;
-                dialogClosedFn = doneFn;
-                var dlg = $("#dlg" + currentTable);
+                dialogClosedFn = _dialogClosedFn;
+                oRecord = _oRecord;
+                dlg = $("#dlg" + currentTable);
                 dlg.dialog("open");
             }
         });

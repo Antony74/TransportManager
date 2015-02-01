@@ -97,7 +97,7 @@ function allReady()
 
             dlg.dialog("open");
 
-            dialogHandler.doDialog(currentTable, function(bChanged)
+            dialogHandler.doDialog(currentTable, oRecord, function(bChanged)
             {
                 if (bChanged)
                 {
