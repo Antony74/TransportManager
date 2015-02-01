@@ -2,7 +2,7 @@
 
 function createDialogHandler(doneFn)
 {
-    $('#dialogs').load('raw/dialogs.html div', function()
+    $('#dialogs').load('raw/dialogs.html .dialogTemplate', function()
     {
         var nDialogWidth = 800;
         var nButtonWidth = 85;
@@ -10,28 +10,76 @@ function createDialogHandler(doneFn)
         var dialogClosedFn = null;
         var bDialogChanged = false;
         var oRecord = {};
-        var dlg = null;
+        var sDlgId = '';
 
 //                            $(this).find('input').each(function()
 //                            {
 //                                alert($(this).val());
 //                            });
 
+        function setStatus(sStatus, bOK)
+        {
+            var statusBar = $(sDlgId + ' .dialogStatus').find('td');
+            if (bOK)
+            {
+                // TO DO: DISABLE BUTTONS FOR ANYTHING THAT IS NOT A READY STATUS
+                statusBar.html('Status: ' + sStatus).addClass('dialogStatusOK').removeClass('dialogStatusError');
+            }
+            else
+            {
+                if (sStatus.indexOf('SyntaxError:') != 0)
+                {
+                    sStatus = 'Error: ' + sStatus;
+                }
+
+                statusBar.html(sStatus).addClass('dialogStatusError').removeClass('dialogStatusOK');
+            }
+        }
+
         function commitChanges(bCloseDialog)
         {
+            setStatus('Updating', true);
             bDialogChanged = true;
 
-            $.post('updateDatabase', JSON.stringify(
+            $.ajax(
             {
-                'name': "John",
-                'time': {wait: 'what?'}
-            }));
-            
-            if (bCloseDialog)
-            {
-                dlg.dialog('close');
-                dialogClosedFn(bDialogChanged);
-            }
+                url  : 'updateDatabase',
+                type : 'POST',
+                data : '{', // Passing the correct data is my next task, this is delibrately invalid to test my error handling
+                success: function(data)
+                {
+                    var oData = JSON.parse(data);
+
+                    if (typeof oData.Error != undefined)
+                    {
+                        setStatus(oData.Error, false);
+                    }
+                    else
+                    {
+                        setStatus('Ready', true);
+
+                        if (bCloseDialog)
+                        {
+                            $(sDlgId).dialog('close');
+                            dialogClosedFn(bDialogChanged);
+                        }
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    if (textStatus == 'timeout')
+                    {
+                        textStatus = 'Request timed out';
+                    }
+                    else if (jqXHR.status == 0)
+                    {
+                        textStatus = 'No reponse from server';
+                    }
+
+                    setStatus(textStatus, false);
+                },
+                timeout: 6000,
+            });
         }
 
         $('#dialogs div').each(function()
@@ -68,7 +116,7 @@ function createDialogHandler(doneFn)
                         icons: {primary: 'ui-icon-closethick'},
                         click: function()
                         {
-                            $(this).dialog('close');
+                            $(sDlgId).dialog('close');
                             dialogClosedFn(bDialogChanged);
                         }
                     },
@@ -86,8 +134,9 @@ function createDialogHandler(doneFn)
                 bDialogChanged = false;
                 dialogClosedFn = _dialogClosedFn;
                 oRecord = _oRecord;
-                dlg = $("#dlg" + currentTable);
-                dlg.dialog("open");
+                sDlgId = "#dlg" + currentTable;
+                $(sDlgId).dialog("open");
+                setStatus('Ready', true);
             }
         });
     });

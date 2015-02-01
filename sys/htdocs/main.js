@@ -95,8 +95,6 @@ function allReady()
                 $('#' + currentTable + '_' + sFieldname).val(sValue);
             }
 
-            dlg.dialog("open");
-
             dialogHandler.doDialog(currentTable, oRecord, function(bChanged)
             {
                 if (bChanged)

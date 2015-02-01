@@ -54,3 +54,29 @@ tr
     color:red;
 }
 
+.dialogStatus
+{
+    width: 100%;
+    margin-top: 15px;
+}
+
+.dialogStatusOK
+{
+    background-color: lightgreen;
+    color: green;
+    border-color: green;
+    border: 2px solid;
+    font-size: small;
+    font-family: "Courier New";
+}
+
+.dialogStatusError
+{
+    background-color: lightpink;
+    color: red;
+    border-color: red;
+    border: 2px solid;
+    font-size: small;
+    font-family: "Courier New";
+}
+

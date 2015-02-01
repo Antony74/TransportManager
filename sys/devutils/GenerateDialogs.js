@@ -134,7 +134,7 @@ function generateDialog(sTablename)
 
     var nColumns = (arrFields.length >= 12) ? 2 : 1;
 
-    var sForm  = '<div id="dlg' + sTablename + '" title="' + sTitle + '">\r\n';
+    var sForm  = '<div id="dlg' + sTablename + '" title="' + sTitle + '" class="dialogTemplate">\r\n';
     sForm     += '    <form>\r\n';
     sForm     += '        <table style="width:100%">\r\n';
 
@@ -176,6 +176,11 @@ function generateDialog(sTablename)
     }
 
     sForm     += '    </form>\r\n';
+    sForm     += '    <table class="dialogStatus">\r\n';
+    sForm     += '        <tr>\r\n';
+    sForm     += '            <td class="dialogStatusOK">Status: Initialising</td>\r\n';
+    sForm     += '        </tr>\r\n';
+    sForm     += '    </table>\r\n';
     sForm     += '</div>\r\n';
 
     return sForm;
