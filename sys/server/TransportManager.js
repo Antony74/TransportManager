@@ -130,7 +130,7 @@ function handleRequest(request, response)
             if (bParsedOK)
             {
                 response.write('{"OK":true}');
-                console.log(oPostedData);
+                console.log(require('util').inspect(oPostedData, {depth: null}));
             }
 
             response.end();

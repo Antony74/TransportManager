@@ -11,12 +11,7 @@ function createDialogHandler(doneFn)
         var bDialogChanged = false;
         var bDialogButtonsEnabled = true;
         var oRecord = {};
-        var sDlgId = '';
-
-//                            $(this).find('input').each(function()
-//                            {
-//                                alert($(this).val());
-//                            });
+        var sCurrentTable = '';
 
         function enableButtons(bEnable)
         {
@@ -40,7 +35,7 @@ function createDialogHandler(doneFn)
 
         function setStatus(sStatus, cTrafficLight)
         {
-            var statusBar = $(sDlgId + ' .dialogStatus').find('td');
+            var statusBar = $('#dlg' + sCurrentTable + ' .dialogStatus').find('td');
             if (cTrafficLight == 'G')
             {
                 statusBar.html('Status: ' + sStatus)
@@ -80,16 +75,35 @@ function createDialogHandler(doneFn)
             setStatus('Updating', 'A');
             bDialogChanged = true;
 
+            var oFields = {};
+
+            for (var sFieldName in oRecord)
+            {
+                oFields[sFieldName] = 
+                {
+                    oldValue : oRecord[sFieldName],
+                    newValue : $('#' + sCurrentTable + '_' + sFieldName).val(),
+                };
+            }
+
+            var oCommitData =
+            [
+                {
+                    operation : 'edit',
+                    fields    : oFields,
+                }
+            ];
+
             $.ajax(
             {
                 url  : 'updateDatabase',
                 type : 'POST',
-                data : '{', // Passing the correct data is my next task, this is delibrately invalid to test my error handling
+                data : JSON.stringify(oCommitData, null, 4),
                 success: function(data)
                 {
                     var oData = JSON.parse(data);
 
-                    if (typeof oData.Error != undefined)
+                    if (typeof oData.Error != 'undefined')
                     {
                         setStatus(oData.Error, 'R');
                     }
@@ -99,7 +113,7 @@ function createDialogHandler(doneFn)
 
                         if (bCloseDialog)
                         {
-                            $(sDlgId).dialog('close');
+                            $('#dlg' + sCurrentTable).dialog('close');
                             dialogClosedFn(bDialogChanged);
                         }
                     }
@@ -168,7 +182,7 @@ function createDialogHandler(doneFn)
                         {
                             if (bDialogButtonsEnabled)
                             {
-                                $(sDlgId).dialog('close');
+                                $('#dlg' + sCurrentTable).dialog('close');
                                 dialogClosedFn(bDialogChanged);
                             }
                         }
@@ -191,14 +205,16 @@ function createDialogHandler(doneFn)
 
         doneFn(
         {
-            doDialog: function(currentTable, _oRecord, _dialogClosedFn)
+            doDialog: function(_sCurrentTable, _oRecord, _dialogClosedFn)
             {
                 bDialogButtonsEnabled = true;
                 bDialogChanged = false;
+
                 dialogClosedFn = _dialogClosedFn;
                 oRecord = _oRecord;
-                sDlgId = "#dlg" + currentTable;
-                $(sDlgId).dialog("open");
+                sCurrentTable = _sCurrentTable;
+
+                $('#dlg' + sCurrentTable).dialog("open");
                 setStatus('Ready', 'G');
             }
         });
