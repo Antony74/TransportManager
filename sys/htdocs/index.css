@@ -60,23 +60,37 @@ tr
     margin-top: 15px;
 }
 
-.dialogStatusOK
+.dialogStatusRed
 {
-    background-color: lightgreen;
-    color: green;
-    border-color: green;
+    background-color: lightpink;
+    color: red;
     border: 2px solid;
     font-size: small;
     font-family: "Courier New";
 }
 
-.dialogStatusError
+.dialogStatusAmber
 {
-    background-color: lightpink;
-    color: red;
-    border-color: red;
+    background-color: #FFFF77;
+    color: darkgoldenrod;
     border: 2px solid;
     font-size: small;
     font-family: "Courier New";
 }
+
+.dialogStatusGreen
+{
+    background-color: lightgreen;
+    color: green;
+    border: 2px solid;
+    font-size: small;
+    font-family: "Courier New";
+}
+
+.buttonDisabled
+{
+    color: darkgrey !important;
+    background-color: lightgrey !important;
+}
+
 

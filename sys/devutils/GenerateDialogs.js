@@ -178,7 +178,7 @@ function generateDialog(sTablename)
     sForm     += '    </form>\r\n';
     sForm     += '    <table class="dialogStatus">\r\n';
     sForm     += '        <tr>\r\n';
-    sForm     += '            <td class="dialogStatusOK">Status: Initialising</td>\r\n';
+    sForm     += '            <td class="dialogStatusAmber">Status: Initialising</td>\r\n';
     sForm     += '        </tr>\r\n';
     sForm     += '    </table>\r\n';
     sForm     += '</div>\r\n';

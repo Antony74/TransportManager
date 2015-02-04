@@ -9,6 +9,7 @@ function createDialogHandler(doneFn)
 
         var dialogClosedFn = null;
         var bDialogChanged = false;
+        var bDialogButtonsEnabled = true;
         var oRecord = {};
         var sDlgId = '';
 
@@ -17,13 +18,46 @@ function createDialogHandler(doneFn)
 //                                alert($(this).val());
 //                            });
 
-        function setStatus(sStatus, bOK)
+        function enableButtons(bEnable)
+        {
+            bDialogButtonsEnabled = bEnable;
+
+            if (bEnable)
+            {
+                $('.ui-dialog-titlebar-close').css('display', 'inherit');
+                $('#dialogApply').removeClass('buttonDisabled');
+                $('#dialogOK').removeClass('buttonDisabled');
+                $('#dialogCancel').removeClass('buttonDisabled');
+            }
+            else
+            {
+                $('.ui-dialog-titlebar-close').css('display', 'none');
+                $('#dialogApply').addClass('buttonDisabled');
+                $('#dialogOK').addClass('buttonDisabled');
+                $('#dialogCancel').addClass('buttonDisabled');
+            }
+        }
+
+        function setStatus(sStatus, cTrafficLight)
         {
             var statusBar = $(sDlgId + ' .dialogStatus').find('td');
-            if (bOK)
+            if (cTrafficLight == 'G')
             {
-                // TO DO: DISABLE BUTTONS FOR ANYTHING THAT IS NOT A READY STATUS
-                statusBar.html('Status: ' + sStatus).addClass('dialogStatusOK').removeClass('dialogStatusError');
+                statusBar.html('Status: ' + sStatus)
+                         .removeClass('dialogStatusRed')
+                         .removeClass('dialogStatusAmber')
+                         .addClass('dialogStatusGreen');
+
+                enableButtons(true);
+            }
+            else if (cTrafficLight == 'A')
+            {
+                statusBar.html('Status: ' + sStatus)
+                         .removeClass('dialogStatusRed')
+                         .addClass('dialogStatusAmber')
+                         .removeClass('dialogStatusGreen');
+
+                enableButtons(false);
             }
             else
             {
@@ -32,13 +66,18 @@ function createDialogHandler(doneFn)
                     sStatus = 'Error: ' + sStatus;
                 }
 
-                statusBar.html(sStatus).addClass('dialogStatusError').removeClass('dialogStatusOK');
+                statusBar.html(sStatus)
+                         .addClass('dialogStatusRed')
+                         .removeClass('dialogStatusAmber')
+                         .removeClass('dialogStatusGreen');
+
+                enableButtons(true);
             }
         }
 
         function commitChanges(bCloseDialog)
         {
-            setStatus('Updating', true);
+            setStatus('Updating', 'A');
             bDialogChanged = true;
 
             $.ajax(
@@ -52,11 +91,11 @@ function createDialogHandler(doneFn)
 
                     if (typeof oData.Error != undefined)
                     {
-                        setStatus(oData.Error, false);
+                        setStatus(oData.Error, 'R');
                     }
                     else
                     {
-                        setStatus('Ready', true);
+                        setStatus('Ready', 'G');
 
                         if (bCloseDialog)
                         {
@@ -76,7 +115,7 @@ function createDialogHandler(doneFn)
                         textStatus = 'No reponse from server';
                     }
 
-                    setStatus(textStatus, false);
+                    setStatus(textStatus, 'R');
                 },
                 timeout: 6000,
             });
@@ -86,42 +125,65 @@ function createDialogHandler(doneFn)
         {
             $(this).dialog(
             {
-                modal: true,
-                autoOpen: false,
-                width: nDialogWidth,
-                buttons:
+                modal         : true,
+                autoOpen      : false,
+                closeOnEscape : false,
+                resizable     : false,
+                width         : nDialogWidth,
+                buttons       :
                 [
                     {
-                        text: "Apply",
-                        class: 'leftButton',
-                        icons: {primary: 'ui-icon-check'},
-                        width: nButtonWidth,
-                        click: function()
+                        text  : 'Apply',
+                        id    : 'dialogApply',
+                        class : 'leftButton',
+                        icons : {primary: 'ui-icon-check'},
+                        width : nButtonWidth,
+                        click : function()
                         {
-                            commitChanges(false);
+                            if (bDialogButtonsEnabled)
+                            {
+                                commitChanges(false);
+                            }
                         }
                     },
                     {
-                        text: "OK",
-                        icons: {primary: 'ui-icon-check'},
-                        width: nButtonWidth,
-                        click: function()
+                        text  : 'OK',
+                        id    : 'dialogOK',
+                        icons : {primary: 'ui-icon-check'},
+                        width : nButtonWidth,
+                        click : function()
                         {
-                            commitChanges(true);
+                            if (bDialogButtonsEnabled)
+                            {
+                                commitChanges(true);
+                            }
                         }
                     },
                     {
-                        text: "Cancel",
-                        width: nButtonWidth,
-                        icons: {primary: 'ui-icon-closethick'},
-                        click: function()
+                        text  : 'Cancel',
+                        id    : 'dialogCancel',
+                        width : nButtonWidth,
+                        icons : {primary: 'ui-icon-closethick'},
+                        click : function()
                         {
-                            $(sDlgId).dialog('close');
-                            dialogClosedFn(bDialogChanged);
+                            if (bDialogButtonsEnabled)
+                            {
+                                $(sDlgId).dialog('close');
+                                dialogClosedFn(bDialogChanged);
+                            }
                         }
                     },
 
                 ],
+            }).on('keydown', function(event)
+            {
+                if (event.keyCode === $.ui.keyCode.ESCAPE)
+                {
+                    if (bDialogButtonsEnabled)
+                    {
+                        $(this).dialog('close');
+                    }
+                } 
             });
         });
 
@@ -131,12 +193,13 @@ function createDialogHandler(doneFn)
         {
             doDialog: function(currentTable, _oRecord, _dialogClosedFn)
             {
+                bDialogButtonsEnabled = true;
                 bDialogChanged = false;
                 dialogClosedFn = _dialogClosedFn;
                 oRecord = _oRecord;
                 sDlgId = "#dlg" + currentTable;
                 $(sDlgId).dialog("open");
-                setStatus('Ready', true);
+                setStatus('Ready', 'G');
             }
         });
     });
