@@ -75,22 +75,19 @@ function createDialogHandler(doneFn)
             setStatus('Updating', 'A');
             bDialogChanged = true;
 
-            var oFields = {};
+            var oNewRecord = {};
 
             for (var sFieldName in oRecord)
             {
-                oFields[sFieldName] = 
-                {
-                    oldValue : oRecord[sFieldName],
-                    newValue : $('#' + sCurrentTable + '_' + sFieldName).val(),
-                };
+                oNewRecord[sFieldName] = $('#' + sCurrentTable + '_' + sFieldName).val();
             }
 
             var oCommitData =
             [
                 {
                     operation : 'edit',
-                    fields    : oFields,
+                    oldRecord : oRecord,
+                    newRecord : oNewRecord,
                 }
             ];
 
