@@ -3,23 +3,23 @@
 var fs = require('fs');
 var dface = require('dface');
 
-var sDatabaseFilename = __dirname + "/../../TransportManager.mdb";
+var sDatabaseFilename = __dirname + '/../../TransportManager.mdb';
 
 function copyFile(source, target, doneCopying)
 {
     var streamIn = fs.createReadStream(source);
-    streamIn.on("error", function(err)
+    streamIn.on('error', function(err)
     {
         console.log(err);
     });
 
     var streamOut = fs.createWriteStream(target);
-    streamOut.on("error", function(err)
+    streamOut.on('error', function(err)
     {
         console.log(err);
     });
 
-    streamOut.on("close", function(ex)
+    streamOut.on('close', function(ex)
     {
         doneCopying();
     });
@@ -29,20 +29,20 @@ function copyFile(source, target, doneCopying)
 
 function runSQL(sFilenameSql, doneRunning)
 {
-    console.log("Running " + sFilenameSql);
+    console.log('Running ' + sFilenameSql);
 
     // Load the SQL
     fs.readFile(sFilenameSql, function(err, sSql)
     {
         if (err) throw err;
 
-        var arrSql1 = String(sSql).split(";");
+        var arrSql1 = String(sSql).split(';');
         var arrSql2 = [];
 
         for (var n = 0; n < arrSql1.length - 1; ++n)
         {
             var statement = arrSql1[n].trim();
-            if (statement.charAt(0) != "#")
+            if (statement.charAt(0) != '#')
             {
                 arrSql2.push(statement);
             }
@@ -56,26 +56,26 @@ function runSQL(sFilenameSql, doneRunning)
 
 function ensureDatabaseIsReady(doneEnsuring)
 {
-    var sFilenameEmpty = __dirname + "/Blank2002Database.mdb";
-    var sFilenameSql = __dirname + "../../TransportManager.sql";
+    var sFilenameEmpty = __dirname + '/Blank2002Database.mdb';
+    var sFilenameSql = __dirname + '../../TransportManager.sql';
 
     fs.exists(sDatabaseFilename, function(bExists)
     {
         if (bExists)
         {
-            console.log("Database ready");
+            console.log('Database ready');
             doneEnsuring();
         }
         else
         {
-            console.log("Database not found... creating empty database");
+            console.log('Database not found... creating empty database');
 
             // Copy empty database
             copyFile(sFilenameEmpty, sDatabaseFilename, function()
             {
                 runSQL(sFilenameSql, function()
                 {
-                    console.log("Database ready");
+                    console.log('Database ready');
                     doneEnsuring();
                 });
             });
@@ -98,6 +98,18 @@ function selectSql(obj)
     return result;
 }
 
+function updateDatabase(obj)
+{
+    var result = dface.updateDatabase(sDatabaseFilename, obj);
+
+    if (typeof result.error == 'String')
+    {
+        console.log('Error getting data from database: ' + result.error);
+    }
+
+    return result;
+}
+
 //
 // And that should be all the JET database related stuff above, now for some 
 // utility functions which are Windows specific.
@@ -111,18 +123,18 @@ function ensureShortcutExists()
     // a parameter so we go via a batch file.  Unfortunately this is the best I can
     // do right now.
 
-    var sBatchFile =  __dirname + "/TransportManager.bat";
+    var sBatchFile =  __dirname + '/TransportManager.bat';
     var sScript = '';
     sScript += '@echo off\r\n';
     sScript += '"' + process.execPath + '" "' + __dirname + '\\TransportManagerInWindowsSysTray.js"\r\n';
     fs.writeFile(sBatchFile, sScript);
 
-    var sShortcutFile = __dirname + "/../../TransportManager.url";
-    fs.writeFile(sShortcutFile, "[InternetShortcut]\r\n"
-                              + "URL=file://" + __dirname + "\\TransportManager.bat\r\n"
-                              + "WorkingDir=" + __dirname + "\r\n"
-                              + "IconFile=" + __dirname + "\\..\\htdocs\\icons\\Car.ico\r\n"
-                              + "IconIndex=0\r\n");
+    var sShortcutFile = __dirname + '/../../TransportManager.url';
+    fs.writeFile(sShortcutFile, '[InternetShortcut]\r\n'
+                              + 'URL=file://' + __dirname + '\\TransportManager.bat\r\n'
+                              + 'WorkingDir=' + __dirname + '\r\n'
+                              + 'IconFile=' + __dirname + '\\..\\htdocs\\icons\\Car.ico\r\n'
+                              + 'IconIndex=0\r\n');
 }
 
 //
@@ -132,4 +144,5 @@ function ensureShortcutExists()
 exports.ensureShortcutExists = ensureShortcutExists;
 exports.ensureDatabaseIsReady = ensureDatabaseIsReady;
 exports.selectSql = selectSql;
+exports.updateDatabase = updateDatabase;
 

@@ -37,25 +37,25 @@ if (process.arch != 'ia32' || process.platform != 'win32')
 var http = require('http');
 var url = require('url');
 var static = require('node-static');
-var platform = require("./UsingMSJet4.js");
-var parser = require("./SelectStatementParser.js");
+var platform = require('./UsingMSJet4.js');
+var parser = require('./SelectStatementParser.js');
 var server = null;
 var port = 8080;
-var sServerUrl = "http://localhost:" + port + "/";
+var sServerUrl = 'http://localhost:' + port + '/';
 var bServerIsRunning = false;
 
-process.stdout.write("\r\n");
-process.stdout.write("    T R A N S P O R T   M A N A G E R\r\n");
-process.stdout.write("\r\n");
+process.stdout.write('\r\n');
+process.stdout.write('    T R A N S P O R T   M A N A G E R\r\n');
+process.stdout.write('\r\n');
 
 platform.ensureShortcutExists();
 
-var staticServer = new static.Server(__dirname + "/../htdocs");
+var staticServer = new static.Server(__dirname + '/../htdocs');
 
 function handleRequest(request, response)
 {
     var parsed = url.parse(request.url, true);
-    if (parsed.pathname == "/selectSql")
+    if (parsed.pathname == '/selectSql')
     {
         var sQuery = parsed.query.query;
         var nStartRecord = parseInt(parsed.query.startRecord, 10);
@@ -71,7 +71,7 @@ function handleRequest(request, response)
             nSchemaLevel = 0;
         }
 
-        response.setHeader("Content-Type", "application/json");
+        response.setHeader('Content-Type', 'application/json');
 
         var bParsedOK = false;
 
@@ -82,7 +82,7 @@ function handleRequest(request, response)
         }
         catch(e)
         {
-            var oError = {"Error": e.toString()};
+            var oError = {'Error': e.toString()};
             response.write(JSON.stringify(oError, null, 4));
         }
 
@@ -102,7 +102,7 @@ function handleRequest(request, response)
         request.connection.end();     //close the socket
         request.connection.destroy(); //close it really
     }
-    else if (parsed.pathname == "/updateDatabase")
+    else if (parsed.pathname == '/updateDatabase')
     {
         var sPostedData = '';
 
@@ -113,24 +113,71 @@ function handleRequest(request, response)
 
         request.on('end', function()
         {
-            var oPostedData = {};
+            var arrPostedData = [];
             var bParsedOK = true;
 
             try
             {
-                oPostedData = JSON.parse(sPostedData);
+                arrPostedData = JSON.parse(sPostedData);
             }
             catch(e)
             {
-                var oError = {"Error": e.toString()};
+                var oError = {'Error': e.toString()};
                 response.write(JSON.stringify(oError, null, 4));
                 bParsedOK = false;
             }
 
             if (bParsedOK)
             {
-                response.write('{"OK":true}');
-                console.log(require('util').inspect(oPostedData, {depth: null}));
+                if (!Array.isArray(arrPostedData))
+                {
+                    var oTheError = {'Error': 'UpdateDatabase expected an array'};
+                    response.write(JSON.stringify(oTheError, null, 4));
+                    bParsedOK = false;
+                }
+                else
+                {
+                    for (var n = 0; n < arrPostedData.length; ++n)
+                    {
+                        var oQuery = arrPostedData[n];
+                        
+                        if (typeof oQuery != 'object')
+                        {
+                            var oTheError = {'Error': 'Item ' + n + ' is not an object'};
+                            response.write(JSON.stringify(oTheError, null, 4));
+                            bParsedOK = false;
+                            break;
+                        }
+                        else if (typeof oQuery['query'] != 'string')
+                        {
+                            var oTheError = {'Error': "Item " + n + " does not contain a string-member called 'query'"};
+                            response.write(JSON.stringify(oTheError, null, 4));
+                            bParsedOK = false;
+                            break;
+                        }
+                        else
+                        {
+                            var sQuery = oQuery.query;
+                        
+                            try
+                            {
+                                parser.parse(sQuery.toLowerCase());
+                            }
+                            catch(e)
+                            {
+                                var oTheError = {'Error': 'Error in query ' + n + ': ' + e.toString()};
+                                response.write(JSON.stringify(oTheError, null, 4));
+                                bParsedOK = false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (bParsedOK)
+            {
+                var oOutput = platform.updateDatabase(arrPostedData);
+                response.write(JSON.stringify(oOutput, null, 4));
             }
 
             response.end();
@@ -138,10 +185,10 @@ function handleRequest(request, response)
             request.connection.destroy(); //close it really
         });
     }
-    else if (parsed.pathname == "/quitTransportManager")
+    else if (parsed.pathname == '/quitTransportManager')
     {
-        process.stdout.write("Quitting\r\n");
-        response.end("OK");
+        process.stdout.write('Quitting\r\n');
+        response.end('OK');
         request.connection.end();     //close the socket
         request.connection.destroy(); //close it really
         server.close();
@@ -157,20 +204,20 @@ function handleRequest(request, response)
 
 server = http.createServer(handleRequest);
 
-server.on("listening", function()
+server.on('listening', function()
 {
     bServerIsRunning = true;
-    process.stdout.write("Server has been started (" + sServerUrl + ")\r\n");
+    process.stdout.write('Server has been started (' + sServerUrl + ')\r\n');
     platform.ensureDatabaseIsReady(function()
     {
         process.argv.forEach(function(sParam)
         {
-            if (sParam.substring(0,1) == "-")
+            if (sParam.substring(0,1) == '-')
             {
                 switch(sParam.substring(1).toUpperCase())
                 {
-                case "Q":
-                    console.log("Quiting");
+                case 'Q':
+                    console.log('Quiting');
                     if (bServerIsRunning)
                     {
                         server.close();
@@ -182,14 +229,14 @@ server.on("listening", function()
     });
 });
 
-server.on("error", function(e)
+server.on('error', function(e)
 {
     if (e.code == 'EADDRINUSE')
     {
         process.stdout.write('Port ' + port + ' is already in use\r\n');
-        process.stdout.write("\r\n");
-        process.stdout.write("This usually happens because another instance of the server is already\r\n");
-        process.stdout.write("running on this computer.\r\n");
+        process.stdout.write('\r\n');
+        process.stdout.write('This usually happens because another instance of the server is already\r\n');
+        process.stdout.write('running on this computer.\r\n');
 
         ec.setExitCode(ec.PORT_IN_USE);
     }
