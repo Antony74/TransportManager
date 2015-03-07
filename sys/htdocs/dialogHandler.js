@@ -88,11 +88,13 @@ function createDialogHandler(doneFn)
                 {
                     query : sCurrentQuery,
                     operations:
-                    {
-                        operation : 'edit',
-                        oldRecord : oRecord,
-                        newRecord : oNewRecord
-                    }
+                    [
+                        {
+                            operation : 'edit',
+                            oldRecord : oRecord,
+                            newRecord : oNewRecord
+                        }
+                    ]
                 }
             ];
 
