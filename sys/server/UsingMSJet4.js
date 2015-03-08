@@ -106,7 +106,7 @@ function updateDatabase(obj)
 
     if (typeof result.Error == 'string')
     {
-        console.log('Error getting data from database: ' + result.Error);
+        console.log('Error updating database: ' + result.Error);
     }
 
     return result;
