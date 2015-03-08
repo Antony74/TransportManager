@@ -100,11 +100,13 @@ function selectSql(obj)
 
 function updateDatabase(obj)
 {
+    console.log(JSON.stringify(obj, null, 4));
+
     var result = dface.updateDatabase(sDatabaseFilename, obj);
 
-    if (typeof result.error == 'String')
+    if (typeof result.Error == 'string')
     {
-        console.log('Error getting data from database: ' + result.error);
+        console.log('Error getting data from database: ' + result.Error);
     }
 
     return result;
