@@ -12,7 +12,6 @@ function createDialogHandler(doneFn)
         var bDialogButtonsEnabled = true;
         var oRecord = {};
         var sCurrentTable = '';
-        var sCurrentQuery = '';
 
         function enableButtons(bEnable)
         {
@@ -86,7 +85,7 @@ function createDialogHandler(doneFn)
             var oCommitData =
             [
                 {
-                    query : sCurrentQuery,
+                    table : sCurrentTable,
                     operations:
                     [
                         {
@@ -209,7 +208,7 @@ function createDialogHandler(doneFn)
 
         doneFn(
         {
-            doDialog: function(_sCurrentTable, _sCurrentQuery, _oRecord, _dialogClosedFn)
+            doDialog: function(_sCurrentTable, _oRecord, _dialogClosedFn)
             {
                 bDialogButtonsEnabled = true;
                 bDialogChanged = false;
@@ -217,7 +216,6 @@ function createDialogHandler(doneFn)
                 dialogClosedFn = _dialogClosedFn;
                 oRecord = _oRecord;
                 sCurrentTable = _sCurrentTable;
-                sCurrentQuery = _sCurrentQuery;
 
                 $('#dlg' + sCurrentTable).dialog("open");
                 setStatus('Ready', 'G');

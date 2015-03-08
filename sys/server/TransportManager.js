@@ -133,51 +133,12 @@ function handleRequest(request, response)
                 {
                     var oTheError = {'Error': 'UpdateDatabase expected an array'};
                     response.write(JSON.stringify(oTheError, null, 4));
-                    bParsedOK = false;
                 }
                 else
                 {
-                    for (var n = 0; n < arrPostedData.length; ++n)
-                    {
-                        var oQuery = arrPostedData[n];
-                        
-                        if (typeof oQuery != 'object')
-                        {
-                            var oTheError = {'Error': 'Item ' + n + ' is not an object'};
-                            response.write(JSON.stringify(oTheError, null, 4));
-                            bParsedOK = false;
-                            break;
-                        }
-                        else if (typeof oQuery['query'] != 'string')
-                        {
-                            var oTheError = {'Error': "Item " + n + " does not contain a string-member called 'query'"};
-                            response.write(JSON.stringify(oTheError, null, 4));
-                            bParsedOK = false;
-                            break;
-                        }
-                        else
-                        {
-                            var sQuery = oQuery.query;
-                        
-                            try
-                            {
-                                parser.parse(sQuery.toLowerCase());
-                            }
-                            catch(e)
-                            {
-                                var oTheError = {'Error': 'Error in query ' + n + ': ' + e.toString()};
-                                response.write(JSON.stringify(oTheError, null, 4));
-                                bParsedOK = false;
-                            }
-                        }
-                    }
+                    var oOutput = platform.updateDatabase(arrPostedData);
+                    response.write(JSON.stringify(oOutput, null, 4));
                 }
-            }
-
-            if (bParsedOK)
-            {
-                var oOutput = platform.updateDatabase(arrPostedData);
-                response.write(JSON.stringify(oOutput, null, 4));
             }
 
             response.end();
