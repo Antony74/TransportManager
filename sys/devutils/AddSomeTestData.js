@@ -1,50 +1,72 @@
 ///<reference path='../interface/node.d.ts' />
 
-var win32ole = require('../server/node_modules/win32ole');
 var platform = require('../server/usingMSJet4.js');
-var jet = platform.jet;
-var Faker = require('Faker');
-
-function addTestClient(rs)
-{
-    rs.AddNew();
-    rs.Fields("Title").Value = "";
-    rs.Fields("Firstname").Value = Faker.name.firstName();
-    rs.Fields("Initial").Value = Faker.name.firstName().substr(0,1);
-    rs.Fields("Surname").Value = Faker.name.lastName();
-    rs.Fields("AddressLine1").Value = Faker.address.streetAddress();
-    rs.Fields("AddressLine2").Value = "";
-    rs.Fields("Town").Value = "Neverville";
-    rs.Fields("Postcode").Value = "";
-    rs.Fields("HomeNumber").Value = Faker.phone.phoneNumber().substr(0,13);
-    rs.Fields("MobileNumber").Value = "";
-    rs.Fields("EmailAddress").Value = "";
-    rs.Fields("Notes").Value = "";
-    rs.Fields("IsActive").Value = true;
-    rs.Update();
-}
+var faker = require('Faker');
 
 platform.ensureDatabaseIsReady(function()
 {
-    var db = jet.openAccessDatabase(jet.sDatabaseFilename);
+    // Ensure there isn't already client data in this database
     
-    var rsClients = jet.createRecordset();
-    rsClients.Open("Clients", db, jet.adOpenStatic, jet.adLockOptimistic, jet.adCmdTableDirect);
-    
-    if (rsClients.RecordCount == 0)
+    var existing = platform.selectSql(
     {
-        for (var n = 0; n < 8; ++n)
-        {
-            addTestClient(rsClients);
-        }
+        query: 'select * from clients'
+    });
+
+    if (existing.records.length != 0)
+    {
+        console.log('This database already contains clients');
+        return;
     }
 
-    rsClients.Close();
+    // Add one test client at a time in a loop of eight.  Though there shouldn't be anything to
+    // stop us from batching up eight new test clients in a single updateDatabase call.
 
+    for (var n = 0; n < 8; ++n)
+    {
+        platform.updateDatabase( 
+        [
+            {
+                table: 'Clients',
+                operations:
+                [
+                    {
+                        operationName: 'add',
+                        newRecord: generateTestClientFields()
+                    }
+                ]
+            }
+        ]);
+    }
+});
+
+function generateTestClientFields()
+{
+    var retval =
+    {
+        Title        : "",
+        Firstname    : faker.name.firstName(),
+        Initial      : faker.name.firstName().substr(0,1),
+        Surname      : faker.name.lastName(),
+        AddressLine1 : faker.address.streetAddress(),
+        AddressLine2 : "",
+        Town         : "Neverville",
+        Postcode     : "",
+        HomeNumber   : faker.phone.phoneNumber().substr(0,13),
+        MobileNumber : "",
+        EmailAddress : "",
+        Notes        : "",
+        IsActive     : true
+    };
+
+    return retval;
+}
+
+/*
 //    var randomName = Faker.Name.findName(); // Rowan Nikolaus
 //    var randomEmail = Faker.Internet.email(); // Kassandra.Haley@erich.biz
 //    var randomCard = Faker.Helpers.createCard();
      
 //    console.log(randomName);
 });
+*/
 

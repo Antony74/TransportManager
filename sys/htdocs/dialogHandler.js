@@ -89,9 +89,9 @@ function createDialogHandler(doneFn)
                     operations:
                     [
                         {
-                            operation : 'edit',
-                            oldRecord : oRecord,
-                            newRecord : oNewRecord
+                            operationName : 'edit',
+                            oldRecord     : oRecord,
+                            newRecord     : oNewRecord
                         }
                     ]
                 }
