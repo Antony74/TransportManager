@@ -102,6 +102,17 @@ function handleRequest(request, response)
         request.connection.end();     //close the socket
         request.connection.destroy(); //close it really
     }
+    else if (parsed.pathname == '/getIndices')
+    {
+        response.setHeader('Content-Type', 'application/json');
+        var oOutput = platform.getIndices();
+        
+        response.write(JSON.stringify(oOutput, null, 4));
+
+        response.end();
+        request.connection.end();     //close the socket
+        request.connection.destroy(); //close it really
+    }
     else if (parsed.pathname == '/updateDatabase')
     {
         var sPostedData = '';

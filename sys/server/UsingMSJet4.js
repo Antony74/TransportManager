@@ -98,6 +98,12 @@ function selectSql(obj)
     return result;
 }
 
+function getIndices()
+{
+    var result = dface.getIndices(sDatabaseFilename);
+    return result;
+}
+
 function updateDatabase(obj)
 {
     console.log(JSON.stringify(obj, null, 4));
@@ -140,11 +146,12 @@ function ensureShortcutExists()
 }
 
 //
-// Main exports
+// Exports
 //
 
 exports.ensureShortcutExists = ensureShortcutExists;
 exports.ensureDatabaseIsReady = ensureDatabaseIsReady;
 exports.selectSql = selectSql;
+exports.getIndices = getIndices;
 exports.updateDatabase = updateDatabase;
 
