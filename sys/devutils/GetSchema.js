@@ -89,7 +89,8 @@ function getTable(sDatabaseFilename, sTablename, oIndices)
 
         if (sPrimaryKey == sFieldname)
         {
-            typeInfo = "AUTOINCREMENT(1,1) NOT NULL PRIMARY KEY";
+            typeInfo  = "AUTOINCREMENT(1,1) NOT NULL,\r\n";
+            typeInfo += "    CONSTRAINT PrimaryKey PRIMARY KEY(" + sFieldname + ")";
         }
 
         arrFields.push("    " + sFieldname + " " + typeInfo);

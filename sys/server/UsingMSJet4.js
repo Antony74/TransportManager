@@ -27,31 +27,26 @@ function copyFile(source, target, doneCopying)
     streamIn.pipe(streamOut);
 }
 
-function runSQL(sFilenameSql, doneRunning)
+function runSQL(sFilenameSql)
 {
     console.log('Running ' + sFilenameSql);
 
     // Load the SQL
-    fs.readFile(sFilenameSql, function(err, sSql)
+    var sSql = fs.readFileSync(sFilenameSql);
+
+    var arrSql1 = String(sSql).split(';');
+    var arrSql2 = [];
+
+    for (var n = 0; n < arrSql1.length - 1; ++n)
     {
-        if (err) throw err;
-
-        var arrSql1 = String(sSql).split(';');
-        var arrSql2 = [];
-
-        for (var n = 0; n < arrSql1.length - 1; ++n)
+        var statement = arrSql1[n].trim();
+        if (statement.charAt(0) != '#')
         {
-            var statement = arrSql1[n].trim();
-            if (statement.charAt(0) != '#')
-            {
-                arrSql2.push(statement);
-            }
+            arrSql2.push(statement);
         }
+    }
 
-        dface.runSql(sDatabaseFilename, arrSql2);
-
-        doneRunning();
-    });
+    dface.runSql(sDatabaseFilename, arrSql2);
 }
 
 function ensureDatabaseIsReady(doneEnsuring)
@@ -63,8 +58,7 @@ function ensureDatabaseIsReady(doneEnsuring)
     {
         if (bExists)
         {
-            console.log('Database ready');
-            doneEnsuring();
+            ensureDatabaseIsUpgraded(doneEnsuring);
         }
         else
         {
@@ -73,14 +67,57 @@ function ensureDatabaseIsReady(doneEnsuring)
             // Copy empty database
             copyFile(sFilenameEmpty, sDatabaseFilename, function()
             {
-                runSQL(sFilenameSql, function()
-                {
-                    console.log('Database ready');
-                    doneEnsuring();
-                });
+                ensureDatabaseIsUpgraded(doneEnsuring);
             });
         }
     });
+}
+
+function ensureDatabaseIsUpgraded(doneEnsuring)
+{
+    var oIndices = dface.getIndices(sDatabaseFilename);
+
+    if (typeof oIndices.records == 'undefined')
+    {
+        console.log('Error getting information from database: ' + oIndices.Error);
+        doneEnsuring(false);
+        return;
+    }
+
+    var nUpgradeLevel = 0;
+
+    for (var nRecord in oIndices.records)
+    {
+        var oRecord = oIndices.records[nRecord];
+    
+        if (oRecord.TABLE_NAME == 'Clients')
+        {
+            nUpgradeLevel = Math.max(1, nUpgradeLevel);
+        }
+        
+        if (oRecord.TABLE_NAME == 'Drivers' && oRecord.COLUMN_NAME == 'DriverID' && oRecord.PRIMARY_KEY == true)
+        {
+            nUpgradeLevel = Math.max(2, nUpgradeLevel);
+        }
+    }
+
+    if (nUpgradeLevel > 0 && nUpgradeLevel < 2)
+    {
+        console.log('Upgrading database');
+    }
+
+    switch(nUpgradeLevel)
+    {
+    case 0:
+        runSQL(__dirname + '../../TransportManager.sql');
+        // Drop through!!1!
+    case 1:
+        runSQL(__dirname + '../../TransportManagerUpgrade1.sql');
+        // Drop through!!1!
+    }
+
+    console.log('Database ready');
+    doneEnsuring(true);
 }
 
 function selectSql(obj)

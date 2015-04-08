@@ -1,0 +1,2 @@
+
+ALTER TABLE Drivers ADD CONSTRAINT PrimaryKey PRIMARY KEY (DriverID);

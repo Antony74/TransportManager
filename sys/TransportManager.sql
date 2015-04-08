@@ -1,6 +1,7 @@
 
 CREATE TABLE Clients(
-    ClientID AUTOINCREMENT(1,1) NOT NULL PRIMARY KEY,
+    ClientID AUTOINCREMENT(1,1) NOT NULL,
+    CONSTRAINT PrimaryKey PRIMARY KEY(ClientID),
     Title TEXT(5),
     Firstname TEXT(15),
     Initial TEXT(1),
@@ -25,7 +26,8 @@ CREATE INDEX IsActive ON Clients(IsActive) WITH DISALLOW NULL;
 
 
 CREATE TABLE Destinations(
-    DestinationID AUTOINCREMENT(1,1) NOT NULL PRIMARY KEY,
+    DestinationID AUTOINCREMENT(1,1) NOT NULL,
+    CONSTRAINT PrimaryKey PRIMARY KEY(DestinationID),
     TypeID INTEGER,
     Name TEXT(30),
     AddressLine1 TEXT(25),
@@ -39,7 +41,8 @@ CREATE INDEX DestinationType ON Destinations(TypeID) WITH DISALLOW NULL;
 
 
 CREATE TABLE DestinationType(
-    DestinationTypeID AUTOINCREMENT(1,1) NOT NULL PRIMARY KEY,
+    DestinationTypeID AUTOINCREMENT(1,1) NOT NULL,
+    CONSTRAINT PrimaryKey PRIMARY KEY(DestinationTypeID),
     DestinationLevel1 TEXT(30),
     DestinationLevel2 TEXT(30));
 
@@ -93,7 +96,8 @@ CREATE INDEX ExpiryDate ON Drivers(ExpiryDate) WITH DISALLOW NULL;
 
 
 CREATE TABLE DriverVacation(
-    VacationID AUTOINCREMENT(1,1) NOT NULL PRIMARY KEY,
+    VacationID AUTOINCREMENT(1,1) NOT NULL,
+    CONSTRAINT PrimaryKey PRIMARY KEY(VacationID),
     VacationEntryDateTime DATE,
     DriverID INTEGER,
     VacationFrom DATE,
@@ -124,7 +128,8 @@ CREATE INDEX JobID ON JobLog(JobID) WITH DISALLOW NULL;
 
 
 CREATE TABLE Jobs(
-    JobID AUTOINCREMENT(1,1) NOT NULL PRIMARY KEY,
+    JobID AUTOINCREMENT(1,1) NOT NULL,
+    CONSTRAINT PrimaryKey PRIMARY KEY(JobID),
     JobEntryDateTime DATE,
     ClientID INTEGER,
     DestinationID INTEGER,

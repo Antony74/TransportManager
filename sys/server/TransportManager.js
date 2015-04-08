@@ -180,13 +180,22 @@ server.on('listening', function()
 {
     bServerIsRunning = true;
     process.stdout.write('Server has been started (' + sServerUrl + ')\r\n');
-    platform.ensureDatabaseIsReady(function()
+    platform.ensureDatabaseIsReady(function(bReady)
     {
+        if (bReady == false)
+        {
+            if (bServerIsRunning)
+            {
+                server.close();
+            }
+            return;
+        }
+    
         process.argv.forEach(function(sParam)
         {
             if (sParam.substring(0,1) == '-')
             {
-                switch(sParam.substring(1).toUpperCase())
+                switch(sParam.substring(1,2).toUpperCase())
                 {
                 case 'Q':
                     console.log('Quiting');
