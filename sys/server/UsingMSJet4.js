@@ -94,14 +94,9 @@ function ensureDatabaseIsUpgraded(doneEnsuring)
         {
             nUpgradeLevel = Math.max(1, nUpgradeLevel);
         }
-        
-        if (oRecord.TABLE_NAME == 'Drivers' && oRecord.COLUMN_NAME == 'DriverID' && oRecord.PRIMARY_KEY == true)
-        {
-            nUpgradeLevel = Math.max(2, nUpgradeLevel);
-        }
     }
 
-    if (nUpgradeLevel > 0 && nUpgradeLevel < 2)
+    if (nUpgradeLevel > 0 && nUpgradeLevel < 1)
     {
         console.log('Upgrading database');
     }
@@ -111,8 +106,8 @@ function ensureDatabaseIsUpgraded(doneEnsuring)
     case 0:
         runSQL(__dirname + '../../TransportManager.sql');
         // Drop through!!1!
-    case 1:
-        runSQL(__dirname + '../../TransportManagerUpgrade1.sql');
+//    case 1:
+//        runSQL(__dirname + '../../TransportManagerUpgrade1.sql');
         // Drop through!!1!
     }
 
