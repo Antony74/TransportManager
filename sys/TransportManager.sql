@@ -58,7 +58,7 @@ CREATE INDEX DriverID ON DriverExclusionList(DriverID) WITH DISALLOW NULL;
 
 
 CREATE TABLE Drivers(
-    DriverID INTEGER,
+    DriverID AUTOINCREMENT(1,1) NOT NULL,
     Title TEXT(6),
     Firstname TEXT(25),
     Surname TEXT(25),

@@ -92,6 +92,10 @@ function getTable(sDatabaseFilename, sTablename, oIndices)
             typeInfo  = "AUTOINCREMENT(1,1) NOT NULL,\r\n";
             typeInfo += "    CONSTRAINT PrimaryKey PRIMARY KEY(" + sFieldname + ")";
         }
+        else if (fld.ISAUTOINCREMENT == true)
+        {
+            typeInfo = "AUTOINCREMENT(1,1) NOT NULL";
+        }
 
         arrFields.push("    " + sFieldname + " " + typeInfo);
     }

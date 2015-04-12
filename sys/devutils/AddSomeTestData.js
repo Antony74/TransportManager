@@ -20,7 +20,6 @@ platform.ensureDatabaseIsReady(function()
 
     // Add one test client at a time in a loop of eight.  Though there shouldn't be anything to
     // stop us from batching up eight new test clients in a single updateDatabase call.
-
     for (var n = 0; n < 8; ++n)
     {
         platform.updateDatabase( 
@@ -37,6 +36,25 @@ platform.ensureDatabaseIsReady(function()
             }
         ]);
     }
+
+    // Add test drivers
+    for (var n = 0; n < 1; ++n)
+    {
+        platform.updateDatabase( 
+        [
+            {
+                table: 'Drivers',
+                operations:
+                [
+                    {
+                        operationName: 'add',
+                        newRecord: generateTestDriverFields()
+                    }
+                ]
+            }
+        ]);
+    }
+    
 });
 
 function generateTestClientFields()
@@ -56,6 +74,30 @@ function generateTestClientFields()
         EmailAddress : "",
         Notes        : "",
         IsActive     : true
+    };
+
+    return retval;
+}
+
+function generateTestDriverFields()
+{
+    var retval =
+    {
+        Title        : "",
+        Firstname    : faker.name.firstName(),
+        Surname      : faker.name.lastName(),
+        AddressLine1 : faker.address.streetAddress(),
+        AddressLine2 : "",
+        Town         : "Neverville",
+        Postcode     : "",
+        HomeNumber   : faker.phone.phoneNumber().substr(0,13),
+        MobileNumber : "",
+        EmailAddress : "",
+        Notes        : "",
+        IsActive     : true,
+        IsWheelchair : true,
+        DateofBirth  : new Date(1974, 12 - 1, 27),
+        ExpiryDate   : new Date(2016, 01 - 1, 31)
     };
 
     return retval;
