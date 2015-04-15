@@ -156,11 +156,14 @@ function generateDialog(sTablename)
             }
 
             var sInputAttributes = 'type="text"';
+            var sCalendarButton  = '';
+            
             var sDbType = arrFields[nFld].Type;
             
             if (sDbType == 'DATE')
             {
-                sInputAttributes = 'type="text" class="datepicker" style="width:85%"';
+                sInputAttributes = 'type="text" class="datetimepicker" style="width:85%"';
+                sCalendarButton  = '&nbsp;<img src="./ui-lightness/images/calendar.gif" id="' + sTablename + '_' + sFieldname + '_button" class="datetimepickerbutton" />';
             }
             else if (sDbType == 'YESNO')
             {
@@ -168,7 +171,7 @@ function generateDialog(sTablename)
             }
 
             sForm += '                <td>' + sFieldname + '</td>\r\n';
-            sForm += '                <td><input ' + sInputAttributes + ' id="' + sTablename + '_' + sFieldname + '" style="width:95%"/></td>\r\n';
+            sForm += '                <td><input ' + sInputAttributes + ' id="' + sTablename + '_' + sFieldname + '" style="width:95%"/>' + sCalendarButton + '</td>\r\n';
             
             ++nPairedCellCount;
         }

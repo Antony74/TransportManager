@@ -1,16 +1,33 @@
 ///<reference path='../interface/jqueryui.d.ts' />
+///<reference path='../interface/jquery.ui.datetimepicker.d.ts' />
 
 function createDialogHandler(doneFn)
 {
     $('#dialogs').load('raw/dialogs.html .dialogTemplate', function()
     {
-        $( ".datepicker" ).datepicker(
+        var bPickerShown = false;
+
+        $('.datetimepicker').datetimepicker(
             {
-                showOn: "button",
-                buttonImage: "ui-lightness/images/calendar.gif",
-                buttonImageOnly: true,
-                buttonText: "Select date"
+                onShow: function()  {bPickerShown = true;},
+                onClose: function() {bPickerShown = false;}
             });
+
+        $('.datetimepickerbutton').click(function()
+        {
+            var sID = '#' + this.id.substring(0, this.id.length - '_button'.length);
+
+            if (bPickerShown)
+            {
+                $(sID).datetimepicker('show');
+                bPickerShown = false;
+            }
+            else
+            {
+                $(sID).datetimepicker('hide');
+                bPickerShown = true;
+            }
+        });
     
         var nDialogWidth = 800;
         var nButtonWidth = 85;
