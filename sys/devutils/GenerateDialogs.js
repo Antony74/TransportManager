@@ -102,7 +102,7 @@ function generateDialog(sTablename)
     {
         'query'                : 'select * from ' + sTablename,
         'startRecord'          : 0,
-        'schemaLevel'          : 1,
+        'schemaLevel'          : 2,
         'databaseFilename'     : __dirname + '/../../TransportManager.mdb',
         'numberOfRecordsToGet' : 20
     };
@@ -138,6 +138,8 @@ function generateDialog(sTablename)
     sForm     += '    <form>\r\n';
     sForm     += '        <table style="width:100%">\r\n';
 
+    var nPairedCellCount = 0;
+
     for(var nFld = 0; nFld < arrFields.length; ++nFld)
     {
         var sFieldname = arrFields[nFld].name;
@@ -153,10 +155,32 @@ function generateDialog(sTablename)
                 sForm += '            <tr>\r\n';
             }
 
+            var sInputAttributes = 'type="text"';
+            var sDbType = arrFields[nFld].Type;
+            
+            if (sDbType == 'DATE')
+            {
+                sInputAttributes = 'type="text" class="datepicker" style="width:85%"';
+            }
+            else if (sDbType == 'YESNO')
+            {
+                sInputAttributes = 'type="checkbox" style="text-align:left"';
+            }
+
             sForm += '                <td>' + sFieldname + '</td>\r\n';
-            sForm += '                <td><input type="Text" id="' + sTablename + '_' + sFieldname + '" style="width:95%"/></td>\r\n';
+            sForm += '                <td><input ' + sInputAttributes + ' id="' + sTablename + '_' + sFieldname + '" style="width:95%"/></td>\r\n';
+            
+            ++nPairedCellCount;
         }
     }
+    
+    while (nPairedCellCount % nColumns)
+    {
+        sForm += '                <td>&nbsp;</td>\r\n';
+        sForm += '                <td>&nbsp;</td>\r\n';
+        ++nPairedCellCount;
+    }
+    
     sForm     += '            </tr>\r\n';
     sForm     += '        </table>\r\n';
 
@@ -164,13 +188,13 @@ function generateDialog(sTablename)
     {
         sForm += '        <table style="width:100%">\r\n';
         sForm += '            <tr>\r\n';
-        sForm += '              <td>Mon</td><td><input type="Text" id="Drivers_Mon" style="width:95%"/></td>\r\n';
-        sForm += '              <td>Tue</td><td><input type="Text" id="Drivers_Tue" style="width:95%"/></td>\r\n';
-        sForm += '              <td>Wed</td><td><input type="Text" id="Drivers_Wed" style="width:95%"/></td>\r\n';
-        sForm += '              <td>Thu</td><td><input type="Text" id="Drivers_Thu" style="width:95%"/></td>\r\n';
-        sForm += '              <td>Fri</td><td><input type="Text" id="Drivers_Fri" style="width:95%"/></td>\r\n';
-        sForm += '              <td>Sat</td><td><input type="Text" id="Drivers_Sat" style="width:95%"/></td>\r\n';
-        sForm += '              <td>Sun</td><td><input type="Text" id="Drivers_Sun" style="width:95%"/></td>\r\n';
+        sForm += '              <td>Mon</td><td><input type="checkbox" id="Drivers_Mon" style="width:95%"/></td>\r\n';
+        sForm += '              <td>Tue</td><td><input type="checkbox" id="Drivers_Tue" style="width:95%"/></td>\r\n';
+        sForm += '              <td>Wed</td><td><input type="checkbox" id="Drivers_Wed" style="width:95%"/></td>\r\n';
+        sForm += '              <td>Thu</td><td><input type="checkbox" id="Drivers_Thu" style="width:95%"/></td>\r\n';
+        sForm += '              <td>Fri</td><td><input type="checkbox" id="Drivers_Fri" style="width:95%"/></td>\r\n';
+        sForm += '              <td>Sat</td><td><input type="checkbox" id="Drivers_Sat" style="width:95%"/></td>\r\n';
+        sForm += '              <td>Sun</td><td><input type="checkbox" id="Drivers_Sun" style="width:95%"/></td>\r\n';
         sForm += '            </tr>\r\n';
         sForm += '        </table>\r\n';
     }

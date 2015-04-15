@@ -4,6 +4,14 @@ function createDialogHandler(doneFn)
 {
     $('#dialogs').load('raw/dialogs.html .dialogTemplate', function()
     {
+        $( ".datepicker" ).datepicker(
+            {
+                showOn: "button",
+                buttonImage: "ui-lightness/images/calendar.gif",
+                buttonImageOnly: true,
+                buttonText: "Select date"
+            });
+    
         var nDialogWidth = 800;
         var nButtonWidth = 85;
 
