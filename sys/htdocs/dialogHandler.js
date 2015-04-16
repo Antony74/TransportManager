@@ -5,29 +5,33 @@ function createDialogHandler(doneFn)
 {
     $('#dialogs').load('raw/dialogs.html .dialogTemplate', function()
     {
-        var bPickerShown = false;
+    	// Set up datetimepickers.  This would be one line of code - the rest is ensuring
+    	// they don't open automatically when you click on the date-time fields, but instead
+		// open when you click the little calendar buttons.
+        var sCurrentPickerButton = '';
+        var sOpenPickerButton = '';
 
         $('.datetimepicker').datetimepicker(
             {
-                onShow: function()  {bPickerShown = true;},
-                onClose: function() {bPickerShown = false;}
+                onShow:  function () { sOpenPickerButton = sCurrentPickerButton; },
+                onClose: function () { return (sOpenPickerButton != sCurrentPickerButton); }
             });
 
-        $('.datetimepickerbutton').click(function()
-        {
-            var sID = '#' + this.id.substring(0, this.id.length - '_button'.length);
+        $('.datetimepicker').off('open.xdsoft focusin.xdsoft mousedown.xdsoft');
 
-            if (bPickerShown)
-            {
-                $(sID).datetimepicker('show');
-                bPickerShown = false;
-            }
-            else
-            {
-                $(sID).datetimepicker('hide');
-                bPickerShown = true;
-            }
-        });
+        $('.datetimepickerbutton').mouseenter(function(event)
+        {
+        	sCurrentPickerButton = event.target.id;
+		}).mouseleave(function()
+		{
+			sCurrentPickerButton = '';
+		}).click(function ()
+        {
+			var sID = '#' + this.id.substring(0, this.id.length - '_button'.length);
+			sOpenPickerButton = '';
+			$(sID).datetimepicker('toggle');
+		});
+		// Done setting up datetimepickers
     
         var nDialogWidth = 800;
         var nButtonWidth = 85;
