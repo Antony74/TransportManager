@@ -179,20 +179,6 @@ function createDialogHandler(doneFn)
                 buttons       :
                 [
                     {
-                        text  : 'Apply',
-                        id    : 'dialogApply',
-                        class : 'leftButton',
-                        icons : {primary: 'ui-icon-check'},
-                        width : nButtonWidth,
-                        click : function()
-                        {
-                            if (bDialogButtonsEnabled)
-                            {
-                                commitChanges(false);
-                            }
-                        }
-                    },
-                    {
                         text  : 'OK',
                         id    : 'dialogOK',
                         icons : {primary: 'ui-icon-check'},
@@ -219,6 +205,19 @@ function createDialogHandler(doneFn)
                             }
                         }
                     },
+                    {
+                        text  : 'Apply',
+                        id    : 'dialogApply',
+                        icons : {primary: 'ui-icon-check'},
+                        width : nButtonWidth,
+                        click : function()
+                        {
+                            if (bDialogButtonsEnabled)
+                            {
+                                commitChanges(false);
+                            }
+                        }
+                    },
 
                 ],
             }).on('keydown', function(event)
@@ -232,8 +231,6 @@ function createDialogHandler(doneFn)
                 } 
             });
         });
-
-        $('.leftButton').css('margin-right', nDialogWidth - (nButtonWidth * 4.1));
 
         doneFn(
         {
