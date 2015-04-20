@@ -21,7 +21,7 @@ function createDialogHandler(doneFn)
 
         $('.datetimepickerbutton').mouseenter(function(event)
         {
-        	sCurrentPickerButton = event.target.id;
+        	sCurrentPickerButton = event.target['id'];
 		}).mouseleave(function()
 		{
 			sCurrentPickerButton = '';

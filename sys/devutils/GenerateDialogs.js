@@ -2,7 +2,7 @@
 
 var fs = require('fs');
 var dface = require('../server/node_modules/dface');
-var oTables = require('./Schema.js').getTables();
+var oTables = require('../htdocs/Schema.js').getTables();
 
 var out = fs.createWriteStream(__dirname + '/../htdocs/raw/dialogs.html');
 
@@ -163,7 +163,7 @@ function generateDialog(sTablename)
             if (sDbType == 'DATE')
             {
                 sInputAttributes = 'type="text" class="datetimepicker" style="width:85%"';
-                sCalendarButton  = '&nbsp;<img src="./ui-lightness/images/calendar.gif" id="' + sTablename + '_' + sFieldname + '_button" class="datetimepickerbutton" />';
+                sCalendarButton  = '&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="' + sTablename + '_' + sFieldname + '_button" class="datetimepickerbutton" />';
             }
             else if (sDbType == 'YESNO')
             {

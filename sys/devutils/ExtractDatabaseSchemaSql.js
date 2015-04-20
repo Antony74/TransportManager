@@ -1,8 +1,8 @@
 ///<reference path='../interface/node.d.ts' />
 
 var fs = require('fs');
-var schema = require('./Schema.js');
-var dface = require('../server/node_modules/dface');
+var schema = require('../htdocs/Schema.js');
+var dface =  require('../server/node_modules/dface');
 
 var arrPrimaryKeys = [];
 var arrIndices = [];
