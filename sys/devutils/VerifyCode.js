@@ -193,8 +193,8 @@ function fileExcluded(sFilename)
     ||   (sFilename.indexOf(sPathDest + '/devutils/node_modules/jison')          != -1)
     ||   (sFilename.indexOf(sPathDest + '/devutils/GenerateIcons/processing.ts') != -1)
     ||   (sFilename.indexOf(sPathDest + '/devutils/node_modules/faker')          != -1) 
-    ||   (sFilename.indexOf(sPathDest + '/htdocs/fullcalendar')                  != -1)
-    ||   (sFilename.indexOf(sPathDest + '/htdocs/jquery')                        != -1) )
+    ||   (sFilename.indexOf(sPathDest + '/htdocs/lib/fullcalendar')              != -1)
+    ||   (sFilename.indexOf(sPathDest + '/htdocs/lib/jquery')                    != -1) )
     {
         return true;
     }
