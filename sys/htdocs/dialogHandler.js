@@ -13,8 +13,12 @@ function createDialogHandler(doneFn)
 
         $('.datetimepicker').datetimepicker(
             {
-                onShow:  function () { sOpenPickerButton = sCurrentPickerButton; },
-                onClose: function () { return (sOpenPickerButton != sCurrentPickerButton); }
+                format     : 'd/m/Y H:i',
+                formatTime : 'H:i',
+                formatDate : 'd/m/Y',
+                yearStart  : 1900,
+                onShow     : function () { sOpenPickerButton = sCurrentPickerButton; },
+                onClose    : function () { return (sOpenPickerButton != sCurrentPickerButton); }
             });
 
         $('.datetimepicker').off('open.xdsoft focusin.xdsoft mousedown.xdsoft');
@@ -27,9 +31,11 @@ function createDialogHandler(doneFn)
 			sCurrentPickerButton = '';
 		}).click(function ()
         {
-			var sID = '#' + this.id.substring(0, this.id.length - '_button'.length);
 			sOpenPickerButton = '';
-			$(sID).datetimepicker('toggle');
+
+			var ctrl = $('#' + this.id.substring(0, this.id.length - '_button'.length));
+			ctrl.datetimepicker({value: ctrl.val()});
+			ctrl.datetimepicker('toggle');
 		});
 		// Done setting up datetimepickers
     

@@ -2,6 +2,7 @@
 ///<reference path='./dialogHandler.ts' />
 
 var dialogHandler = null;
+var currentFields = {};
 
 $(document).ready(function()
 {
@@ -90,9 +91,10 @@ function allReady()
 
             for (var sFieldname in oRecord)
             {
-                var sValue = oRecord[sFieldname];
+                var oValue = oRecord[sFieldname];
+                var input = $('#' + currentTable + '_' + sFieldname);
 
-                $('#' + currentTable + '_' + sFieldname).val(sValue);
+                input.val(currentFields[sFieldname].toDialogValue(oValue));
             }
 
             dialogHandler.doDialog(currentTable, oRecord, function(bChanged)
@@ -104,7 +106,8 @@ function allReady()
                     for (var sFieldName in oRecord)
                     {
                         arrFieldNames.push(sFieldName);
-                        oRecord[sFieldName] = $('#' + currentTable + '_' + sFieldName).val();
+                        var dialogValue = $('#' + currentTable + '_' + sFieldName).val();
+                        oRecord[sFieldName] = currentFields[sFieldName].fromDialogValue(dialogValue);
                     }
 
                     var oRow = $('#mainDataTable tr:nth-child(' + nRow + ')');
@@ -112,22 +115,11 @@ function allReady()
                     oRow.find('td').each(function()
                     {
                         var sFieldName = arrFieldNames.shift();
-                        $(this).html(fieldValueAsHtml(oRecord[sFieldName]));
+                        var value = oRecord[sFieldName];
+                        $(this).html(currentFields[sFieldName].toHtmlValue(value));
                     });
                 }
             });
-        }
-    }
-
-    function fieldValueAsHtml(value)
-    {
-        if (value === null || value === '')
-        {
-            return '&nbsp;';
-        }
-        else
-        {
-            return value;
         }
     }
 
@@ -143,9 +135,9 @@ function allReady()
             
             for(var fld in rs)
             {
-                var value = rs[fld];
+                var htmlValue = currentFields[fld].toHtmlValue(rs[fld]);
 
-                sHtml += '<td>' + fieldValueAsHtml(value) + '</td>\n';
+                sHtml += '<td>' + htmlValue + '</td>\n';
             }
 
             sHtml += '</tr>\n';
@@ -229,13 +221,103 @@ function allReady()
 
             if (root['startRecord'] == 0)
             {
-                var arrFields  = root['fields'];
+                var arrFields = root['fields'];
                 
                 sTableHeader = '<tr>\n';
 
+                currentFields = {};
+
                 for(var nFld in arrFields)
                 {
-                    sTableHeader += '<th style="width:' + arrFields[nFld].width + '">' + arrFields[nFld].name + '</th>\n';
+                    var fld = arrFields[nFld];
+                    sTableHeader += '<th style="width:' + fld.width + '">' + fld.name + '</th>\n';
+                    
+                    var converter = {};
+
+                    if (fld['Type'] == 'DATE')
+                    {
+                        function pad(value)
+                        {
+                            var s = value.toString();
+                        
+                            if (s.length == 1)
+                            {
+                                s = '0' + s;
+                            }
+                            
+                            return s;
+                        }
+                    
+                        function getDDMMYYYY(dateValue)
+                        {
+                            return pad(dateValue.getDate()) + '/' + pad(dateValue.getMonth() + 1) + '/' + dateValue.getFullYear();
+                        }
+
+                        function getHHMM(dateValue)
+                        {
+                            return pad(dateValue.getHours()) + ':' + pad(dateValue.getMinutes());
+                        }
+
+                        converter.toHtmlValue = function(value)
+                        {
+                            var dateValue = new Date(value);
+                            return getDDMMYYYY(dateValue) + '&nbsp;' + getHHMM(dateValue);
+                        }
+
+                        converter.toDialogValue = function(value)
+                        {
+                            var dateValue = new Date(value);
+                            return getDDMMYYYY(dateValue) + ' ' + getHHMM(dateValue);
+                        }
+
+                        converter.fromDialogValue = function(dv)
+                        {
+                            return dv;
+                        }
+                    }
+                    else
+                    {
+                        converter.toDialogValue = function(value)
+                        {
+                            return value;
+                        }
+
+                        converter.fromDialogValue = function(dv)
+                        {
+                            return dv;
+                        }
+
+                        if (fld['Type'] == 'YESNO')
+                        {
+                            converter.toHtmlValue = function(value)
+                            {
+                                if (value)
+                                {
+                                    return '&#x2714'; // Tick
+                                }
+                                else
+                                {
+                                    return '&#x2716'; // Cross
+                                }
+                            }
+                        }
+                        else
+                        {
+                            converter.toHtmlValue = function(value)
+                            {
+                                if (value === null || value === '')
+                                {
+                                    return '&nbsp;';
+                                }
+                                else
+                                {
+                                    return this.toDialogValue(value);
+                                }
+                            }
+                        }
+                    }
+                    
+                    currentFields[fld.name] = converter;
                 }
 
                 sTableHeader += '</tr>\n';
@@ -279,7 +361,7 @@ function allReady()
         currentSortAscending = true;
         sTableHeader = '';
 
-        $.getJSON('selectSql?schemaLevel=1&query=' + encodeURIComponent(currentQuery), gotJSON);
+        $.getJSON('selectSql?schemaLevel=2&query=' + encodeURIComponent(currentQuery), gotJSON);
     }
 
     function beginPopulateJobs()
