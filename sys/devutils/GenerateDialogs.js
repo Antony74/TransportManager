@@ -179,8 +179,7 @@ function generateDialog(sTablename)
     
     while (nPairedCellCount % nColumns)
     {
-        sForm += '                <td>&nbsp;</td>\r\n';
-        sForm += '                <td>&nbsp;</td>\r\n';
+        sForm += '                <td colspan="2">&nbsp;</td>\r\n';
         ++nPairedCellCount;
     }
     

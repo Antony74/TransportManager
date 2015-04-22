@@ -7,14 +7,27 @@ platform.ensureDatabaseIsReady(function()
 {
     // Ensure there isn't already client data in this database
     
-    var existing = platform.selectSql(
+    var existingClients = platform.selectSql(
     {
         query: 'select * from clients'
     });
 
-    if (existing.records.length != 0)
+    if (existingClients.records.length != 0)
     {
         console.log('This database already contains clients');
+        return;
+    }
+
+    // Ensure there isn't already driver data in this database
+    
+    var existingDrivers = platform.selectSql(
+    {
+        query: 'select * from drivers'
+    });
+
+    if (existingDrivers.records.length != 0)
+    {
+        console.log('This database already contains drivers');
         return;
     }
 
@@ -96,8 +109,8 @@ function generateTestDriverFields()
         Notes        : "",
         IsActive     : true,
         IsWheelchair : true,
-        DateofBirth  : new Date(1974, 12 - 1, 27),
-        ExpiryDate   : new Date(2016, 01 - 1, 31)
+        DateofBirth  : (new Date(1974, 12 - 1, 27)).getTime(),
+        ExpiryDate   : (new Date(2016, 01 - 1, 31)).getTime()
     };
 
     return retval;
