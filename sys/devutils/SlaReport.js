@@ -167,27 +167,56 @@ function reportCount(arrRecords, sFieldname)
         arrRows.push([sFirstCell, sSecondCell]);
     }
 
-    if (arrRows.length >= 2)
+    return arrRows.sort(function(row1, row2)
     {
-        if (arrRows[0][0].indexOf('Cancelled') != -1 || arrRows[0][0].indexOf('No') != -1)
-        {
-            var swap = arrRows[0];
-            arrRows[0] = arrRows[1];
-            arrRows[1] = swap;
-        }
-    }
+        var arrSpecialOrdering =
+        [
+            'Closed',
+            'Primary Medical Care',
+            'Secondary Medical Care',
+            '*',
+            'Yes',
+            'No',
+            'Dr.',
+            'Miscellaneous',
+            'Total'
+        ];
 
-    if (arrRows.length >= 3 && sFemaleTitles.length)
-    {
-        if (arrRows[2][0].indexOf(sFemaleTitles) != -1)
-        {
-            var swap = arrRows[1];
-            arrRows[1] = arrRows[2];
-            arrRows[2] = swap;
-        }
-    }
+        var n1 = arrSpecialOrdering.indexOf(row1[0]);
+        var n2 = arrSpecialOrdering.indexOf(row2[0]);
+        var nOther = arrSpecialOrdering.indexOf('*');
 
-    return arrRows;
+        if (n1 == -1)
+        {
+            n1 = nOther;
+        }
+
+        if (n2 == -1)
+        {
+            n2 = nOther;
+        }
+
+        if (n1 < n2)
+        {
+            return -1;
+        }
+        else if (n1 > n2)
+        {
+            return 1;
+        }
+        else if (row1[0] < row2[0])
+        {
+            return -1;
+        }
+        else if (row1[0] > row2[0])
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    });
 }
 
 function reportHtml(oJsonReport)
