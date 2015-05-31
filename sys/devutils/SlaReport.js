@@ -1,31 +1,56 @@
 ///<reference path='../interface/node.d.ts' />
 
-var dface =  require('../server/node_modules/dface');
-var sDatabaseFilename = __dirname + "/../../TransportManager.mdb";
-
 console.log('\r\nDidcot Volunteer Centre\r\n\r\n');
 
+//
 // Cache the destination types
-var oResult = selectSql('SELECT DestinationTypeID, DestinationLevel1 from DestinationType');
-
-var oDestinationTypes = {};
-
-for (var n = 0; n < oResult.records.length; ++n)
+//
+var oDestinationTypes = (function(selectSql)
 {
-    var oRecord = oResult.records[n];
-    oDestinationTypes[oRecord.DestinationTypeID] = oRecord.DestinationLevel1;
-}
-// Done caching the destination types
+    var oResult = selectSql('SELECT DestinationTypeID, DestinationLevel1 FROM DestinationType');
 
-report('2014/04/01', '2014/06/30');
-report('2014/07/01', '2014/09/30');
-report('2014/10/01', '2014/12/31');
+    var oDestinationTypes = {};
+
+    for (var n = 0; n < oResult.records.length; ++n)
+    {
+        var oRecord = oResult.records[n];
+        oDestinationTypes[oRecord.DestinationTypeID] = oRecord.DestinationLevel1;
+    }
+
+    return oDestinationTypes;
+})(simpleSelectSql);
 
 //
-// selectSql - a simplification of what dface provides because in this context we don't need any of its flexibility
+// Generate report
 //
-function selectSql(sSql)
+
+var oJsonReport = 
 {
+    periodStart        : [],
+    periodEnd          : [],
+    jobStatus          : [],
+    clientTitle        : [],
+    isOneWay           : [],
+    involvesWheelchair : [],
+    typeOfDestination  : []
+};
+
+report('2014/04/01', '2014/06/30', oJsonReport, simpleSelectSql);
+report('2014/07/01', '2014/09/30', oJsonReport, simpleSelectSql);
+report('2014/10/01', '2014/12/31', oJsonReport, simpleSelectSql);
+
+console.log(JSON.stringify(oJsonReport, null, 4));
+
+console.log(reportHtml(oJsonReport));
+
+//
+// simpleSelectSql - a simplification of what dface provides because in this context we don't need any of its flexibility
+//
+function simpleSelectSql(sSql)
+{
+    var dface =  require('../server/node_modules/dface');
+    var sDatabaseFilename = __dirname + "/../../TransportManager.mdb";
+
     var oResult = dface.selectSql(
     {
         'databaseFilename'      : sDatabaseFilename,
@@ -46,9 +71,11 @@ function selectSql(sSql)
 //
 // report
 //
-function report(sPeriodStart, sPeriodEnd)
+function report(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
 {
     console.log('Jobs in period ' + sPeriodStart + ' - ' + sPeriodEnd + ' (inclusive):');
+    oJsonReport.periodStart.push(sPeriodStart);
+    oJsonReport.periodEnd.push(sPeriodEnd);
 
     var sPeriodSubQuery = 'JobAppointmentDateTime > #' + sPeriodStart + ' 00:00# AND JobAppointmentDateTime < #' + sPeriodEnd + ' 23:59#';
 
@@ -56,7 +83,7 @@ function report(sPeriodStart, sPeriodEnd)
 
     var oResult = selectSql(sStatusQuery);
 
-    reportCount(oResult.records, 'status');
+    oJsonReport.jobStatus.push(reportCount(oResult.records, 'status'));
 
     console.log('(The rest of the report for this period only considers the "Closed" jobs)');
 
@@ -76,13 +103,13 @@ function report(sPeriodStart, sPeriodEnd)
 
     console.log('');
     console.log("Client's title");
-    reportCount(oResult.records, 'Title');
+    oJsonReport.clientTitle.push(reportCount(oResult.records, 'Title'));
     console.log('Job is one way?');
-    reportCount(oResult.records, 'IsJobOneWay');
+    oJsonReport.isOneWay.push(reportCount(oResult.records, 'IsJobOneWay'));
     console.log('Job involves a wheelchair?');
-    reportCount(oResult.records, 'Wheelchair');
+    oJsonReport.involvesWheelchair.push(reportCount(oResult.records, 'Wheelchair'));
     console.log('Type of destination');
-    reportCount(oResult.records, 'DestinationTypeID');
+    oJsonReport.typeOfDestination.push(reportCount(oResult.records, 'DestinationTypeID'));
     console.log('');
 }
 
@@ -132,25 +159,26 @@ function reportCount(arrRecords, sFieldname)
     oResult['Total'] = arrRecords.length;
 
     var arrLines = [];
+    var arrRows = [];
 
     for (var sFieldvalue in oResult)
     {
-        var sLine = '';
+        var sFirstCell = '';
 
         if (sFieldvalue == 'true' || sFieldvalue == '65535')
         {
-            sLine = 'Yes';
+            sFirstCell = 'Yes';
         }
         else if (sFieldvalue == 'false' || sFieldvalue == '0')
         {
-            sLine = 'No';
+            sFirstCell = 'No';
         }
         else
         {
-            sLine = sFieldvalue;
+            sFirstCell = sFieldvalue;
         }
 
-        sLine += ':';
+        var sLine = sFirstCell + ':';
 
         while (sLine.length < 24)
         {
@@ -158,6 +186,9 @@ function reportCount(arrRecords, sFieldname)
         }
 
         arrLines.push('    ' + sLine + oResult[sFieldvalue]);
+        var sSecondCell = oResult[sFieldvalue];
+
+        arrRows.push([sFirstCell, sSecondCell]);
     }
 
     if (arrLines.length >= 2)
@@ -167,6 +198,10 @@ function reportCount(arrRecords, sFieldname)
             var swap = arrLines[0];
             arrLines[0] = arrLines[1];
             arrLines[1] = swap;
+
+            swap = arrRows[0];
+            arrRows[0] = arrRows[1];
+            arrRows[1] = swap;
         }
     }
 
@@ -177,6 +212,10 @@ function reportCount(arrRecords, sFieldname)
             var swap = arrLines[1];
             arrLines[1] = arrLines[2];
             arrLines[2] = swap;
+
+            swap = arrRows[1];
+            arrRows[1] = arrRows[2];
+            arrRows[2] = swap;
         }
     }
 
@@ -186,5 +225,191 @@ function reportCount(arrRecords, sFieldname)
     }
 
     console.log('');
+
+    return arrRows;
+}
+
+function reportHtml(oJsonReport)
+{
+    var nColCount = oJsonReport.periodStart.length + 1;
+
+    var sHtml = '<!DOCTYPE html>                        \r\n'
+              + '<html>                                 \r\n'
+              + '<head>                                 \r\n'
+              + '    <title>SLA Report</title>          \r\n'
+              + '    <style>                            \r\n'
+              + '        table, td, th                  \r\n'
+              + '        {                              \r\n'
+              + '            border: 1px solid black;   \r\n'
+              + '            border-collapse: collapse; \r\n'
+              + '            padding: 5px;              \r\n'
+              + '        }                              \r\n'
+              + '        th, .firstColumn               \r\n'
+              + '        {                              \r\n'
+              + '            background-color: lightgray\r\n'
+              + '        }                              \r\n'
+              + '        .subheading                    \r\n'
+              + '        {                              \r\n'
+              + '            font-weight: bold;         \r\n'
+              + '            background-color: yellow   \r\n'
+              + '        }                              \r\n'
+              + '    </style>                           \r\n'
+              + '</head>                                \r\n'
+              + '<body>                                 \r\n'
+              + '    <table>                            \r\n';
+
+    //
+    // Display the time periods that this report relates to
+    //
+
+    sHtml    += '        <tr>                                    \r\n'
+              + '            <td class="firstColumn">&nbsp;</td> \r\n';
+
+    for (var n = 0; n < oJsonReport.periodStart.length; ++n)
+    {
+        var sPeriod = reverseDateFormat(oJsonReport.periodStart[n]) + ' - ' + reverseDateFormat(oJsonReport.periodEnd[n]);
+        sHtml += '            <th>' + sPeriod + '</th>\r\n'
+    }
+
+    sHtml += '        </tr>                  \r\n'
+
+    //
+    // Done displaying time periods
+    //
+
+    sHtml +=reportSubHeading('Jobs in period', nColCount);
+    sHtml += reportHtmlRow(oJsonReport.jobStatus);
+
+    sHtml +=reportSubHeading('Now considering only "Closed" jobs', nColCount);
+
+    sHtml +=reportSubHeading("Client's title", nColCount);
+    sHtml += reportHtmlRow(oJsonReport.clientTitle);
+
+    sHtml +=reportSubHeading("Job is one way?", nColCount);
+    sHtml += reportHtmlRow(oJsonReport.isOneWay);
+
+    sHtml +=reportSubHeading("Job involves a wheelchair?", nColCount);
+    sHtml += reportHtmlRow(oJsonReport.involvesWheelchair);
+
+    sHtml +=reportSubHeading("Type of destination", nColCount);
+    sHtml += reportHtmlRow(oJsonReport.typeOfDestination);
+
+    //
+    // And now just finish off
+    //
+
+    sHtml    += '    </table>                  \r\n'
+              + '</body>                       \r\n'
+              + '</html>                       \r\n';
+
+    return sHtml;
+}
+
+function reportSubHeading(sSubHeading, nColCount)
+{
+    return '        <tr>                       \r\n'
+    +      '            <td class="subheading" colspan="' + nColCount + '"> \r\n'
+    +      '                ' + sSubHeading + '\r\n'
+    +      '            </td>                  \r\n'
+    +      '        </tr>                      \r\n';
+}
+
+function reportHtmlRow(oSummaryItem)
+{
+    var arrRowHeadings = [];
+
+    for (var nPeriod = 0; nPeriod < oSummaryItem.length; ++nPeriod)
+    {
+        var arr = [];
+        var oRows = oSummaryItem[nPeriod];
+        
+        for (var nRow = 0; nRow < oRows.length; ++nRow)
+        {
+            arr.push(oRows[nRow][0]);
+        }
+
+        arrRowHeadings = merge(arr, arrRowHeadings);
+    }
+
+    var sHtml = '';
+
+    for (var nRow = 0; nRow < arrRowHeadings.length; ++nRow)
+    {
+        var sHeading = arrRowHeadings[nRow];
+        sHtml += '        <tr>\r\n'
+        sHtml += '            <td class="firstColumn">' + sHeading + '</td>\r\n';
+
+        for (var nPeriod = 0; nPeriod < oSummaryItem.length; ++nPeriod)
+        {
+            var oRows = oSummaryItem[nPeriod];
+            var nValue = 0;
+
+            for (var nRow2 = 0; nRow2 < oRows.length; ++nRow2)
+            {
+
+                if (oRows[nRow2][0] == sHeading)
+                {
+                    nValue = oRows[nRow2][1];
+                }
+            }
+
+            sHtml += '            <td>' + nValue + '</td>\r\n';
+        }
+
+        sHtml += '        </tr>\r\n';
+    }
+
+    return sHtml;
+}
+
+function merge(arr1, arr2)
+{
+    var arrMerged = [];
+
+    var n1 = 0;
+    var n2 = 0;
+
+    while (n1 < arr1.length || n2 < arr2.length)
+    {
+        if (n1 >= arr1.length)
+        {
+            arrMerged.push(arr2[n2]);
+            ++n2;
+        }
+        else if (n2 >= arr2.length)
+        {
+            arrMerged.push(arr1[n1]);
+            ++n1;
+        }
+        else if (arr1[n1] == arr2[n2])
+        {
+            arrMerged.push(arr1[n1]);
+            ++n1;
+            ++n2;
+        }
+        else
+        {
+            var n1in2 = arr2.indexOf(arr1[n1], n2);
+            var n2in1 = arr1.indexOf(arr2[n2], n1);
+
+            if (n1in2 - n2 > n2in1 - n1)
+            {
+                arrMerged.push(arr2[n2]);
+                ++n2;
+            }
+            else
+            {
+                arrMerged.push(arr1[n1]);
+                ++n1;
+            }
+        }
+    }
+
+    return arrMerged;
+}
+
+function reverseDateFormat(sDate)
+{
+    return sDate.split('/').reverse().join('/');
 }
 
