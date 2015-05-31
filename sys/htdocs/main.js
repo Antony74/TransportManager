@@ -258,38 +258,38 @@ function allReady()
                             return pad(dateValue.getHours()) + ':' + pad(dateValue.getMinutes());
                         }
 
-                        converter.toHtmlValue = function(value)
+                        converter['toHtmlValue'] = function(value)
                         {
                             var dateValue = new Date(value);
                             return getDDMMYYYY(dateValue) + '&nbsp;' + getHHMM(dateValue);
                         }
 
-                        converter.toDialogValue = function(value)
+                        converter['toDialogValue'] = function(value)
                         {
                             var dateValue = new Date(value);
                             return getDDMMYYYY(dateValue) + ' ' + getHHMM(dateValue);
                         }
 
-                        converter.fromDialogValue = function(dv)
+                        converter['fromDialogValue'] = function(dv)
                         {
                             return dv;
                         }
                     }
                     else
                     {
-                        converter.toDialogValue = function(value)
+                        converter['toDialogValue'] = function(value)
                         {
                             return value;
                         }
 
-                        converter.fromDialogValue = function(dv)
+                        converter['fromDialogValue'] = function(dv)
                         {
                             return dv;
                         }
 
                         if (fld['Type'] == 'YESNO')
                         {
-                            converter.toHtmlValue = function(value)
+                            converter['toHtmlValue'] = function(value)
                             {
                                 if (value)
                                 {
@@ -303,7 +303,7 @@ function allReady()
                         }
                         else
                         {
-                            converter.toHtmlValue = function(value)
+                            converter['toHtmlValue'] = function(value)
                             {
                                 if (value === null || value === '')
                                 {
