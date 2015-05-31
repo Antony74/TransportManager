@@ -1,7 +1,5 @@
 ///<reference path='../interface/node.d.ts' />
 
-console.log('\r\nDidcot Volunteer Centre\r\n\r\n');
-
 //
 // Cache the destination types
 //
@@ -39,8 +37,6 @@ report('2014/04/01', '2014/06/30', oJsonReport, simpleSelectSql);
 report('2014/07/01', '2014/09/30', oJsonReport, simpleSelectSql);
 report('2014/10/01', '2014/12/31', oJsonReport, simpleSelectSql);
 
-console.log(JSON.stringify(oJsonReport, null, 4));
-
 console.log(reportHtml(oJsonReport));
 
 //
@@ -73,7 +69,6 @@ function simpleSelectSql(sSql)
 //
 function report(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
 {
-    console.log('Jobs in period ' + sPeriodStart + ' - ' + sPeriodEnd + ' (inclusive):');
     oJsonReport.periodStart.push(sPeriodStart);
     oJsonReport.periodEnd.push(sPeriodEnd);
 
@@ -84,8 +79,6 @@ function report(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
     var oResult = selectSql(sStatusQuery);
 
     oJsonReport.jobStatus.push(reportCount(oResult.records, 'status'));
-
-    console.log('(The rest of the report for this period only considers the "Closed" jobs)');
 
     var sSql = 'SELECT JobIsDVOWheelchair OR Clients.IsWheelchair AS Wheelchair, IsJobOneWay, Clients.Title, Destinations.TypeID AS DestinationTypeID'
              + ' FROM (jobs'
@@ -101,22 +94,14 @@ function report(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
         oRecord.DestinationTypeID = oDestinationTypes[oRecord.DestinationTypeID];
     }
 
-    console.log('');
-    console.log("Client's title");
     oJsonReport.clientTitle.push(reportCount(oResult.records, 'Title'));
-    console.log('Job is one way?');
     oJsonReport.isOneWay.push(reportCount(oResult.records, 'IsJobOneWay'));
-    console.log('Job involves a wheelchair?');
     oJsonReport.involvesWheelchair.push(reportCount(oResult.records, 'Wheelchair'));
-    console.log('Type of destination');
     oJsonReport.typeOfDestination.push(reportCount(oResult.records, 'DestinationTypeID'));
-    console.log('');
 }
 
 function reportCount(arrRecords, sFieldname)
 {
-    console.log('');
-
     var oResult = {};
 
     for (var n = 0; n < arrRecords.length; ++n)
@@ -158,7 +143,6 @@ function reportCount(arrRecords, sFieldname)
 
     oResult['Total'] = arrRecords.length;
 
-    var arrLines = [];
     var arrRows = [];
 
     for (var sFieldvalue in oResult)
@@ -178,53 +162,30 @@ function reportCount(arrRecords, sFieldname)
             sFirstCell = sFieldvalue;
         }
 
-        var sLine = sFirstCell + ':';
-
-        while (sLine.length < 24)
-        {
-            sLine += ' ';
-        }
-
-        arrLines.push('    ' + sLine + oResult[sFieldvalue]);
         var sSecondCell = oResult[sFieldvalue];
 
         arrRows.push([sFirstCell, sSecondCell]);
     }
 
-    if (arrLines.length >= 2)
+    if (arrRows.length >= 2)
     {
-        if (arrLines[0].indexOf('Cancelled:') != -1 || arrLines[0].indexOf('No:') != -1)
+        if (arrRows[0][0].indexOf('Cancelled') != -1 || arrRows[0][0].indexOf('No') != -1)
         {
-            var swap = arrLines[0];
-            arrLines[0] = arrLines[1];
-            arrLines[1] = swap;
-
-            swap = arrRows[0];
+            var swap = arrRows[0];
             arrRows[0] = arrRows[1];
             arrRows[1] = swap;
         }
     }
 
-    if (arrLines.length >= 3 && sFemaleTitles.length)
+    if (arrRows.length >= 3 && sFemaleTitles.length)
     {
-        if (arrLines[2].indexOf(sFemaleTitles) != -1)
+        if (arrRows[2][0].indexOf(sFemaleTitles) != -1)
         {
-            var swap = arrLines[1];
-            arrLines[1] = arrLines[2];
-            arrLines[2] = swap;
-
-            swap = arrRows[1];
+            var swap = arrRows[1];
             arrRows[1] = arrRows[2];
             arrRows[2] = swap;
         }
     }
-
-    for (var n = 0; n < arrLines.length; ++n)
-    {
-        console.log(arrLines[n]);
-    }
-
-    console.log('');
 
     return arrRows;
 }
@@ -236,7 +197,7 @@ function reportHtml(oJsonReport)
     var sHtml = '<!DOCTYPE html>                        \r\n'
               + '<html>                                 \r\n'
               + '<head>                                 \r\n'
-              + '    <title>SLA Report</title>          \r\n'
+              + '    <title>DVC - SLA Report</title>    \r\n'
               + '    <style>                            \r\n'
               + '        table, td, th                  \r\n'
               + '        {                              \r\n'
