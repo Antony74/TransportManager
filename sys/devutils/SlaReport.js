@@ -33,9 +33,9 @@ var oJsonReport =
     typeOfDestination  : []
 };
 
-report('2014/04/01', '2014/06/30', oJsonReport, simpleSelectSql);
-report('2014/07/01', '2014/09/30', oJsonReport, simpleSelectSql);
-report('2014/10/01', '2014/12/31', oJsonReport, simpleSelectSql);
+reportGeneratePeriod('2014/04/01', '2014/06/30', oJsonReport, simpleSelectSql);
+reportGeneratePeriod('2014/07/01', '2014/09/30', oJsonReport, simpleSelectSql);
+reportGeneratePeriod('2014/10/01', '2014/12/31', oJsonReport, simpleSelectSql);
 
 console.log(reportHtml(oJsonReport));
 
@@ -65,9 +65,9 @@ function simpleSelectSql(sSql)
 }
 
 //
-// report
+// reportGeneratePeriod
 //
-function report(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
+function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
 {
     oJsonReport.periodStart.push(sPeriodStart);
     oJsonReport.periodEnd.push(sPeriodEnd);
@@ -78,7 +78,7 @@ function report(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
 
     var oResult = selectSql(sStatusQuery);
 
-    oJsonReport.jobStatus.push(reportCount(oResult.records, 'status'));
+    oJsonReport.jobStatus.push(reportCountValues(oResult.records, 'status'));
 
     var sSql = 'SELECT JobIsDVOWheelchair OR Clients.IsWheelchair AS Wheelchair, IsJobOneWay, Clients.Title, Destinations.TypeID AS DestinationTypeID'
              + ' FROM (jobs'
@@ -94,96 +94,109 @@ function report(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
         oRecord.DestinationTypeID = oDestinationTypes[oRecord.DestinationTypeID];
     }
 
-    oJsonReport.clientTitle.push(reportCount(oResult.records, 'Title'));
-    oJsonReport.isOneWay.push(reportCount(oResult.records, 'IsJobOneWay'));
-    oJsonReport.involvesWheelchair.push(reportCount(oResult.records, 'Wheelchair'));
-    oJsonReport.typeOfDestination.push(reportCount(oResult.records, 'DestinationTypeID'));
+    var oSummaryOfClientTitles = reportCountValues(oResult.records, 'Title');
+    combineSummaryRecords(oSummaryOfClientTitles, ['Mrs.', 'Miss.', 'Ms'], '');
+    oJsonReport.clientTitle.push(oSummaryOfClientTitles);
+
+    oJsonReport.isOneWay.push(reportCountValues(oResult.records, 'IsJobOneWay'));
+    oJsonReport.involvesWheelchair.push(reportCountValues(oResult.records, 'Wheelchair'));
+    oJsonReport.typeOfDestination.push(reportCountValues(oResult.records, 'DestinationTypeID'));
 }
 
-function reportCount(arrRecords, sFieldname)
+//
+// reportCountValues
+//
+function reportCountValues(arrRecords, sFieldname)
 {
-    var oResult = {};
+    var oSummaryRecord = {};
 
     for (var n = 0; n < arrRecords.length; ++n)
     {
-        var sFieldvalue = arrRecords[n][sFieldname];
+        var sThingToCount = arrRecords[n][sFieldname];
 
-        if (typeof oResult[sFieldvalue] == 'undefined')
+        if (sThingToCount == true || sThingToCount == '65535')
         {
-            oResult[sFieldvalue] = 1;
+            sThingToCount = 'Yes';
+        }
+        else if (sThingToCount == false || sThingToCount == '0')
+        {
+            sThingToCount = 'No';
+        }
+
+        if (typeof oSummaryRecord[sThingToCount] == 'undefined')
+        {
+            oSummaryRecord[sThingToCount] = 1;
         }
         else
         {
-            ++oResult[sFieldvalue];
+            ++oSummaryRecord[sThingToCount];
         }
     }
 
-    var nFemaleTitleCount = 0;
-    var arrFemaleTitlesPresent = [];
-    var arrFemaleTitles = ['Mrs.', 'Ms.', 'Miss'];
+    oSummaryRecord['Total'] = arrRecords.length;
 
-    for (var n = 0; n < arrFemaleTitles.length; ++n)
+    return oSummaryRecord;
+}
+
+//
+// combineSummaryRecords
+//
+function combineSummaryRecords(oSummaryRecord, arrHeadingsToCombine, sCombinedHeading)
+{
+    var nCombinedValue = 0;
+    var arrHeadingsPresent = [];
+
+    for (var n = 0; n < arrHeadingsToCombine.length; ++n)
     {
-        var sTitle = arrFemaleTitles[n];
+        var sHeading = arrHeadingsToCombine[n];
 
-        if (typeof oResult[sTitle] != 'undefined')
+        if (typeof oSummaryRecord[sHeading] != 'undefined')
         {
-            nFemaleTitleCount += oResult[sTitle];
-            arrFemaleTitlesPresent.push(sTitle);
-            delete oResult[sTitle];
+            nCombinedValue += oSummaryRecord[sHeading];
+            arrHeadingsPresent.push(sHeading);
+            delete oSummaryRecord[sHeading];
         }
     }
 
-    var sFemaleTitles = arrFemaleTitlesPresent.join('/');
-
-    if (nFemaleTitleCount > 0)
+    if (sCombinedHeading == '')
     {
-        oResult[sFemaleTitles] = nFemaleTitleCount;
+        sCombinedHeading = arrHeadingsPresent.join('/');
     }
 
-    oResult['Total'] = arrRecords.length;
-
-    var arrRows = [];
-
-    for (var sFieldvalue in oResult)
+    if (nCombinedValue > 0)
     {
-        var sFirstCell = '';
+        oSummaryRecord[sCombinedHeading] = nCombinedValue;
+    }
+}
 
-        if (sFieldvalue == 'true' || sFieldvalue == '65535')
-        {
-            sFirstCell = 'Yes';
-        }
-        else if (sFieldvalue == 'false' || sFieldvalue == '0')
-        {
-            sFirstCell = 'No';
-        }
-        else
-        {
-            sFirstCell = sFieldvalue;
-        }
-
-        var sSecondCell = oResult[sFieldvalue];
-
-        arrRows.push([sFirstCell, sSecondCell]);
+//
+// sortRowHeaders
+//
+function sortRowHeaders(rows)
+{
+    // Perhaps we've been passed an object which needs to be converted to an array?
+    if (!Array.isArray(rows))
+    {
+        rows = Object.keys(rows);
     }
 
-    return arrRows.sort(function(row1, row2)
-    {
-        var arrSpecialOrdering =
-        [
-            'Closed',
-            'Primary Medical Care',
-            'Secondary Medical Care',
-            '*',
-            'Yes',
-            'No',
-            'Dr.',
-            'Miscellaneous',
-            'Total'
-        ];
+    var arrSpecialOrdering =
+    [
+        'Closed',
+        'Primary Medical Care',
+        'Secondary Medical Care',
+        '*',
+        'Yes',
+        'No',
+        'Dr.',
+        'Miscellaneous',
+        'Total'
+    ];
 
-        var n1 = arrSpecialOrdering.indexOf(row1[0]);
-        var n2 = arrSpecialOrdering.indexOf(row2[0]);
+    return rows.sort(function(row1, row2)
+    {
+        var n1 = arrSpecialOrdering.indexOf(row1);
+        var n2 = arrSpecialOrdering.indexOf(row2);
         var nOther = arrSpecialOrdering.indexOf('*');
 
         if (n1 == -1)
@@ -204,11 +217,11 @@ function reportCount(arrRecords, sFieldname)
         {
             return 1;
         }
-        else if (row1[0] < row2[0])
+        else if (row1 < row2)
         {
             return -1;
         }
-        else if (row1[0] > row2[0])
+        else if (row1 > row2)
         {
             return 1;
         }
@@ -219,6 +232,9 @@ function reportCount(arrRecords, sFieldname)
     });
 }
 
+//
+// reportHtml
+//
 function reportHtml(oJsonReport)
 {
     var nColCount = oJsonReport.periodStart.length + 1;
@@ -295,6 +311,9 @@ function reportHtml(oJsonReport)
     return sHtml;
 }
 
+//
+// reportSubHeading
+//
 function reportSubHeading(sSubHeading, nColCount)
 {
     return '        <tr>                       \r\n'
@@ -304,43 +323,43 @@ function reportSubHeading(sSubHeading, nColCount)
     +      '        </tr>                      \r\n';
 }
 
-function reportHtmlRow(oSummaryItem)
+//
+// reportHtmlRow
+//
+function reportHtmlRow(arrSummaryRecords)
 {
-    var arrRowHeadings = [];
+    var oRowHeadings = {};
 
-    for (var nPeriod = 0; nPeriod < oSummaryItem.length; ++nPeriod)
+    // Collect row headings from all periods
+    for (var nPeriod = 0; nPeriod < arrSummaryRecords.length; ++nPeriod)
     {
-        var arr = [];
-        var oRows = oSummaryItem[nPeriod];
+        var arrHeadings = Object.keys(arrSummaryRecords[nPeriod]);
         
-        for (var nRow = 0; nRow < oRows.length; ++nRow)
+        for (var nHeading = 0; nHeading < arrHeadings.length; ++nHeading)
         {
-            arr.push(oRows[nRow][0]);
+            var sHeading = arrHeadings[nHeading];
+            oRowHeadings[sHeading] = sHeading;
         }
-
-        arrRowHeadings = merge(arr, arrRowHeadings);
     }
+
+    var arrRowHeadings = sortRowHeaders(oRowHeadings);
 
     var sHtml = '';
 
     for (var nRow = 0; nRow < arrRowHeadings.length; ++nRow)
     {
-        var sHeading = arrRowHeadings[nRow];
+        var sRowHeading = arrRowHeadings[nRow];
         sHtml += '        <tr>\r\n'
-        sHtml += '            <td class="firstColumn">' + sHeading + '</td>\r\n';
+        sHtml += '            <td class="firstColumn">' + sRowHeading + '</td>\r\n';
 
-        for (var nPeriod = 0; nPeriod < oSummaryItem.length; ++nPeriod)
+        for (var nPeriod = 0; nPeriod < arrSummaryRecords.length; ++nPeriod)
         {
-            var oRows = oSummaryItem[nPeriod];
+            var oRows = arrSummaryRecords[nPeriod];
             var nValue = 0;
 
-            for (var nRow2 = 0; nRow2 < oRows.length; ++nRow2)
+            if (typeof oRows[sRowHeading] != 'undefined')
             {
-
-                if (oRows[nRow2][0] == sHeading)
-                {
-                    nValue = oRows[nRow2][1];
-                }
+                nValue = oRows[sRowHeading];
             }
 
             sHtml += '            <td>' + nValue + '</td>\r\n';
@@ -352,52 +371,9 @@ function reportHtmlRow(oSummaryItem)
     return sHtml;
 }
 
-function merge(arr1, arr2)
-{
-    var arrMerged = [];
-
-    var n1 = 0;
-    var n2 = 0;
-
-    while (n1 < arr1.length || n2 < arr2.length)
-    {
-        if (n1 >= arr1.length)
-        {
-            arrMerged.push(arr2[n2]);
-            ++n2;
-        }
-        else if (n2 >= arr2.length)
-        {
-            arrMerged.push(arr1[n1]);
-            ++n1;
-        }
-        else if (arr1[n1] == arr2[n2])
-        {
-            arrMerged.push(arr1[n1]);
-            ++n1;
-            ++n2;
-        }
-        else
-        {
-            var n1in2 = arr2.indexOf(arr1[n1], n2);
-            var n2in1 = arr1.indexOf(arr2[n2], n1);
-
-            if (n1in2 - n2 > n2in1 - n1)
-            {
-                arrMerged.push(arr2[n2]);
-                ++n2;
-            }
-            else
-            {
-                arrMerged.push(arr1[n1]);
-                ++n1;
-            }
-        }
-    }
-
-    return arrMerged;
-}
-
+//
+// reverseDateFormat
+//
 function reverseDateFormat(sDate)
 {
     return sDate.split('/').reverse().join('/');
