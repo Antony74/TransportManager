@@ -26,6 +26,7 @@ var oJsonReport =
 {
     periodStart        : [],
     periodEnd          : [],
+    uniqueClients      : [],
     jobStatus          : [],
     clientTitle        : [],
     isOneWay           : [],
@@ -37,6 +38,8 @@ var oJsonReport =
 reportGeneratePeriod('2014/04/01', '2014/06/30', oJsonReport, simpleSelectSql);
 reportGeneratePeriod('2014/07/01', '2014/09/30', oJsonReport, simpleSelectSql);
 reportGeneratePeriod('2014/10/01', '2014/12/31', oJsonReport, simpleSelectSql);
+
+reportUniqueClients(oJsonReport, simpleSelectSql);
 
 console.log(reportHtml(oJsonReport));
 
@@ -66,6 +69,14 @@ function simpleSelectSql(sSql)
 }
 
 //
+// getPeriodSubQuery
+//
+function getPeriodSubQuery(sPeriodStart, sPeriodEnd)
+{
+    return '(JobAppointmentDateTime > #' + sPeriodStart + ' 00:00# AND JobAppointmentDateTime < #' + sPeriodEnd + ' 23:59#)';
+}
+
+//
 // reportGeneratePeriod
 //
 function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
@@ -73,7 +84,7 @@ function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
     oJsonReport.periodStart.push(sPeriodStart);
     oJsonReport.periodEnd.push(sPeriodEnd);
 
-    var sPeriodSubQuery = 'JobAppointmentDateTime > #' + sPeriodStart + ' 00:00# AND JobAppointmentDateTime < #' + sPeriodEnd + ' 23:59#';
+    var sPeriodSubQuery = getPeriodSubQuery(sPeriodStart, sPeriodEnd);
 
     var sStatusQuery = 'SELECT status FROM jobs WHERE ' + sPeriodSubQuery;
 
@@ -112,6 +123,31 @@ function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
     combineSummaryRecords(oPurposeOfJourney, ['Primary Medical Care', 'Secondary Medical Care'], 'Medical/Hospital');
     combineSummaryRecords(oPurposeOfJourney, ['Miscellaneous', '- New Destination -'], 'Other');
     oJsonReport.purposeOfJourney.push(oPurposeOfJourney);
+}
+
+//
+// reportUniqueClients
+//
+function reportUniqueClients(oJsonReport, selectSql)
+{
+    var sSql = 'SELECT COUNT(ClientID) FROM Clients WHERE ClientID IN (SELECT ClientID FROM jobs WHERE ';
+
+    var arrPeriodSubQueries = [];
+    for (var nPeriod = 0; nPeriod < oJsonReport.periodStart.length; ++nPeriod)
+    {
+        var sPeriodSubQuery = getPeriodSubQuery(oJsonReport.periodStart[nPeriod], oJsonReport.periodEnd[nPeriod]);
+        arrPeriodSubQueries.push(sPeriodSubQuery);
+
+        var oResult = selectSql(sSql + sPeriodSubQuery + ')');
+        var oRecord = oResult['records'][0];
+        var nUniqueClients = oRecord[Object.keys(oRecord)[0]];
+        oJsonReport.uniqueClients.push(nUniqueClients);
+    }
+
+    var oResult = selectSql(sSql + arrPeriodSubQueries.join(' OR ') + ')');
+    var oRecord = oResult['records'][0];
+    var nUniqueClients = oRecord[Object.keys(oRecord)[0]];
+    oJsonReport.uniqueClients.push(nUniqueClients);
 }
 
 //
@@ -296,6 +332,16 @@ function reportHtml(oJsonReport)
     //
     // Done displaying time periods
     //
+
+    sHtml += reportSubHeading('Number of clients travelling at least once', nColCount);
+
+    sHtml += '        <tr>\r\n'
+    sHtml += '            <td class="firstColumn">Number of clients travelling at least once</td>\r\n';
+    for (var nPeriod = 0; nPeriod < oJsonReport.uniqueClients.length; ++nPeriod)
+    {
+        sHtml += '            <td>' + oJsonReport.uniqueClients[nPeriod] + '</td>\r\n';
+    }
+    sHtml += '        </tr>\r\n'
 
     sHtml += reportSubHeading('Jobs in period', nColCount);
     sHtml += reportHtmlRow(oJsonReport.jobStatus);
