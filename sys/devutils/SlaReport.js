@@ -95,7 +95,7 @@ function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
     }
 
     var oSummaryOfClientTitles = reportCountValues(oResult.records, 'Title');
-    combineSummaryRecords(oSummaryOfClientTitles, ['Mrs.', 'Miss.', 'Ms'], '');
+    combineSummaryRecords(oSummaryOfClientTitles, ['Mrs.', 'Miss.', 'Ms.'], '');
     oJsonReport.clientTitle.push(oSummaryOfClientTitles);
 
     oJsonReport.isOneWay.push(reportCountValues(oResult.records, 'IsJobOneWay'));
