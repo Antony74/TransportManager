@@ -30,7 +30,8 @@ var oJsonReport =
     clientTitle        : [],
     isOneWay           : [],
     involvesWheelchair : [],
-    typeOfDestination  : []
+    typeOfDestination  : [],
+    purposeOfJourney   : []
 };
 
 reportGeneratePeriod('2014/04/01', '2014/06/30', oJsonReport, simpleSelectSql);
@@ -98,9 +99,19 @@ function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
     combineSummaryRecords(oSummaryOfClientTitles, ['Mrs.', 'Miss.', 'Ms.'], '');
     oJsonReport.clientTitle.push(oSummaryOfClientTitles);
 
-    oJsonReport.isOneWay.push(reportCountValues(oResult.records, 'IsJobOneWay'));
+    var oSummaryIsJobOneWay = reportCountValues(oResult.records, 'IsJobOneWay');
+    oSummaryIsJobOneWay['Total client journey-legs'] = oSummaryIsJobOneWay['Yes'] + (2 * oSummaryIsJobOneWay['No']);
+    oJsonReport.isOneWay.push(oSummaryIsJobOneWay);
     oJsonReport.involvesWheelchair.push(reportCountValues(oResult.records, 'Wheelchair'));
-    oJsonReport.typeOfDestination.push(reportCountValues(oResult.records, 'DestinationTypeID'));
+
+    var oSummaryDestinations = reportCountValues(oResult.records, 'DestinationTypeID');
+    var oPurposeOfJourney = JSON.parse(JSON.stringify(oSummaryDestinations)); // Clone oSummaryDestinations
+    oJsonReport.typeOfDestination.push(oSummaryDestinations);
+
+    combineSummaryRecords(oPurposeOfJourney, ['Shops', 'Social/Leisure', 'Visiting'], 'Shopping/Social');
+    combineSummaryRecords(oPurposeOfJourney, ['Primary Medical Care', 'Secondary Medical Care'], 'Medical/Hospital');
+    combineSummaryRecords(oPurposeOfJourney, ['Miscellaneous', '- New Destination -'], 'Other');
+    oJsonReport.purposeOfJourney.push(oPurposeOfJourney);
 }
 
 //
@@ -190,7 +201,9 @@ function sortRowHeaders(rows)
         'No',
         'Dr.',
         'Miscellaneous',
-        'Total'
+        'Other',
+        'Total',
+        'Total client journey-legs'
     ];
 
     return rows.sort(function(row1, row2)
@@ -237,7 +250,7 @@ function sortRowHeaders(rows)
 //
 function reportHtml(oJsonReport)
 {
-    var nColCount = oJsonReport.periodStart.length + 1;
+    var nColCount = oJsonReport.periodStart.length + 2;
 
     var sHtml = '<!DOCTYPE html>                        \r\n'
               + '<html>                                 \r\n'
@@ -274,31 +287,35 @@ function reportHtml(oJsonReport)
     for (var n = 0; n < oJsonReport.periodStart.length; ++n)
     {
         var sPeriod = reverseDateFormat(oJsonReport.periodStart[n]) + ' - ' + reverseDateFormat(oJsonReport.periodEnd[n]);
-        sHtml += '            <th>' + sPeriod + '</th>\r\n'
+        sHtml += '            <th>' + sPeriod + '</th>           \r\n';
     }
 
-    sHtml += '        </tr>                  \r\n'
+    sHtml += '            <th>Total</th>                         \r\n';
+    sHtml += '        </tr>                                      \r\n';
 
     //
     // Done displaying time periods
     //
 
-    sHtml +=reportSubHeading('Jobs in period', nColCount);
+    sHtml += reportSubHeading('Jobs in period', nColCount);
     sHtml += reportHtmlRow(oJsonReport.jobStatus);
 
-    sHtml +=reportSubHeading('Now considering only "Closed" jobs', nColCount);
+    sHtml += reportSubHeading('Now considering only "Closed" jobs', nColCount);
 
-    sHtml +=reportSubHeading("Client's title", nColCount);
+    sHtml += reportSubHeading("Client's title", nColCount);
     sHtml += reportHtmlRow(oJsonReport.clientTitle);
 
-    sHtml +=reportSubHeading("Job is one way?", nColCount);
+    sHtml += reportSubHeading("Job is one way?", nColCount);
     sHtml += reportHtmlRow(oJsonReport.isOneWay);
 
-    sHtml +=reportSubHeading("Job involves a wheelchair?", nColCount);
+    sHtml += reportSubHeading("Job involves a wheelchair?", nColCount);
     sHtml += reportHtmlRow(oJsonReport.involvesWheelchair);
 
-    sHtml +=reportSubHeading("Type of destination", nColCount);
+    sHtml += reportSubHeading("Type of destination", nColCount);
     sHtml += reportHtmlRow(oJsonReport.typeOfDestination);
+
+    sHtml += reportSubHeading("Purpose of journey", nColCount);
+    sHtml += reportHtmlRow(oJsonReport.purposeOfJourney);
 
     //
     // And now just finish off
@@ -352,6 +369,8 @@ function reportHtmlRow(arrSummaryRecords)
         sHtml += '        <tr>\r\n'
         sHtml += '            <td class="firstColumn">' + sRowHeading + '</td>\r\n';
 
+        var nTotal = 0;
+
         for (var nPeriod = 0; nPeriod < arrSummaryRecords.length; ++nPeriod)
         {
             var oRows = arrSummaryRecords[nPeriod];
@@ -362,9 +381,12 @@ function reportHtmlRow(arrSummaryRecords)
                 nValue = oRows[sRowHeading];
             }
 
+            nTotal += nValue;
+
             sHtml += '            <td>' + nValue + '</td>\r\n';
         }
 
+        sHtml += '            <td>' + nTotal + '</td>\r\n';
         sHtml += '        </tr>\r\n';
     }
 
