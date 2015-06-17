@@ -92,7 +92,7 @@ function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
 
     oJsonReport.jobStatus.push(reportCountValues(oResult.records, 'status'));
 
-    var sSql = 'SELECT JobIsDVOWheelchair OR Clients.IsWheelchair AS Wheelchair, IsJobOneWay, Clients.Title, Destinations.TypeID AS DestinationTypeID'
+    var sSql = 'SELECT JobIsDVOWheelchair OR Clients.IsWheelchair AS Wheelchair, IsJobOneWay, Clients.Title, Clients.Firstname, Clients.Surname, Destinations.TypeID AS DestinationTypeID'
              + ' FROM (jobs'
              + ' INNER JOIN Clients ON jobs.ClientID = Clients.ClientID)'
              + ' INNER JOIN Destinations ON jobs.DestinationID = Destinations.DestinationID'
@@ -107,6 +107,25 @@ function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, selectSql)
     }
 
     var oSummaryOfClientTitles = reportCountValues(oResult.records, 'Title');
+
+    for (var nJob = 0; nJob < oResult.records.length; ++nJob)
+    {
+        var sTitle = oResult.records[nJob]['Title'];
+
+        // If title does not imply gender...
+        if (sTitle != 'Mr.' && sTitle != 'Mrs.' && sTitle != 'Miss.' && sTitle != 'Ms.')
+        {
+            // ...we need to display the clients name in the report...
+            var sFirstname = oResult.records[nJob]['Firstname'];
+            var sSurname = oResult.records[nJob]['Surname'];
+            
+            // ...but it does need to be asterisked out while we're still discussing the report via e-mail
+            var sFullName = [sTitle, asterisk(sFirstname), asterisk(sSurname)].join(' ');
+
+            oSummaryOfClientTitles[sTitle] += '<BR/> ' + sFullName;
+        }
+    }
+
     combineSummaryRecords(oSummaryOfClientTitles, ['Mrs.', 'Miss.', 'Ms.'], '');
     oJsonReport.clientTitle.push(oSummaryOfClientTitles);
 
@@ -298,6 +317,7 @@ function reportHtml(oJsonReport)
               + '            border: 1px solid black;   \r\n'
               + '            border-collapse: collapse; \r\n'
               + '            padding: 5px;              \r\n'
+              + '            vertical-align: top;       \r\n'
               + '        }                              \r\n'
               + '        th, .firstColumn               \r\n'
               + '        {                              \r\n'
@@ -427,9 +447,15 @@ function reportHtmlRow(arrSummaryRecords)
                 nValue = oRows[sRowHeading];
             }
 
-            nTotal += nValue;
-
             sHtml += '            <td>' + nValue + '</td>\r\n';
+
+            var sSplit = nValue.toString().split('<BR');
+            if (sSplit.length > 1)
+            {
+                nValue = parseInt(sSplit[0]);
+            }
+
+            nTotal += nValue;
         }
 
         sHtml += '            <td>' + nTotal + '</td>\r\n';
@@ -445,5 +471,14 @@ function reportHtmlRow(arrSummaryRecords)
 function reverseDateFormat(sDate)
 {
     return sDate.split('/').reverse().join('/');
+}
+
+//
+// asterisk
+//
+
+function asterisk(s)
+{
+    return Array(s.length + 1).join('*');
 }
 
