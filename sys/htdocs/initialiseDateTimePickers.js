@@ -22,9 +22,26 @@ function initialiseDateTimePickers(oExtraOptions)
         onClose    : function () { return (sOpenPickerButton != sCurrentPickerButton); }
     };
 
+    // Add oExtraOptions to oOptions replacing any existing options, except where we have two function - it's nice that we can call both! :-)
     for (var key in oExtraOptions)
     {
-        oOptions[key] = oExtraOptions[key];
+        var fn1 = oOptions[key];
+        var fn2 = oExtraOptions[key];
+
+        if ( $.isFunction(fn1) && $.isFunction(fn2) )
+        {
+            var fnCombined = function()
+            {
+                fn1.apply(this, fnCombined.arguments);
+                fn2.apply(this, fnCombined.arguments);
+            };
+
+             oOptions[key] = fnCombined;
+        }
+        else
+        {
+            oOptions[key] = oExtraOptions[key];
+        }
     }
 
     $('.datetimepicker').datetimepicker(oOptions);

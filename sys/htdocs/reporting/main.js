@@ -6,7 +6,11 @@ $(document).ready(function()
     initialiseDateTimePickers(
     {
         timepicker : false,
-        format     : 'd/m/Y'
+        format     : 'd/m/Y',
+        onShow: function(date, input, event)
+        {
+            onShowDate(input.context.id);
+        }
     });
 
     // Try to provide sensible default dates.  Most likely we will want to generate a
@@ -21,7 +25,7 @@ $(document).ready(function()
     case 0:
     case 1:
     case 2:
-        startOfPreviousQuarter = new Date(now.getFullYear() - 1, 8, 1);
+        startOfPreviousQuarter = new Date(now.getFullYear() - 1, 9, 1);
         break;
     case 3:
     case 4:
@@ -31,12 +35,12 @@ $(document).ready(function()
     case 6:
     case 7:
     case 8:
-        startOfPreviousQuarter = new Date(now.getFullYear(), 2, 1);
+        startOfPreviousQuarter = new Date(now.getFullYear(), 3, 1);
         break;
     case 9:
     case 10:
     case 11:
-        startOfPreviousQuarter = new Date(now.getFullYear(), 5, 1);
+        startOfPreviousQuarter = new Date(now.getFullYear(), 6, 1);
         break;
     }
 
@@ -59,9 +63,9 @@ $(document).ready(function()
     {
         var arrSpans = [];
 
-        for (var n = 1; n <= 4; ++n)
+        for (var nSpan = 1; nSpan <= 4; ++nSpan)
         {
-            var retval = validateDateSpan('SLA' + n + 'Start', 'SLA' + n + 'End');
+            var retval = validateDateSpan('SLA' + nSpan + 'Start', 'SLA' + nSpan + 'End');
 
             if (retval.bValid == true)
             {
@@ -69,7 +73,7 @@ $(document).ready(function()
             }
             else if (retval.bValid == false)
             {
-                alert('In span ' + n + ': ' + retval.sMessage);
+                alert('In span ' + nSpan + ': ' + retval.sMessage);
                 return;
             }
             else
@@ -187,6 +191,89 @@ function validateDateSpan(sFromID, sToID)
     else
     {
         return {bValid: true, sMessage: "", dateFrom: dateFrom, dateTo: dateTo};
+    }
+}
+
+function getMonthSpan(sFromID, sToID)
+{
+    var dateFrom = parseDate($('#' + sFromID).val());
+    var dateTo   = parseDate($('#' + sToID  ).val());
+
+    if (dateFrom == null || dateTo == null)
+    {
+        return null;
+    }
+
+    dateTo = addDays(1, dateTo);
+
+    if (dateFrom.getDate() != dateTo.getDate())
+    {
+        return null; // Not a whole number of calander months
+    }
+    else
+    {
+        return dateTo.getMonth() - dateFrom.getMonth() + 12 * (dateTo.getFullYear() - dateFrom.getFullYear());
+    }
+}
+
+//
+// onShowDate
+//
+
+function onShowDate(sID)
+{
+    if (sID.substring(0,3) == 'SLA')
+    {
+        var nMonthSpan = null;
+
+        for (var nSpan = 1; nSpan <= 4; ++nSpan)
+        {
+            var nCurrentMonthSpan = getMonthSpan('SLA' + nSpan + 'Start', 'SLA' + nSpan + 'End');
+
+            if (nCurrentMonthSpan != null)
+            {
+                if (nMonthSpan != null && nMonthSpan != nCurrentMonthSpan)
+                {
+                    return; // Not much chance of doing something helpful with an inconsistent month-span
+                }
+
+                nMonthSpan = nCurrentMonthSpan;
+            }
+        }
+
+        if (nMonthSpan != null)
+        {
+            var datePrev = null;
+
+            for (var nSpan = 3; nSpan >= 1; --nSpan)
+            {
+                var date = parseDate($('#SLA' + (nSpan+1) + 'Start').val());
+                if (date == null)
+                {
+                    date = datePrev;
+                }
+
+                if (date != null)
+                {
+                    var spanStart = addMonths(-nMonthSpan, date);
+                    var spanEnd   = addDays(-1, date);
+
+                    var sStartID = 'SLA' + nSpan + 'Start';
+                    var sEndID   = 'SLA' + nSpan + 'End';
+
+                    if (sID == sStartID)
+                    {
+                        $('#' + sStartID).datetimepicker({value: spanStart});
+                    }
+                    else if (sID == sEndID)
+                    {
+                        $('#' + sEndID  ).datetimepicker({value: spanEnd  });
+                    }
+
+                    datePrev = spanStart;
+                }
+            }
+        }
     }
 }
 
