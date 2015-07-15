@@ -34,18 +34,35 @@ function runSQL(sFilenameSql)
     // Load the SQL
     var sSql = fs.readFileSync(sFilenameSql);
 
-    var arrSql1 = String(sSql).split(';');
-    var arrSql2 = [];
+    // Strip line comments
+    var arrLines = String(sSql).split("\n");
+    sSql = "";
 
-    for (var n = 0; n < arrSql1.length - 1; ++n)
+    for (var n = 0; n < arrLines.length; ++n)
     {
-        var statement = arrSql1[n].trim();
-        if (statement.charAt(0) != '#')
+        var sLine = arrLines[n].trim();
+        if (sLine.charAt(0) != '#')
         {
-            arrSql2.push(statement);
+            sSql += sLine;
         }
     }
 
+    // Split into statements
+    var arrSql1 = String(sSql).split(';');
+    var arrSql2 = [];
+
+    // Remove empty statements
+    for (var n = 0; n < arrSql1.length; ++n)
+    {
+        var sStatement = arrSql1[n].trim();
+        
+        if (sStatement.length)
+        {
+            arrSql2.push(sStatement);
+        }
+    }
+
+    // Run them
     dface.runSql(sDatabaseFilename, arrSql2);
 }
 
@@ -94,6 +111,10 @@ function ensureDatabaseIsUpgraded(doneEnsuring)
         {
             nUpgradeLevel = Math.max(1, nUpgradeLevel);
         }
+        else if (oRecord.TABLE_NAME == 'ClientsEx')
+        {
+            nUpgradeLevel = Math.max(2, nUpgradeLevel);
+        }
     }
 
     if (nUpgradeLevel > 0 && nUpgradeLevel < 1)
@@ -106,8 +127,8 @@ function ensureDatabaseIsUpgraded(doneEnsuring)
     case 0:
         runSQL(__dirname + '../../TransportManager.sql');
         // Drop through!!1!
-//    case 1:
-//        runSQL(__dirname + '../../TransportManagerUpgrade1.sql');
+    case 1:
+        runSQL(__dirname + '../../TransportManagerUpgrade1.sql');
         // Drop through!!1!
     }
 

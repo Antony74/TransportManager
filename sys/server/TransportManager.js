@@ -38,7 +38,6 @@ var http = require('http');
 var url = require('url');
 var static = require('node-static');
 var platform = require('./UsingMSJet4.js');
-var parser = require('./SelectStatementParser.js');
 var server = null;
 var port = 8080;
 var sServerUrl = 'http://localhost:' + port + '/';
@@ -73,30 +72,14 @@ function handleRequest(request, response)
 
         response.setHeader('Content-Type', 'application/json');
 
-        var bParsedOK = false;
-
-        try
+        var oOutput = platform.selectSql(
         {
-            parser.parse(sQuery.toLowerCase());
-            bParsedOK = true;
-        }
-        catch(e)
-        {
-            var oError = {'Error': e.toString()};
-            response.write(JSON.stringify(oError, null, 4));
-        }
-
-        if (bParsedOK)
-        {
-            var oOutput = platform.selectSql(
-            {
-                'query'       : sQuery,
-                'startRecord' : nStartRecord,
-                'schemaLevel' : nSchemaLevel
-            });
+            'query'       : sQuery,
+            'startRecord' : nStartRecord,
+            'schemaLevel' : nSchemaLevel
+        });
             
-            response.write(JSON.stringify(oOutput, null, 4));
-        }
+        response.write(JSON.stringify(oOutput, null, 4));
 
         response.end();
         request.connection.end();     //close the socket
