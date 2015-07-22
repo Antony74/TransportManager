@@ -88,7 +88,17 @@ $(document).ready(function()
         }
         else
         {
-            alert( arrSpans.length + ' valid date spans.  Antony is still working on the SLA report');
+            slaReport(arrSpans, function(sError)
+            {
+                alert(sError);
+            }, function(sReportText)
+            {
+                var w = window.open();
+                if (w)
+                {
+                    $(w.document.body).append(sReportText);
+                }
+            });
         }
     });
 
