@@ -1,5 +1,6 @@
 ///<reference path='../initialiseDateTimePickers.ts' />
 ///<reference path='../../interface/jquery.ui.datetimepicker.d.ts' />
+///<reference path='./SlaReport.ts' />
 
 $(document).ready(function()
 {

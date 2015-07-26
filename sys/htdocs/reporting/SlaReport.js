@@ -1,3 +1,4 @@
+///<reference path='../../interface/jquery.d.ts' />
 
 function slaReport(arrSpans, fnFailed, fnDone)
 {
@@ -207,7 +208,11 @@ function slaReport(arrSpans, fnFailed, fnDone)
             arrPeriodSubQueries.push(sPeriodSubQuery);
         }
 
-        arrPeriodSubQueries.push(arrPeriodSubQueries.join(' OR '));
+        // If there's more than one then we also need the total
+        if (arrPeriodSubQueries.length > 1)
+        {
+            arrPeriodSubQueries.push(arrPeriodSubQueries.join(' OR '));
+        }
 
         subquery();
 
@@ -369,7 +374,18 @@ function slaReport(arrSpans, fnFailed, fnDone)
     //
     function reportHtml(oJsonReport)
     {
-        var nColCount = oJsonReport.periodStart.length + 2;
+        var bShowTotals;
+        var nColCount = oJsonReport.periodStart.length + 1;
+
+        if (oJsonReport.periodStart.length <= 1)
+        {
+            bShowTotals = false;
+        }
+        else
+        {
+            bShowTotals = true;
+            ++nColCount;
+        }
 
         var sHtml = '<!DOCTYPE html>                        \r\n'
                   + '<html>                                 \r\n'
@@ -410,7 +426,11 @@ function slaReport(arrSpans, fnFailed, fnDone)
             sHtml += '            <th>' + sPeriod + '</th>           \r\n';
         }
 
-        sHtml += '            <th>Total</th>                         \r\n';
+        if (bShowTotals)
+        {
+            sHtml += '            <th>Total</th>                     \r\n';
+        }
+
         sHtml += '        </tr>                                      \r\n';
 
         //
@@ -428,24 +448,24 @@ function slaReport(arrSpans, fnFailed, fnDone)
         sHtml += '        </tr>\r\n'
 
         sHtml += reportSubHeading('Jobs in period', nColCount);
-        sHtml += reportHtmlRow(oJsonReport.jobStatus);
+        sHtml += reportHtmlRow(oJsonReport.jobStatus, bShowTotals);
 
         sHtml += reportSubHeading('Now considering only "Closed" jobs', nColCount);
 
         sHtml += reportSubHeading("Client's title", nColCount);
-        sHtml += reportHtmlRow(oJsonReport.clientTitle);
+        sHtml += reportHtmlRow(oJsonReport.clientTitle, bShowTotals);
 
         sHtml += reportSubHeading("Job is one way?", nColCount);
-        sHtml += reportHtmlRow(oJsonReport.isOneWay);
+        sHtml += reportHtmlRow(oJsonReport.isOneWay, bShowTotals);
 
         sHtml += reportSubHeading("Job involves a wheelchair?", nColCount);
-        sHtml += reportHtmlRow(oJsonReport.involvesWheelchair);
+        sHtml += reportHtmlRow(oJsonReport.involvesWheelchair, bShowTotals);
 
         sHtml += reportSubHeading("Type of destination", nColCount);
-        sHtml += reportHtmlRow(oJsonReport.typeOfDestination);
+        sHtml += reportHtmlRow(oJsonReport.typeOfDestination, bShowTotals);
 
         sHtml += reportSubHeading("Purpose of journey", nColCount);
-        sHtml += reportHtmlRow(oJsonReport.purposeOfJourney);
+        sHtml += reportHtmlRow(oJsonReport.purposeOfJourney, bShowTotals);
 
         //
         // And now just finish off
@@ -473,7 +493,7 @@ function slaReport(arrSpans, fnFailed, fnDone)
     //
     // reportHtmlRow
     //
-    function reportHtmlRow(arrSummaryRecords)
+    function reportHtmlRow(arrSummaryRecords, bShowTotals)
     {
         var oRowHeadings = {};
 
@@ -522,7 +542,10 @@ function slaReport(arrSpans, fnFailed, fnDone)
                 nTotal += nValue;
             }
 
-            sHtml += '            <td>' + nTotal + '</td>\r\n';
+            if (bShowTotals)
+            {
+                sHtml += '            <td>' + nTotal + '</td>\r\n';
+            }
             sHtml += '        </tr>\r\n';
         }
 
