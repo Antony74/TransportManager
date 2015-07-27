@@ -107,7 +107,7 @@ function slaReport(arrSpans, fnFailed, fnDone)
                     }
                     else
                     {
-                        fnDone(data);
+                        fnDone(oJson);
                     }
                 }
             });
