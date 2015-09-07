@@ -36,8 +36,10 @@ if (process.arch != 'ia32' || process.platform != 'win32')
 
 var http = require('http');
 var url = require('url');
+var fs = require('fs');
 var static = require('node-static');
 var platform = require('./UsingMSJet4.js');
+var proxyGenerator = require('./GenerateProxyApiSourceCode.js');
 var server = null;
 var port = 8080;
 var sServerUrl = 'http://localhost:' + port + '/';
@@ -210,8 +212,22 @@ server.on('error', function(e)
     }
  });
 
-server.listen(port, 'localhost');
+ // Load the core API, then generate the proxy API from it
+ 
+var coreApi = require('./CoreApi');
+var sProxyApiSourceCode = "///<reference path='../interface/jquery.d.ts' />\n\n";
 
+sProxyApiSourceCode += proxyGenerator.generateProxyApiSourceCode(
+									coreApi,
+									'createCoreApiProxy',
+									sServerUrl,
+									proxyGenerator.findCallback_LastArgument);
+
+fs.writeFile(__dirname + '/../htdocs/proxyApi.js', sProxyApiSourceCode, null, function()
+{
+	// All done, we're ready to start the server
+	server.listen(port, 'localhost');
+});
 
 })();
 

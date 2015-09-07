@@ -1,5 +1,8 @@
 ///<reference path='../interface/jqueryui.d.ts' />
+///<reference path='./proxyApi.ts' />
 ///<reference path='./dialogHandler.ts' />
+
+var coreApi = createCoreApiProxy();
 
 var dialogHandler = null;
 var currentFields = {};
@@ -331,7 +334,7 @@ function allReady()
 
             if (root['more'])
             {
-                $.getJSON('selectSql?query=' + encodeURIComponent(root['query']) + '&startRecord=' + encodeURIComponent(arrRecords.length + root['startRecord']), gotJSON);
+				coreApi.selectSql(root['query'], arrRecords.length + root['startRecord'], 0, gotJSON);
             }
             else
             {
@@ -361,7 +364,7 @@ function allReady()
         currentSortAscending = true;
         sTableHeader = '';
 
-        $.getJSON('selectSql?schemaLevel=2&query=' + encodeURIComponent(currentQuery), gotJSON);
+		coreApi.selectSql(currentQuery, 0, 2, gotJSON);
     }
 
     function beginPopulateJobs()

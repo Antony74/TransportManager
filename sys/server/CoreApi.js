@@ -47,13 +47,7 @@ function updateDatabase(arrPostedData, fnDone)
 	}
 }
 
-function helloWorld()
-{
-	console.log('Hello world');
-}
-
 exports.selectSql      = selectSql;
 exports.getIndices     = getIndices;
 exports.updateDatabase = updateDatabase;
-exports.helloWorld     = helloWorld;
 
