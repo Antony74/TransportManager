@@ -2,6 +2,8 @@
 ///<reference path='../interface/jquery.ui.datetimepicker.d.ts' />
 ///<reference path='./initialiseDateTimePickers.ts' />
 
+var coreApi = createCoreApiProxy();
+
 function createDialogHandler(doneFn)
 {
     $('#dialogs').load('raw/dialogs.html .dialogTemplate', function()
@@ -101,30 +103,27 @@ function createDialogHandler(doneFn)
                 }
             ];
 
-            $.ajax(
-            {
-                url  : 'updateDatabase',
-                type : 'POST',
-                data : JSON.stringify(oCommitData, null, 4),
-                success: function(data)
-                {
-                    var oData = JSON.parse(data);
+			coreApi.updateDatabase(
+						oCommitData,
+						function(oData)
+						{
+							if (typeof oData.Error != 'undefined')
+							{
+								setStatus(oData.Error, 'R');
+							}
+							else
+							{
+								setStatus('Ready', 'G');
 
-                    if (typeof oData.Error != 'undefined')
-                    {
-                        setStatus(oData.Error, 'R');
-                    }
-                    else
-                    {
-                        setStatus('Ready', 'G');
+								if (bCloseDialog)
+								{
+									$('#dlg' + sCurrentTable).dialog('close');
+									dialogClosedFn(bDialogChanged);
+								}
+							}
+						});
 
-                        if (bCloseDialog)
-                        {
-                            $('#dlg' + sCurrentTable).dialog('close');
-                            dialogClosedFn(bDialogChanged);
-                        }
-                    }
-                },
+/*
                 error: function(jqXHR, textStatus, errorThrown)
                 {
                     if (textStatus == 'timeout')
@@ -133,13 +132,15 @@ function createDialogHandler(doneFn)
                     }
                     else if (jqXHR.status == 0)
                     {
-                        textStatus = 'No reponse from server';
+                        textStatus = 'No response from server';
                     }
 
                     setStatus(textStatus, 'R');
                 },
                 timeout: 6000,
             });
+		*/
+
         }
 
         $('#dialogs div').each(function()

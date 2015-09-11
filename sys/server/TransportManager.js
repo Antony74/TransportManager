@@ -51,98 +51,32 @@ process.stdout.write('\r\n');
 
 platform.ensureShortcutExists();
 
+ // Load the core API, then generate the proxy API from it
+ 
+var coreApi = require('./CoreApi');
+
+var proxy = proxyGenerator.generateProxyApiSourceCode(
+									coreApi,
+									'createCoreApiProxy',
+									sServerUrl,
+									proxyGenerator.findCallback_LastArgument);
+
+var sProxyApiSourceCode = "///<reference path='../interface/jquery.d.ts' />\n\n"
+						+ proxy.sSourceCode;
+
+// Done proxying the core API
+
 var staticServer = new static.Server(__dirname + '/../htdocs');
 
 function handleRequest(request, response)
 {
-    var parsed = url.parse(request.url, true);
-    if (parsed.pathname == '/selectSql')
-    {
-        var sQuery = parsed.query.query;
-        var nStartRecord = parseInt(parsed.query.startRecord, 10);
-        var nSchemaLevel = parseInt(parsed.query.schemaLevel, 10);
+    var parsedUrl = url.parse(request.url, true);
 
-        if (isNaN(nStartRecord))
-        {
-            nStartRecord = 0;
-        }
-
-        if (isNaN(nSchemaLevel))
-        {
-            nSchemaLevel = 0;
-        }
-
-        response.setHeader('Content-Type', 'application/json');
-
-        var oOutput = platform.selectSql(
-        {
-            'query'       : sQuery,
-            'startRecord' : nStartRecord,
-            'schemaLevel' : nSchemaLevel
-        });
-            
-        response.write(JSON.stringify(oOutput, null, 4));
-
-        response.end();
-        request.connection.end();     //close the socket
-        request.connection.destroy(); //close it really
-    }
-    else if (parsed.pathname == '/getIndices')
-    {
-        response.setHeader('Content-Type', 'application/json');
-        var oOutput = platform.getIndices();
-        
-        response.write(JSON.stringify(oOutput, null, 4));
-
-        response.end();
-        request.connection.end();     //close the socket
-        request.connection.destroy(); //close it really
-    }
-    else if (parsed.pathname == '/updateDatabase')
-    {
-        var sPostedData = '';
-
-        request.on('data', function(data)
-        {
-            sPostedData += data;
-        });
-
-        request.on('end', function()
-        {
-            var arrPostedData = [];
-            var bParsedOK = true;
-
-            try
-            {
-                arrPostedData = JSON.parse(sPostedData);
-            }
-            catch(e)
-            {
-                var oError = {'Error': e.toString()};
-                response.write(JSON.stringify(oError, null, 4));
-                bParsedOK = false;
-            }
-
-            if (bParsedOK)
-            {
-                if (!Array.isArray(arrPostedData))
-                {
-                    var oTheError = {'Error': 'UpdateDatabase expected an array'};
-                    response.write(JSON.stringify(oTheError, null, 4));
-                }
-                else
-                {
-                    var oOutput = platform.updateDatabase(arrPostedData);
-                    response.write(JSON.stringify(oOutput, null, 4));
-                }
-            }
-
-            response.end();
-            request.connection.end();     //close the socket
-            request.connection.destroy(); //close it really
-        });
-    }
-    else if (parsed.pathname == '/quitTransportManager')
+	if (proxy.fnAcceptUrl(parsedUrl))
+	{
+		proxy.fnHandleRequest(request, response);
+	}
+    else if (parsedUrl.pathname == '/quitTransportManager')
     {
         process.stdout.write('Quitting\r\n');
         response.end('OK');
@@ -212,17 +146,7 @@ server.on('error', function(e)
     }
  });
 
- // Load the core API, then generate the proxy API from it
- 
-var coreApi = require('./CoreApi');
-var sProxyApiSourceCode = "///<reference path='../interface/jquery.d.ts' />\n\n";
-
-sProxyApiSourceCode += proxyGenerator.generateProxyApiSourceCode(
-									coreApi,
-									'createCoreApiProxy',
-									sServerUrl,
-									proxyGenerator.findCallback_LastArgument);
-
+ // Write the proxy API out to a file where the browser can request it
 fs.writeFile(__dirname + '/../htdocs/proxyApi.js', sProxyApiSourceCode, null, function()
 {
 	// All done, we're ready to start the server
