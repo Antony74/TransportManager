@@ -1,6 +1,7 @@
 ///<reference path='../interface/jqueryui.d.ts' />
 ///<reference path='../interface/jquery.ui.datetimepicker.d.ts' />
 ///<reference path='./initialiseDateTimePickers.ts' />
+///<reference path='./ProxyApi.ts' />
 
 var coreApi = createCoreApiProxy();
 
@@ -122,25 +123,6 @@ function createDialogHandler(doneFn)
 								}
 							}
 						});
-
-/*
-                error: function(jqXHR, textStatus, errorThrown)
-                {
-                    if (textStatus == 'timeout')
-                    {
-                        textStatus = 'Request timed out';
-                    }
-                    else if (jqXHR.status == 0)
-                    {
-                        textStatus = 'No response from server';
-                    }
-
-                    setStatus(textStatus, 'R');
-                },
-                timeout: 6000,
-            });
-		*/
-
         }
 
         $('#dialogs div').each(function()

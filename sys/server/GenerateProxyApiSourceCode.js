@@ -11,8 +11,17 @@ function generateProxyApiSourceCode(api, sCreateProxyFunctionName, sUrlPrefix, f
 {
 	var sOutput = '';
 
-	sOutput += 'function ' + sCreateProxyFunctionName + '() {\n';
-	sOutput += '    return {\n';
+	sOutput += "function " + sCreateProxyFunctionName + "() {       \n\n";
+    sOutput += "    function improveErrorMessage(numberStatus, textStatus) {  \n";
+    sOutput += "        if (textStatus == 'timeout')                \n";
+    sOutput += "            textStatus = 'Request timed out';       \n";
+    sOutput += "        else if (numberStatus == 0)                 \n";
+    sOutput += "            textStatus = 'No response from server'; \n";
+    sOutput += "                                                    \n";
+    sOutput += "        console.log(textStatus);                    \n";
+    sOutput += "        return textStatus;                          \n";
+    sOutput += "    }                                               \n\n";
+	sOutput += "    return {                                        \n";
 
 	for (var sFnName in api)
 	{
@@ -72,8 +81,7 @@ function generateProxyApiSourceCode(api, sCreateProxyFunctionName, sUrlPrefix, f
 				sOutput += '                    ' +fn.argumentNames[nCallback] + '(JSON.parse(returnedData));\n';
 				sOutput += '                },\n';
 				sOutput += '                error: function(jqXHR, textStatus, errorThrown) {\n';
-				sOutput += '                    console.log(textStatus);\n';
-				sOutput += '                    ' + fn.argumentNames[nCallback] + "({error:textStatus});\n";
+				sOutput += '                    ' + fn.argumentNames[nCallback] + "({Error:improveErrorMessage(jqXHR.status, textStatus)});\n";
 				sOutput += '                }\n';
 				sOutput += '            });\n';
 				sOutput += '        },\n';

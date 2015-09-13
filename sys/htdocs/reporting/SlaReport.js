@@ -1,5 +1,7 @@
 ///<reference path='../../interface/jquery.d.ts' />
 
+var coreApi = createCoreApiProxy();
+
 function slaReport(arrSpans, fnFailed, fnDone)
 {
     //
@@ -76,19 +78,11 @@ function slaReport(arrSpans, fnFailed, fnDone)
         {
             console.log(sSql);
 
-            var sURL = '../selectSql?startRecord=' + nStartRecord + 'schemaLevel=0&query=' + encodeURIComponent(sSql);
-            var jqxhr = $.getJSON(sURL);
-
-            jqxhr.fail(function(jqxhr, sStatus, sError)
+            coreApi.selectSql(sSql, nStartRecord, 0, function(data)
             {
-                fnFailed(sError);
-            });
-
-            jqxhr.done(function(data)
-            {
-                if (data.error != undefined)
+                if (data.Error != undefined)
                 {
-                    fnFailed(data.error);
+                    fnFailed(data.Error);
                 }
                 else
                 {
