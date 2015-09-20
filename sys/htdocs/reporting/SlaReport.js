@@ -1,4 +1,5 @@
 ///<reference path='../../interface/jquery.d.ts' />
+///<reference path='../ProxyApi.ts' />
 
 var coreApi = createCoreApiProxy();
 
