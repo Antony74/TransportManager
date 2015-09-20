@@ -7,7 +7,7 @@
 // automatically when you click on the date-time fields, but instead open when you click
 // the little calendar buttons.
 //
-function initialiseDateTimePickers(oExtraOptions)
+function initialiseDateTimePickers(oExtraOptions, sPickerQuery, sPickerButtonQuery)
 {
     var sCurrentPickerButton = '';
     var sOpenPickerButton = '';
@@ -44,11 +44,11 @@ function initialiseDateTimePickers(oExtraOptions)
         }
     }
 
-    $('.datetimepicker').datetimepicker(oOptions);
+    $(sPickerQuery).datetimepicker(oOptions);
 
-    $('.datetimepicker').off('open.xdsoft focusin.xdsoft mousedown.xdsoft');
+    $(sPickerQuery).off('open.xdsoft focusin.xdsoft mousedown.xdsoft');
 
-    $('.datetimepickerbutton').mouseenter(function(event)
+    $(sPickerButtonQuery).mouseenter(function(event)
     {
         sCurrentPickerButton = event.target['id'];
     }).mouseleave(function()

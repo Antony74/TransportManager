@@ -356,6 +356,8 @@ function allReady()
 
     function beginPopulateTable()
     {
+        $('#reports').hide();
+        $('#dataTable').show();
         $('#mainDataTable').empty();
 
         currentData = null;
@@ -395,13 +397,20 @@ function allReady()
         beginPopulateTable();
     }
 
+    function showReports()
+    {
+        $('#dataTable').hide();
+        $('#reports').show();
+    }
+
     $('#radioCalendar').click(beginPopulateCalendar);
     $('#radioJobs').click(beginPopulateJobs);
+    $('#radioReports').click(showReports);
     $('#radioClients').click(beginPopulateClients);
     $('#radioDrivers').click(beginPopulateDrivers);
     $('#radioDestinations').click(beginPopulateDestinations);
 
-    $('#radioClients').trigger('click');
+    $('#radioReports').trigger('click');
 
 }
 

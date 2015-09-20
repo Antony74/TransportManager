@@ -1,6 +1,8 @@
-///<reference path='../initialiseDateTimePickers.ts' />
-///<reference path='../../interface/jquery.ui.datetimepicker.d.ts' />
-///<reference path='./SlaReport.ts' />
+///<reference path='./initialiseDateTimePickers.ts' />
+///<reference path='../interface/jquery.ui.datetimepicker.d.ts' />
+///<reference path='./ProxyApi.ts' />
+
+var coreApi = createCoreApiProxy();
 
 $(document).ready(function()
 {
@@ -61,7 +63,6 @@ $(document).ready(function()
     $('#CancellationListEnd').datetimepicker({value:endOfPreviousQuarter});
 
     // Done initialising.  Now we need 'click' functions for each 'GenerateReport' button
-
     $('#generateSlaReport').click(function()
     {
         var arrSpans = [];
@@ -91,6 +92,9 @@ $(document).ready(function()
         }
         else
         {
+            alert('Dates valid.  Antony is still working on the SLA report');
+
+/*
             slaReport(arrSpans, function(sError)
             {
                 alert(sError);
@@ -102,6 +106,7 @@ $(document).ready(function()
                     $(w.document.body).append(sReportText);
                 }
             });
+*/
         }
     });
 
@@ -146,9 +151,7 @@ $(document).ready(function()
             alert(retval.sMessage);
         }
     });
-
 });
-
 //
 // Define some date handling functions.
 // These are pretty crude, but hopefully that will make it obvious what is going on.

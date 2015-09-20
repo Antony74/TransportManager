@@ -14,11 +14,11 @@ wrapper.run(
     'errorCodes'  : require('./ErrorCodes.js').errorText,
     'menu'        : [
                       {
-                          'caption'  : 'Transport Manager Reports',
+                          'caption'  : 'Transport Manager',
                           'default'  : true,
                           'function' : function()
                                        {
-                                          spawn('cmd.exe', ['/c', 'start', 'http://localhost:8080/reporting']);
+                                          spawn('cmd.exe', ['/c', 'start', 'http://localhost:8080/']);
                                        }
                       },
                       {

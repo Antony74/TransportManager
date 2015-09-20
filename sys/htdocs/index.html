@@ -1,24 +1,35 @@
 <!doctype html>
 <html lang="en">
 <head>
+
     <title>Transport Manager</title>
-    <link rel="stylesheet" href="lib/ui-lightness/jquery-ui-1.10.3.custom.css">
-    <link rel="stylesheet" href="lib/jquery.datetimepicker.css">
-    <link rel="stylesheet" href="index.css">
     <link rel="icon" type="image/png" href="icons/Car.png">
+
+    <!-- jquery    -->
     <script src="lib/jquery-1.11.1.min.js"></script>
+
+    <!-- jquery-ui -->
     <script src="lib/jquery-ui-1.10.3.custom.min.js"></script>
+    <link rel="stylesheet" href="lib/ui-lightness/jquery-ui-1.10.3.custom.css">
+
+    <!-- jquery.datetimepicker -->
     <script src="lib/jquery.datetimepicker.js"></script>
+    <link rel="stylesheet" href="lib/jquery.datetimepicker.css">
+
+    <!-- Transport Manager-specific resources -->
+    <link rel="stylesheet" href="index.css">
     <script src="initialiseDateTimePickers.js"></script>
 	<script src="proxyApi.js"></script>
     <script src="dialogHandler.js"></script>
     <script src="TransportManagerMain.js"></script>
+    <script src="ReportingMain.js"></script>
+
 </head>
 <body>
 
     <div id="radio">
     
-        <input type="radio" name="radio" id="radioCalendar">
+        <!--input type="radio" name="radio" id="radioCalendar">
         <label for="radioCalendar">
             <img width="60" height="60" src="icons/Calendar.png"/><br />
             Calendar
@@ -28,15 +39,21 @@
         <label for="radioJobs">
             <img width="60" height="60" src="icons/Job.png"/><br />
             Jobs
-        </label>
+        </label-->
         
+        <input type="radio" name="radio" id="radioReports">
+        <label for="radioReports">
+            <img width="60" height="60" src="icons/Reports.png"/><br />
+            Reports
+        </label>
+
         <input type="radio" name="radio" id="radioClients">
         <label for="radioClients">
             <img width="60" height="60" src="icons/Client.png"/><br />
             Clients
         </label>
         
-        <input type="radio" name="radio" id="radioDrivers">
+        <!--input type="radio" name="radio" id="radioDrivers">
         <label for="radioDrivers">
             <img width="60" height="60" src="icons/Driver.png"/><br />
             Drivers
@@ -46,17 +63,63 @@
         <label for="radioDestinations">
             <img width="60" height="60" src="icons/Destination.png"/><br />
             Destinations
-        </label>
+        </label-->
 
     </div>
 
-    <div id="filterDiv">
-        <span id="filterCaption" class="ui-widget">Filter&nbsp;</span><input type="text" id="filterText"/><input type="button" value="X" id="filterCancel"/>
-    </div>
+    <div id="dataTable">
+        <div id="filterDiv">
+            <span id="filterCaption" class="ui-widget">Filter&nbsp;</span><input type="text" id="filterText"/><input type="button" value="X" id="filterCancel"/>
+        </div>
 
-    <table id="mainDataTable" style="width:100%"></table>
+        <table id="mainDataTable" style="width:100%"></table>
+    </div>
 
     <div id="dialogs">
+    </div>
+
+    <div id="reports">
+        <div class="reportParams">
+            <h3 class="reportName">SLA Report</h3>
+            From <input type="text" class="reportdatetimepicker" id="SLA1Start" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="SLA1Start_button" class="reportdatetimepickerbutton" />
+            &nbsp;&nbsp;To <input type="text" class="reportdatetimepicker" id="SLA1End" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="SLA1End_button" class="reportdatetimepickerbutton" />
+            <BR class="andHalf"/>
+            From <input type="text" class="reportdatetimepicker" id="SLA2Start" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="SLA2Start_button" class="reportdatetimepickerbutton" />
+            &nbsp;&nbsp;To <input type="text" class="reportdatetimepicker" id="SLA2End" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="SLA2End_button" class="reportdatetimepickerbutton" />
+            <BR class="andHalf"/>
+            From <input type="text" class="reportdatetimepicker" id="SLA3Start" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="SLA3Start_button" class="reportdatetimepickerbutton" />
+            &nbsp;&nbsp;To <input type="text" class="reportdatetimepicker" id="SLA3End" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="SLA3End_button" class="reportdatetimepickerbutton" />
+            <BR class="andHalf"/>
+            From <input type="text" class="reportdatetimepicker" id="SLA4Start" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="SLA4Start_button" class="reportdatetimepickerbutton" />
+            &nbsp;&nbsp;To <input type="text" class="reportdatetimepicker" id="SLA4End" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="SLA4End_button" class="reportdatetimepickerbutton" />
+            <BR class="andHalf"/>
+            <button id="generateSlaReport" class="buttonGenerateReport">Generate Report</button>
+        </div>
+
+        <div class="reportParams">
+            <h3 class="reportName">Driver Activity</h3>
+            From <input type="text" class="reportdatetimepicker" id="DriverActivityStart" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="DriverActivityStart_button" class="reportdatetimepickerbutton" />
+            &nbsp;&nbsp;To <input type="text" class="reportdatetimepicker" id="DriverActivityEnd" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="DriverActivityEnd_button" class="reportdatetimepickerbutton" />
+            <BR class="andHalf"/>
+            <button id="generateDriverActivityReport" class="buttonGenerateReport">Generate Report</button>
+        </div>
+
+        <div class="reportParams">
+            <h3 class="reportName">Destination Summary</h3>
+            From <input type="text" class="reportdatetimepicker" id="DestinationSummaryStart" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="DestinationSummaryStart_button" class="reportdatetimepickerbutton" />
+            &nbsp;&nbsp;To <input type="text" class="reportdatetimepicker" id="DestinationSummaryEnd" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="DestinationSummaryEnd_button" class="reportdatetimepickerbutton" />
+            <BR class="andHalf"/>
+            <button id="generateDestinationSummaryReport" class="buttonGenerateReport">Generate Report</button>
+        </div>
+
+        <div class="reportParams">
+            <h3 class="reportName">Cancellation List</h3>
+            From <input type="text" class="reportdatetimepicker" id="CancellationListStart" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="CancellationListStart_button" class="reportdatetimepickerbutton" />
+            &nbsp;&nbsp;To <input type="text" class="reportdatetimepicker" id="CancellationListEnd" />&nbsp;<img src="../lib/ui-lightness/images/calendar.gif" id="CancellationListEnd_button" class="reportdatetimepickerbutton" />
+            <BR class="andHalf"/>
+            <button id="generateCancellationListReport" class="buttonGenerateReport">Generate Report</button>
+   
+        </div>
     </div>
 
 </body>

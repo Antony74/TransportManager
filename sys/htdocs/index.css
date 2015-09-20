@@ -93,4 +93,30 @@ tr
     background-color: lightgrey !important;
 }
 
+.reportParams
+{
+    background-color: #DDDDFF;
+    border-style: solid;
+    border-width: 1px;
+    margin-top: 10px;
+    padding: 5px;
+    max-width: 500px;
+}
+
+.reportName
+{
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+.andHalf /* For when we want a little bit of extra line-spacing */
+{
+    line-height: 29px;
+}
+
+.generateReportButton
+{
+    margin-top: 6px;
+    margin-bottom: 3px;
+}
 

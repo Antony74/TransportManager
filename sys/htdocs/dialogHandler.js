@@ -9,7 +9,7 @@ function createDialogHandler(doneFn)
 {
     $('#dialogs').load('raw/dialogs.html .dialogTemplate', function()
     {
-        initialiseDateTimePickers({});
+        initialiseDateTimePickers({}, '.datetimepicker', '.datetimepickerbutton');
     
         var nDialogWidth = 800;
         var nButtonWidth = 85;
