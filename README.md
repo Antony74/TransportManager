@@ -33,7 +33,17 @@ less difficult to write a sustitute if desired.
 
 ####Installation
 
-**1. Install git (http://git-scm.com/)**<BR>
+**1. Install [NodeJs](https://nodejs.org/en/)**<BR>
+You need to install a specific version of NodeJs.  Currently [node-v0.10.27-x86.msi](https://nodejs.org/dist/v0.10.27/node-v0.10.27-x86.msi).  This is because two Transport Manager node modules are pre-built ([dface](sys/server/node_modules/dface) and [winsystraywrapper](sys/server/node_modules/winsystraywrapper) - if you know how to rebuild them yourself then you have more flexibilty about which (x86) version of node you use).
+
+Here is how we can check that the correct version of NodeJs is installed (with example output):
+
+```
+C:\>node --version
+v0.12.7
+```
+
+**2. Install git (http://git-scm.com/)**<BR>
 This is optional as there are other ways of getting the contents of this repository onto your computer.
 I like git because it makes performing subsequent updates easy.  This installation only requires the plain
 command line version of git.  (If you are a software developer you may already have git installed / may
@@ -44,16 +54,6 @@ Here is how we can check that the git command line is installed (with example ou
 ```
 C:\>git --version
 git version 1.9.5.msysgit.0
-```
-
-**2. Install [NodeJs](https://nodejs.org/en/)**<BR>
-You need to install a specific version of NodeJs.  Currently [node-v0.10.27-x86.msi](https://nodejs.org/dist/v0.10.27/node-v0.10.27-x86.msi).  This is because two Transport Manager node modules are pre-built ([dface](sys/server/node_modules/dface) and [winsystraywrapper](sys/server/node_modules/winsystraywrapper) - if you know how to rebuild them yourself then you have more flexibilty about which (x86) version of node you use).
-
-Here is how we can check that the correct version of NodeJs is installed (with example output):
-
-```
-C:\>node --version
-v0.12.7
 ```
 
 **3. Get the contents of this repository onto you computer**<BR>
