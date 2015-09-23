@@ -95,6 +95,7 @@ When (as here) we run the TransportManager from the command line, we exit it by 
 **5. On a test/play system, optionally create some test-data**<BR>
 ```
 cd ../devutils
+npm install
 node AddSomeTestData.js
 ```
 

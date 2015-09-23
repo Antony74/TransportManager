@@ -22,12 +22,6 @@ if (process.arch != 'ia32' || process.platform != 'win32')
     console.log("");
     console.log("Expected: process.arch='ia32', process.platform='win32'");
     console.log("Found:    process.arch='" + process.arch + "', process.platform='" + process.platform + "'");
-    console.log("");
-    console.log("If you are using the Chocolately Package Manager, then the required install");
-    console.log("and run commands respectively are:");
-    console.log("");
-    console.log("cinst nodejs-win32.commandline");
-    console.log("node-win32 TransportManager.js");
     
     ec.setExitCode(ec.PLATFORM_ISSUE);
     
@@ -109,23 +103,6 @@ server.on('listening', function()
             }
             return;
         }
-    
-        process.argv.forEach(function(sParam)
-        {
-            if (sParam.substring(0,1) == '-')
-            {
-                switch(sParam.substring(1,2).toUpperCase())
-                {
-                case 'Q':
-                    console.log('Quiting');
-                    if (bServerIsRunning)
-                    {
-                        server.close();
-                    }
-                    return;
-                }
-            }
-        });
     });
 });
 
