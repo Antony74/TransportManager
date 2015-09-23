@@ -73,8 +73,10 @@ node TransportManager.js
 
 The third command runs the TransportManager server for the first time.  This also creates a shortcut in the main
 'TransportManager' directory, which is a more convenient way of (subsequently) running the TransportManager.
+If you plan on using the Transport Manager regularly, you may wish to copy that shortcut onto your desktop
+and/or start menu.
 
-Here's that command again with example output:
+Here's that third command again with example output:
 
 ```
 C:\TransportManager\sys\server>node TransportManager.js
