@@ -90,7 +90,7 @@ Running C:\TransportManager\sys\server../../TransportManagerUpgrade1.sql
 Database ready
 ```
 
-When (as here) we run the TransportManager from the command line, we exit it by pressing CTRL + C.
+When (as here) we run the TransportManager from the command line, we exit it by pressing CTRL&nbsp;+&nbsp;C.
 
 **5. On a test/play system, optionally create some test-data**<BR>
 ```
