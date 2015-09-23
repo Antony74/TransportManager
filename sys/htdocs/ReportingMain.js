@@ -92,21 +92,25 @@ $(document).ready(function()
         }
         else
         {
-            alert('Dates valid.  Antony is still working on the SLA report');
+            $('#generateSlaReport').html('Processing...').prop('disabled', true);
 
-/*
-            slaReport(arrSpans, function(sError)
+            coreApi.report_sla(arrSpans, function(oReport)
             {
-                alert(sError);
-            }, function(sReportText)
-            {
-                var w = window.open();
-                if (w)
+                if (oReport['Error'] != undefined)
                 {
-                    $(w.document.body).append(sReportText);
+                    alert(oReport['Error']);
                 }
+                else
+                {
+                    var newWindow = window.open();
+                    if (newWindow)
+                    {
+                        $(newWindow.document.body).append(oReport);
+                    }
+                }
+
+                $('#generateSlaReport').html('Generate Report').prop('disabled', false);
             });
-*/
         }
     });
 

@@ -63,7 +63,7 @@ function generateProxyApiSourceCode(api, sCreateProxyFunctionName, sUrlPrefix, f
 				sOutput += "            {\n";
 				sOutput += "                type: 'POST',\n";
 				sOutput += "                url: '" + sUrlPrefix + fn.name + "',\n";
-				sOutput += '                timeout: 6000,\n';
+				sOutput += '                timeout: 30000,\n';
 				sOutput += '                data: JSON.stringify({\n';
 
 				var sIndent = '                ';

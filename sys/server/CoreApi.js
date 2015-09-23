@@ -49,11 +49,12 @@ function updateDatabase(arrPostedData, fnDone)
 
 function report_sla(arrSpans, fnDone)
 {
-    var oSlaReport = require('SlaReport.js');
+    var oSlaReport = require('./SlaReport.js');
     oSlaReport.generateReport(arrSpans, exports, fnDone);
 }
 
 exports.selectSql      = selectSql;
 exports.getIndices     = getIndices;
 exports.updateDatabase = updateDatabase;
+exports.report_sla = report_sla;
 

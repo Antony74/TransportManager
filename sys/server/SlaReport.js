@@ -37,7 +37,7 @@ function generateReport(arrSpans, coreApi, fnDone)
         {
             if (arrSpans.length)
             {
-                var oSpan = arrSpans.pop();
+                var oSpan = arrSpans.shift();
 
                 reportGeneratePeriod(formatdate(oSpan.dateFrom), formatdate(oSpan.dateTo), oJsonReport, simpleSelectSql, fnFailed, nextSpan, oDestinationTypes);
             }
@@ -58,6 +58,11 @@ function generateReport(arrSpans, coreApi, fnDone)
 
         function formatdate(date)
         {
+            if (typeof(date) == 'string')
+            {
+                date = new Date(date);
+            }
+
             return date.getFullYear().toString() + '/' + asTwoCharacterString(date.getMonth() + 1) + '/' + asTwoCharacterString(date.getDate());
         }
 
@@ -74,8 +79,6 @@ function generateReport(arrSpans, coreApi, fnDone)
 
         function getMoreData(nStartRecord)
         {
-            console.log(sSql);
-
             coreApi.selectSql(sSql, nStartRecord, 0, function(data)
             {
                 if (data.Error != undefined)
@@ -168,7 +171,12 @@ function generateReport(arrSpans, coreApi, fnDone)
                 oJsonReport.clientTitle.push(oSummaryOfClientTitles);
 
                 var oSummaryIsJobOneWay = reportCountValues(oResult.records, 'IsJobOneWay');
-                oSummaryIsJobOneWay['Total client journey-legs'] = oSummaryIsJobOneWay['Yes'] + (2 * oSummaryIsJobOneWay['No']);
+
+                var nOneWayYes = ('Yes' in oSummaryIsJobOneWay) ? oSummaryIsJobOneWay['Yes'] : 0;
+                var nOneWayNo  = ('No'  in oSummaryIsJobOneWay) ? oSummaryIsJobOneWay['No'] : 0;
+
+                oSummaryIsJobOneWay['Total client journey-legs'] = nOneWayYes + (2 * nOneWayNo);
+
                 oJsonReport.isOneWay.push(oSummaryIsJobOneWay);
                 oJsonReport.involvesWheelchair.push(reportCountValues(oResult.records, 'Wheelchair'));
 
