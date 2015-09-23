@@ -1,6 +1,13 @@
-##TransportManager
+##Transport Manager
 
-A database app for community driving schemes - initially developed for Didcot Volunteer Centre.
+A database app for community driving schemes.  Community driving schemes help people (often older people)
+get to medical appointments and other activities which they might not otherwise be able to reach.
+The logistics of organising drives (and funding) can quickly become complicated even for relatively small schemes,
+which is why some sort of electronic system may be felt preferable to a paper-based system (such as a diary and
+a set of address/index-cards).
+
+Initially developed for Didcot Volunteer Centre.
+
 This is a classic three tier application, with web-front-end and middle-layer both
 written in JavaScript.  Not currently intended for remote use (across a
 Local-Area-Network would be fine).
@@ -20,21 +27,37 @@ In development.
 
 ####Operating System
 
-Currently Windows only.  Database and Operating System dependent code is kept in a seperate file to make less
-difficult to write a sustitute if desired.
+Currently Windows only.  Database and Operating System dependent code is kept in a seperate file to make it
+less difficult to write a sustitute if desired.
 
 
 ####Installation
 
 **1. Install git (http://git-scm.com/)**<BR>
 This is optional as there are other ways of getting the contents of this repository onto your computer.
-I like git because it makes performing subsequent updates easy.
+I like git because it makes performing subsequent updates easy.  This installation only requires the plain
+command line version of git.  (If you are a software developer you may already have git installed / may
+prefer one of the downloads which comes bundled with a GUI).
 
-**2. Install NodeJs**<BR>
-You need to install a specific version of NodeJs.  Currently [node-v0.10.27-x86.msi](https://nodejs.org/dist/v0.10.27/).  This is because two transport manager node modules are pre-built (dface and winsystraywrapper) - you can of course get around this limitation by rebuilding them yourself against a different (still x86) version of node.
+Here is how we can check that the git command line is installed (with example output):
+
+```
+C:\>git --version
+git version 1.9.5.msysgit.0
+```
+
+**2. Install [NodeJs](https://nodejs.org/en/)**<BR>
+You need to install a specific version of NodeJs.  Currently [node-v0.10.27-x86.msi](https://nodejs.org/dist/v0.10.27/).  This is because two Transport Manager node modules are pre-built ([dface](sys/server/node_modules/dface) and [winsystraywrapper](sys/server/node_modules/winsystraywrapper) - if you know how to rebuild them yourself then you have more flexibilty about which (x86) version of node you use).
+
+Here is how we can check that the correct version of NodeJs is installed (with example output):
+
+```
+C:\>node --version
+v0.12.7
+```
 
 **3. Get the contents of this repository onto you computer**<BR>
-Bring up a command prompt, go which and enter or paste the following command:
+Bring up a command prompt at a suitable location you've choosen to contain the main 'TransportManager' directory, and enter or paste the following command:
 
 ```
 git clone https://github.com/Antony74/TransportManager.git
@@ -48,12 +71,30 @@ npm install
 node TransportManager.js
 ```
 
-npm is the Node Package Manager (part of the NodeJs install).
-Running npm install in the Server directory, installs any packages that the Transport Manager server requires
-(as defined in [package.json](sys/server/package.json)), currently this is just the webserver node-static.
+The third command runs the TransportManager server for the first time.  This also creates a shortcut in the main
+'TransportManager' directory, which is a more convenient way of (subsequently) running the TransportManager.
 
-**5. On a test system, optionally create some test-data**<BR>
+Here's that command again with example output:
 
+```
+C:\TransportManager\sys\server>node TransportManager.js
+
+    T R A N S P O R T   M A N A G E R
+
+Server has been started (http://localhost:8080/)
+Database not found... creating empty database
+Running C:\TransportManager\sys\server../../TransportManager.sql
+Running C:\TransportManager\sys\server../../TransportManagerUpgrade1.sql
+Database ready
+```
+
+When (as here) we run the TransportManager from the command line, we exit it by pressing CTRL + C.
+
+**5. On a test/play system, optionally create some test-data**<BR>
+```
+cd ../devutils
+node AddSomeTestData.js
+```
 
 ####Dependency list
 
