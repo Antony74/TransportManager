@@ -139,7 +139,7 @@ function ensureDatabaseIsUpgraded(doneEnsuring)
 function selectSql(obj)
 {
     obj.databaseFilename = sDatabaseFilename;
-    obj.numberOfRecordsToGet = 20;
+    obj.numberOfRecordsToGet = 2000;
 
     var result = dface.selectSql(obj);
 
