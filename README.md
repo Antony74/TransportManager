@@ -34,7 +34,7 @@ less difficult to write a sustitute if desired.
 ####Installation
 
 **1. Install [NodeJs](https://nodejs.org/en/)**<BR>
-You need to install a specific version of NodeJs.  Currently [node-v0.10.27-x86.msi](https://nodejs.org/dist/v0.10.27/node-v0.10.27-x86.msi).  This is because two Transport Manager node modules are pre-built ([dface](sys/server/node_modules/dface) and [winsystraywrapper](sys/server/node_modules/winsystraywrapper) - if you know how to rebuild them yourself then you have more flexibilty about which (x86) version of node you use).
+You need to install a specific version of NodeJs.  Currently [node-v0.12.7-x86.msi](https://nodejs.org/dist/v0.12.7/node-v0.12.7-x86.msi).  This is because two Transport Manager node modules are pre-built ([dface](sys/server/node_modules/dface) and [winsystraywrapper](sys/server/node_modules/winsystraywrapper) - if you know how to rebuild them yourself then you have more flexibilty about which (x86) version of node you use).
 
 Here is how we can check that the correct version of NodeJs is installed (with example output):
 
