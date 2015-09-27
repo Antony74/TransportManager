@@ -10,8 +10,12 @@ function findCallback_LastArgument(sFunctionName, arrArguments)
 function generateProxyApiSourceCode(api, sCreateProxyFunctionName, sUrlPrefix, fnFindCallback)
 {
 	var sOutput = '';
+    var ts = new Date();    
+
+    sOutput += "// THIS IS AN AUTO-GENERATED FILE (created by " + __filename + ", " + ts.getFullYear() + "/" + (ts.getMonth()+1) + "/" + ts.getDate() + " " + ts.getHours() + ":" + ts.getMinutes() + ")\n\n";
 
 	sOutput += "function " + sCreateProxyFunctionName + "() {       \n\n";
+
     sOutput += "    function improveErrorMessage(numberStatus, textStatus) {  \n";
     sOutput += "        if (textStatus == 'timeout')                \n";
     sOutput += "            textStatus = 'Request timed out';       \n";
@@ -21,6 +25,7 @@ function generateProxyApiSourceCode(api, sCreateProxyFunctionName, sUrlPrefix, f
     sOutput += "        console.log(textStatus);                    \n";
     sOutput += "        return textStatus;                          \n";
     sOutput += "    }                                               \n\n";
+
 	sOutput += "    return {                                        \n";
 
 	for (var sFnName in api)
@@ -63,7 +68,6 @@ function generateProxyApiSourceCode(api, sCreateProxyFunctionName, sUrlPrefix, f
 				sOutput += "            {\n";
 				sOutput += "                type: 'POST',\n";
 				sOutput += "                url: '" + sUrlPrefix + fn.name + "',\n";
-				sOutput += '                timeout: 30000,\n';
 				sOutput += '                data: JSON.stringify({\n';
 
 				var sIndent = '                ';
