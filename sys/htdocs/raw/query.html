@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <title>Transport Manager Raw Query</title>
 </head>
@@ -6,12 +7,54 @@
 
 <h3>Transport Manager Raw Query</h3>
 
-<form action="/selectSql" method="GET">
+<form id='rawQueryForm'>
     <input type="text" name="query" size="50"/>
     <input type="submit" value="Submit"/><BR/><BR/>
     Start record <input type="text" name="startRecord" value="0"/>
     Schema level <input type="text" name="schemaLevel" value="0"/>
 </form>
+
+<script>
+
+    function displayQueryResult(sResult)
+    {
+        var newWindow = window.open();
+        if (newWindow)
+        {
+            newWindow.document.title = 'Raw query result';
+            newWindow.document.body.innerHTML = sResult;
+        }
+    }
+
+    var oForm = document.forms['rawQueryForm'];
+
+    oForm.onsubmit = function()
+    {
+        var request = new XMLHttpRequest();
+
+        request.onload = function()
+        {
+            displayQueryResult('<PRE>' + request.responseText + '</PRE>');
+        }
+
+        request.onerror = function()
+        {
+            displayQueryResult('A network error occured');
+        }
+
+        request.open('POST', '/selectSql', true);
+
+        request.send(JSON.stringify(
+        {
+            query: oForm['query'].value,
+            startRecord: oForm['startRecord'].value,
+            schemaLevel: oForm['schemaLevel'].value,
+        }, null, 4));
+
+        return false;
+    };
+
+</script>
 
 </body>
 </html>
