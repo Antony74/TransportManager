@@ -9,10 +9,16 @@ function findCallback_LastArgument(sFunctionName, arrArguments)
 
 function generateProxyApiSourceCode(api, sCreateProxyFunctionName, sUrlPrefix, fnFindCallback)
 {
-	var sOutput = '';
     var ts = new Date();    
 
-    sOutput += "// THIS IS AN AUTO-GENERATED FILE (created by " + __filename + ", " + ts.getFullYear() + "/" + (ts.getMonth()+1) + "/" + ts.getDate() + " " + ts.getHours() + ":" + ts.getMinutes() + ")\n\n";
+	function pad(nValue)
+	{
+		return ('00' + nValue).slice(-2);
+	}
+
+	var sOutput = '';
+
+    sOutput += "// THIS IS AN AUTO-GENERATED FILE (created by " + __filename + ", " + ts.getFullYear() + "/" + pad(ts.getMonth()+1) + "/" + pad(ts.getDate()) + " " + pad(ts.getHours()) + ":" + pad(ts.getMinutes()) + ")\n\n";
 
 	sOutput += "function " + sCreateProxyFunctionName + "() {       \n\n";
 

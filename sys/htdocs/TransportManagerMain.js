@@ -239,17 +239,10 @@ function allReady()
 
                     if (fld['Type'] == 'DATE')
                     {
-                        function pad(value)
-                        {
-                            var s = value.toString();
-                        
-                            if (s.length == 1)
-                            {
-                                s = '0' + s;
-                            }
-                            
-                            return s;
-                        }
+						function pad(nValue)
+						{
+							return ('00' + nValue).slice(-2);
+						}
                     
                         function getDDMMYYYY(dateValue)
                         {
