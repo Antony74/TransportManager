@@ -142,14 +142,16 @@ function postDelete()
 
                     var compiler = spawn(sCmd, cmd);
 
+                    var sOutput = '';
+
                     compiler.stdout.on('data', function(data)
                     {
-                        process.stdout.write(data.toString());
+                        sOutput += data.toString();
                     });
     
                     compiler.stderr.on('data', function(data)
                     {
-                        process.stdout.write(data.toString());
+                        sOutput += data.toString();
                     });
 
                     compiler.on('error', function(error)
@@ -166,7 +168,20 @@ function postDelete()
 
                     compiler.on('exit', function(nExitCode)
                     {
-                        if (nExitCode == 0)
+                        var bFailed = false;
+                        var arrLines = sOutput.split('\n');
+
+                        for (var nLine = 0; nLine < arrLines.length; ++nLine)
+                        {
+                            var sLine = arrLines[nLine].trim();
+                            if (sLine.length && sLine.indexOf('TS2364') == -1)
+                            {
+                                process.stdout.write(sLine + '\n');
+                                bFailed = true;
+                            }
+                        }
+
+                        if (bFailed == false)
                         {
                             launch();
                         }
