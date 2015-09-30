@@ -51,7 +51,7 @@ var coreApi = require('./CoreApi');
 
 var proxy = proxyGenerator.generateProxyApiSourceCode(
 									coreApi,
-									'createCoreApiProxy',
+									'getCoreApiProxy',
 									sServerUrl,
 									proxyGenerator.findCallback_LastArgument);
 

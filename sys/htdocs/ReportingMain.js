@@ -2,8 +2,6 @@
 ///<reference path='../interface/jquery.ui.datetimepicker.d.ts' />
 ///<reference path='./ProxyApi.ts' />
 
-var coreApi = createCoreApiProxy();
-
 $(document).ready(function()
 {
     initialiseDateTimePickers(
@@ -94,7 +92,7 @@ $(document).ready(function()
         {
             $('#generateSlaReport').html('Processing...').prop('disabled', true);
 
-            coreApi.report_sla(arrSpans, function(oReport)
+            getCoreApiProxy().report_sla(arrSpans, function(oReport)
             {
                 if (oReport['Error'] != undefined)
                 {

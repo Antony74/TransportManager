@@ -2,8 +2,6 @@
 ///<reference path='./proxyApi.ts' />
 ///<reference path='./dialogHandler.ts' />
 
-var coreApi = createCoreApiProxy();
-
 var dialogHandler = null;
 var currentFields = {};
 
@@ -327,7 +325,7 @@ function allReady()
 
             if (root['more'])
             {
-				coreApi.selectSql(root['query'], arrRecords.length + root['startRecord'], 0, gotJSON);
+				getCoreApiProxy().selectSql(root['query'], arrRecords.length + root['startRecord'], 0, gotJSON);
             }
             else
             {
@@ -359,7 +357,7 @@ function allReady()
         currentSortAscending = true;
         sTableHeader = '';
 
-		coreApi.selectSql(currentQuery, 0, 2, gotJSON);
+		getCoreApiProxy().selectSql(currentQuery, 0, 2, gotJSON);
     }
 
     function beginPopulateJobs()

@@ -3,8 +3,6 @@
 ///<reference path='./initialiseDateTimePickers.ts' />
 ///<reference path='./ProxyApi.ts' />
 
-var coreApi = createCoreApiProxy();
-
 function getDialogHandler(doneFn)
 {
     // Queue this request for a dialog handler
@@ -114,7 +112,7 @@ function getDialogHandler(doneFn)
                 }
             ];
 
-			coreApi.updateDatabase(
+			getCoreApiProxy().updateDatabase(
 						oCommitData,
 						function(oData)
 						{

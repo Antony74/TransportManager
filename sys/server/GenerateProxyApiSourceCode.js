@@ -7,7 +7,7 @@ function findCallback_LastArgument(sFunctionName, arrArguments)
 	return arrArguments.length - 1;
 }
 
-function generateProxyApiSourceCode(api, sCreateProxyFunctionName, sUrlPrefix, fnFindCallback)
+function generateProxyApiSourceCode(api, sGetProxyFunctionName, sUrlPrefix, fnFindCallback)
 {
     var ts = new Date();    
 
@@ -20,7 +20,7 @@ function generateProxyApiSourceCode(api, sCreateProxyFunctionName, sUrlPrefix, f
 
     sOutput += "// THIS IS AN AUTO-GENERATED FILE (created by " + __filename + ", " + ts.getFullYear() + "/" + pad(ts.getMonth()+1) + "/" + pad(ts.getDate()) + " " + pad(ts.getHours()) + ":" + pad(ts.getMinutes()) + ")\n\n";
 
-	sOutput += "function " + sCreateProxyFunctionName + "() {       \n\n";
+	sOutput += "function " + sGetProxyFunctionName + "() {          \n\n";
 
     sOutput += "    function improveErrorMessage(numberStatus, textStatus) {  \n";
     sOutput += "        if (textStatus == 'timeout')                \n";
@@ -32,7 +32,7 @@ function generateProxyApiSourceCode(api, sCreateProxyFunctionName, sUrlPrefix, f
     sOutput += "        return textStatus;                          \n";
     sOutput += "    }                                               \n\n";
 
-	sOutput += "    return {                                        \n";
+	sOutput += "    var proxy = {                                   \n";
 
 	for (var sFnName in api)
 	{
@@ -40,7 +40,7 @@ function generateProxyApiSourceCode(api, sCreateProxyFunctionName, sUrlPrefix, f
 
 		if (typeof(fn) != 'function')
 		{
-			console.log('Generating "' + sCreateProxyFunctionName + '", "' + sFnName + '" is not a function');
+			console.log('Generating "' + sGetProxyFunctionName + '", "' + sFnName + '" is not a function');
 		}
 		else
 		{
@@ -50,7 +50,7 @@ function generateProxyApiSourceCode(api, sCreateProxyFunctionName, sUrlPrefix, f
 
 			if (nOpenBracket == -1 || nCloseBracket == -1 || nCloseBracket <= nOpenBracket)
 			{
-				console.log('Generating "' + sCreateProxyFunctionName + '", failed to parse function "' + sFnName + '"');
+				console.log('Generating "' + sGetProxyFunctionName + '", failed to parse function "' + sFnName + '"');
 			}
 			else
 			{
@@ -99,8 +99,14 @@ function generateProxyApiSourceCode(api, sCreateProxyFunctionName, sUrlPrefix, f
 		}
 	}
 
-	sOutput += '    };\n';
-	sOutput += '}\n\n';
+	sOutput += '    };                 \n\n';
+
+	sOutput += "    " + sGetProxyFunctionName + " = function() {  \n";
+    sOutput += "        return proxy;  \n"
+	sOutput += '    }\n\n';
+
+    sOutput += "    return proxy;      \n"
+	sOutput += '}                      \n\n';
 
 	return {
 
