@@ -5,8 +5,18 @@
 
 var coreApi = createCoreApiProxy();
 
-function createDialogHandler(doneFn)
+function getDialogHandler(doneFn)
 {
+    // Queue this request for a dialog handler
+    var arrFunctionsWaitingForDialogHandler = [doneFn];
+
+    // Queue any subsequent request we get for a dialog handler while we are waiting for it
+    getDialogHandler = function(doneFn)
+    {
+        arrFunctionsWaitingForDialogHandler.push(doneFn);
+    }
+
+    // Load the dialogs
     $('#dialogs').load('raw/dialogs.html .dialogTemplate', function()
     {
         initialiseDateTimePickers({}, '.datetimepicker', '.datetimepickerbutton');
@@ -190,7 +200,9 @@ function createDialogHandler(doneFn)
             });
         });
 
-        doneFn(
+        // And now we're ready to create the dialogHandler
+
+        var theDialogHandler = 
         {
             doDialog: function(_sCurrentTable, _oRecord, _dialogClosedFn)
             {
@@ -204,7 +216,22 @@ function createDialogHandler(doneFn)
                 $('#dlg' + sCurrentTable).dialog("open");
                 setStatus('Ready', 'G');
             }
-        });
+        };
+
+        // Subsequent calls to getDialogHandler can simply be immediately called back with the dialogHandler
+
+        getDialogHandler = function(fnDone)
+        {
+            fnDone(theDialogHandler);
+        };
+
+        // Callback anyone who was waiting for a dialogHandler
+
+        for (var n = 0; n < arrFunctionsWaitingForDialogHandler.length; ++n)
+        {
+            var fn = arrFunctionsWaitingForDialogHandler[n];
+            fn(theDialogHandler);
+        }
     });
 }
 

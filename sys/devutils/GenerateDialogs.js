@@ -32,7 +32,17 @@ out.write('\r\n');
 
 for (var sTablename in oTables)
 {
-    out.write(generateDialog(sTablename));
+    var sQuery;
+
+    if (sTablename == 'Clients')
+    {
+        sQuery = 'SELECT * FROM (Clients LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)';
+    }
+    else
+    {
+        sQuery = 'SELECT * FROM ' + sTablename;
+    }
+    out.write(generateDialog(sTablename, sQuery));
 }
 
 out.write(generateFooter());
@@ -44,15 +54,26 @@ out.end();
 //
 function generateHeader()
 {
+    var ts = new Date();    
+
+	function pad(nValue)
+	{
+		return ('00' + nValue).slice(-2);
+	}
+
     var s = '<!doctype html>\r\n';
     s    += '<html lang="en">\r\n';
-    s    += '<head>\r\n';
+    s    += '<head>\r\n\r\n';
+
+    s    += "    <!-- THIS IS AN AUTO-GENERATED FILE (created by " + __filename.split('\\').pop() + ", " + ts.getFullYear() + "/" + pad(ts.getMonth()+1) + "/" + pad(ts.getDate()) + " " + pad(ts.getHours()) + ":" + pad(ts.getMinutes()) + " -->\n\n";
+
     s    += '    <title>Transport Manager Dialogs</title>\r\n';
     s    += '    <link rel="stylesheet" href="../ui-lightness/jquery-ui-1.10.3.custom.css">\r\n';
     s    += '    <link rel="stylesheet" href="../index.css">\r\n';
     s    += '    <link rel="icon" type="image/png" href="../icons/Car.png">\r\n';
     s    += '    <script src="../jquery-1.11.1.min.js"></script>\r\n';
-    s    += '    <script src="../jquery-ui-1.10.3.custom.min.js"></script>\r\n';
+    s    += '    <script src="../jquery-ui-1.10.3.custom.min.js"></script>\r\n\r\n';
+
     s    += '</head>\r\n';
     s    += '<body>\r\n';
     s    += '\r\n';
@@ -95,12 +116,12 @@ function generateButtonScript(sTablename)
 //
 // generateDialog
 //
-function generateDialog(sTablename)
+function generateDialog(sTablename, sQuery)
 {
 
     var options =
     {
-        'query'                : 'select * from ' + sTablename,
+        'query'                : sQuery,
         'startRecord'          : 0,
         'schemaLevel'          : 2,
         'databaseFilename'     : __dirname + '/../../TransportManager.mdb',
@@ -123,7 +144,7 @@ function generateDialog(sTablename)
 
     var sTitle = sTablename;
 
-    if (typeof oTitles[sTablename] !== 'undefined')
+    if (typeof oTitles[sTablename] !== undefined)
     {
         sTitle = oTitles[sTablename];
     }

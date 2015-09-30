@@ -9,7 +9,7 @@ var currentFields = {};
 
 $(document).ready(function()
 {
-    createDialogHandler(function(_dialogHandler)
+    getDialogHandler(function(_dialogHandler)
     {
         dialogHandler = _dialogHandler;
         allReady();
