@@ -36,7 +36,7 @@ for (var sTablename in oTables)
 
     if (sTablename == 'Clients')
     {
-        sQuery = 'SELECT * FROM (Clients LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)';
+        sQuery = 'SELECT Clients.*, DateOfBirth, Gender FROM (Clients LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)';
     }
     else
     {
@@ -140,7 +140,7 @@ function generateDialog(sTablename, sQuery)
         'DriverVacation'      : 'Driver Vacation',
         'JobLog'              : 'Job Log',
         'Jobs'                : 'Job',
-    }
+    };
 
     var sTitle = sTablename;
 
@@ -161,6 +161,21 @@ function generateDialog(sTablename, sQuery)
 
     var nPairedCellCount = 0;
 
+    // Quick first pass of fields to eliminate an unwanted field
+    for(var nFld = 0; nFld < arrFields.length; ++nFld)
+    {
+        var sFieldname = arrFields[nFld].name;
+
+        // I imagine this field got into one of our databases by mistake.  It's not hard to guess how considering how 'helpful'
+        // recent versions Access are at letting you change the schema from the data-view.
+        if (sFieldname == 'Field1')
+        {
+            arrFields.splice(nFld, 1);
+            break;
+        }
+    }
+
+    // Now we can go through the fields properly and add them to the dialog
     for(var nFld = 0; nFld < arrFields.length; ++nFld)
     {
         var sFieldname = arrFields[nFld].name;
