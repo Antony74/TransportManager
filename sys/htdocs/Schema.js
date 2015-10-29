@@ -9,9 +9,16 @@
 
 ///<reference path='../interface/node.d.ts' />
 
-var tables =
+function getTables()
+{
+    var tables =
     {
-        "Clients" : {},
+        "Clients" :
+            {
+                query: 'SELECT Clients.ClientID as ClientID, ClientsEx.ClientID, Title, Firstname, Initial, Surname, AddressLine1, AddressLine2, Town, Postcode, '
+                +      'HomeNumber, MobileNumber, EmailAddress, IsWheelchair, Notes, IsActive, DateOfBirth, Gender '
+                +      'FROM (Clients LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)',
+            },
         "Destinations" : {},
         "DestinationType" : {},
         "DriverExclusionList" : {},
@@ -24,16 +31,24 @@ var tables =
         "Jobs" : {},
     };
         
-function getTables()
-{
+    for (var sTablename in tables)
+    {
+        if (tables[sTablename].query == undefined)
+        {
+            tables[sTablename].query = 'SELECT * from ' + sTablename;
+        }
+    }
+
+    getTables = function()
+    {
+        return tables;
+    }
+
     return tables;
 }
 
-function isValidTable(sTable)
+if (typeof(exports) != 'undefined')
 {
-    return sTable in tables;
+    exports.getTables = getTables;
 }
-
-exports.getTables = getTables;
-exports.isValidTable = isValidTable;
 

@@ -27,6 +27,7 @@ function getDialogHandler(doneFn)
         var bDialogButtonsEnabled = true;
         var sDialogName = '';
         var arrTablesToUpdate = [];
+        var oData = {Error: 'No data'};
 
         function enableButtons(bEnable)
         {
@@ -89,32 +90,81 @@ function getDialogHandler(doneFn)
         {
             setStatus('Updating', 'A');
             bDialogChanged = true;
+            
+            var arrCommits = [];
 
-            /*
-            var oNewRecord = {};
-
-            for (var sFieldName in oRecord)
+            for (var nTable in arrTablesToUpdate)
             {
-                oNewRecord[sFieldName] = $('#' + sDialogName + '_' + sFieldName).val();
+                var sTablename = arrTablesToUpdate[nTable];
+                var oOldRecord = {};
+                var oNewRecord = {};
+                var arrFields = oData['fields'];
+
+                var bWasAllNull = true;
+
+                for (var nField in arrFields)
+                {
+                    var oField = arrFields[nField];
+                    var sFieldname = oField['name'];                    
+
+                    if (oField['Tablename'] == sTablename)
+                    {
+                        var arrParts = sFieldname.split('.');
+                        if (arrParts.length == 2)
+                        {
+                            var sKeyFieldname = arrParts[1];
+                            var sValue = oData['records'][0][sKeyFieldname];
+
+                            oOldRecord[sKeyFieldname] = sValue;
+                            oNewRecord[sKeyFieldname] = sValue;
+                        }
+                        else
+                        {
+                            oOldRecord[sFieldname] = oData['records'][0][sFieldname];
+                            oNewRecord[sFieldname] = $('#' + sDialogName + '_' + sFieldname).val();
+                        }
+
+                        if (oData['records'][0][sFieldname] != null)
+                        {
+                            bWasAllNull = false;
+                        }
+                    }
+                }
+
+                if (bWasAllNull)
+                {
+                    arrCommits.push(
+                    {
+                        table : sTablename,
+                        operations:
+                        [
+                            {
+                                operationName : 'add',
+                                newRecord     : oNewRecord,
+                            }
+                        ]
+                    });
+                }
+                else
+                {
+                    arrCommits.push(
+                    {
+                        table : sTablename,
+                        operations:
+                        [
+                            {
+                                operationName : 'edit',
+                                oldRecord     : oOldRecord,
+                                newRecord     : oNewRecord,
+                            }
+                        ]
+                    });
+                }
+
             }
 
-            var oCommitData =
-            [
-                {
-                    table : sCurrentTable,
-                    operations:
-                    [
-                        {
-                            operationName : 'edit',
-                            oldRecord     : oRecord,
-                            newRecord     : oNewRecord
-                        }
-                    ]
-                }
-            ];
-
 			getCoreApiProxy().updateDatabase(
-						oCommitData,
+						arrCommits,
 						function(oData)
 						{
 							if (typeof oData.Error != 'undefined')
@@ -127,12 +177,11 @@ function getDialogHandler(doneFn)
 
 								if (bCloseDialog)
 								{
-									$('#dlg' + sCurrentTable).dialog('close');
+									$('#dlg' + sDialogName).dialog('close');
 									fnDialogClosed(bDialogChanged);
 								}
 							}
 						});
-            */
         }
 
         $('#dialogs div').each(function()
@@ -215,8 +264,10 @@ function getDialogHandler(doneFn)
 
                 $('#dlg' + sDialogName).dialog("open");
 
-                getCoreApiProxy().selectSql(sQuery, 0, 0, function(oData)
+                getCoreApiProxy().selectSql(sQuery, 0, 2, function(_oData)
                 {
+                    oData = _oData;
+                
  				    if (typeof oData.Error != 'undefined')
 				    {
 					    setStatus(oData.Error, 'R');

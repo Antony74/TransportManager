@@ -32,16 +32,8 @@ out.write('\r\n');
 
 for (var sTablename in oTables)
 {
-    var sQuery;
+    var sQuery = oTables[sTablename]['query'];
 
-    if (sTablename == 'Clients')
-    {
-        sQuery = 'SELECT Clients.*, DateOfBirth, Gender FROM (Clients LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)';
-    }
-    else
-    {
-        sQuery = 'SELECT * FROM ' + sTablename;
-    }
     out.write(generateDialog(sTablename, sQuery));
 }
 
@@ -153,6 +145,13 @@ function generateDialog(sTablename, sQuery)
 
     var json = dface.selectSql(options);
 
+    if (typeof json.Error != 'undefined')
+    {
+        console.log(sQuery);
+        console.log(json.Error);
+        return '<!--' + json.Error + '-->';
+    }
+
     var arrFields = json.fields;
 
     var nColumns = (arrFields.length >= 12) ? 2 : 1;
@@ -163,17 +162,15 @@ function generateDialog(sTablename, sQuery)
 
     var nPairedCellCount = 0;
 
-    // Quick first pass of fields to eliminate an unwanted field
+    // Quick first pass of fields to eliminate unwanted fields (e.g. ClientEx.ClientID)
     for(var nFld = 0; nFld < arrFields.length; ++nFld)
     {
         var sFieldname = arrFields[nFld].name;
 
-        // I imagine this field got into one of our databases by mistake.  It's not hard to guess how considering how 'helpful'
-        // recent versions Access are at letting you change the schema from the data-view.
-        if (sFieldname == 'Field1')
+        if (sFieldname.indexOf('.') != -1)
         {
             arrFields.splice(nFld, 1);
-            break;
+            --nFld;
         }
     }
 

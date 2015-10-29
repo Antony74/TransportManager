@@ -1,4 +1,5 @@
 ///<reference path='../interface/jqueryui.d.ts' />
+///<reference path='./Schema.ts' />
 ///<reference path='./proxyApi.ts' />
 ///<reference path='./dialogHandler.ts' />
 
@@ -90,9 +91,10 @@ function allReady()
 
             var oRecord = currentFilter ? currentFilter[nRow] : currentData.records[nRow];
 
-            var sDialogQuery = 'SELECT Clients.*, DateOfBirth, Gender FROM (Clients LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)  WHERE Clients.ClientID = ' + oRecord['ClientID'];
+            var sTablename = 'Clients';
+            var sDialogQuery = getTables()[sTablename]['query'] + ' WHERE Clients.ClientID = ' + oRecord['ClientID'];
 
-            dialogHandler.doDialog('Clients', sDialogQuery, ['ClientsEx'], function(bChanged)
+            dialogHandler.doDialog(sTablename, sDialogQuery, ['ClientsEx'], function(bChanged)
             {
                 if (bChanged)
                 {
