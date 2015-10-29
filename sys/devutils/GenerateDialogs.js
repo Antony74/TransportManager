@@ -197,8 +197,18 @@ function generateDialog(sTablename, sQuery)
             
             if (sDbType == 'DATE')
             {
-                sInputAttributes = 'type="text" class="datetimepicker" style="width:85%"';
-                sCalendarButton  = '&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="' + sTablename + '_' + sFieldname + '_button" class="datetimepickerbutton" />';
+                var oDateOnlyFields = oTables[sTablename].DateOnlyFields;
+
+                if (oDateOnlyFields != undefined && oDateOnlyFields[sFieldname] == true)
+                {
+                    sInputAttributes = 'type="text" class="datepicker" style="width:85%"';
+                    sCalendarButton  = '&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="' + sTablename + '_' + sFieldname + '_button" class="datepickerbutton" />';
+                }
+                else
+                {
+                    sInputAttributes = 'type="text" class="datetimepicker" style="width:85%"';
+                    sCalendarButton  = '&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="' + sTablename + '_' + sFieldname + '_button" class="datetimepickerbutton" />';
+                }
             }
             else if (sDbType == 'YESNO')
             {
@@ -206,7 +216,7 @@ function generateDialog(sTablename, sQuery)
             }
 
             sForm += '                <td>' + sFieldname + '</td>\r\n';
-            sForm += '                <td><input ' + sInputAttributes + ' id="' + sTablename + '_' + sFieldname + '" style="width:95%"/>' + sCalendarButton + '</td>\r\n';
+            sForm += '                <td><input ' + sInputAttributes + ' id="' + sTablename + '_' + sFieldname + '" class="dialogInput" style="width:95%"/>' + sCalendarButton + '</td>\r\n';
             
             ++nPairedCellCount;
         }

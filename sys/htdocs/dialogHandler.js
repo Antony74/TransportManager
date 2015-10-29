@@ -18,6 +18,7 @@ function getDialogHandler(doneFn)
     $('#dialogs').load('raw/dialogs.html .dialogTemplate', function()
     {
         initialiseDateTimePickers({}, '.datetimepicker', '.datetimepickerbutton');
+        initialiseDateTimePickers({timepicker: false}, '.datepicker', '.datepickerbutton');
     
         var nDialogWidth = 800;
         var nButtonWidth = 85;
@@ -262,6 +263,8 @@ function getDialogHandler(doneFn)
                 sDialogName = _sDialogName;
                 arrTablesToUpdate = _arrTablesToUpdate;
 
+                $('.dialogInput').val(null); // Clear any previous input so we can start with an empty dialog
+
                 $('#dlg' + sDialogName).dialog("open");
 
                 getCoreApiProxy().selectSql(sQuery, 0, 2, function(_oData)
@@ -279,8 +282,28 @@ function getDialogHandler(doneFn)
                         for (var sFieldname in oRecord)
                         {
                             var input = $('#' + sDialogName + '_' + sFieldname);
-
                             input.val(oRecord[sFieldname]);
+                        }
+
+                        // Decide which fields to enable/disable
+                        var arrFields = oData['fields'];
+                        
+                        for (var nField in arrFields)
+                        {
+                            var bDisabled = true;
+                            var sFieldname = arrFields[nField]['name'];
+                            var sTablename = arrFields[nField]['Tablename'];
+
+                            for (var nTable in arrTablesToUpdate)
+                            {
+                                if (sTablename == arrTablesToUpdate[nTable])
+                                {
+                                    bDisabled = false;
+                                }
+                            }
+
+                            var input = $('#' + sDialogName + '_' + sFieldname);
+                            input.prop('disabled', bDisabled);
                         }
 
                         setStatus('Ready', 'G');
