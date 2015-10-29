@@ -65,7 +65,9 @@ function generateHeader()
     s    += '<html lang="en">\r\n';
     s    += '<head>\r\n\r\n';
 
-    s    += "    <!-- THIS IS AN AUTO-GENERATED FILE (created by " + __filename.split('\\').pop() + ", " + ts.getFullYear() + "/" + pad(ts.getMonth()+1) + "/" + pad(ts.getDate()) + " " + pad(ts.getHours()) + ":" + pad(ts.getMinutes()) + " -->\n\n";
+    s    += "    <!-- THIS IS AN AUTO-GENERATED FILE (created by " + __filename.split('\\').pop() + ", "
+                                                                   + ts.getFullYear() + "/" + pad(ts.getMonth()+1) + "/" + pad(ts.getDate())
+                                                                   + " " + pad(ts.getHours()) + ":" + pad(ts.getMinutes()) + ") -->\n\n";
 
     s    += '    <title>Transport Manager Dialogs</title>\r\n';
     s    += '    <link rel="stylesheet" href="../ui-lightness/jquery-ui-1.10.3.custom.css">\r\n';

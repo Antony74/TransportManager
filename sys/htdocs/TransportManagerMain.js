@@ -90,15 +90,9 @@ function allReady()
 
             var oRecord = currentFilter ? currentFilter[nRow] : currentData.records[nRow];
 
-            for (var sFieldname in oRecord)
-            {
-                var oValue = oRecord[sFieldname];
-                var input = $('#' + currentTable + '_' + sFieldname);
+            var sDialogQuery = 'SELECT Clients.*, DateOfBirth, Gender FROM (Clients LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)  WHERE Clients.ClientID = ' + oRecord['ClientID'];
 
-                input.val(currentFields[sFieldname].toDialogValue(oValue));
-            }
-
-            dialogHandler.doDialog(currentTable, oRecord, function(bChanged)
+            dialogHandler.doDialog('Clients', sDialogQuery, ['ClientsEx'], function(bChanged)
             {
                 if (bChanged)
                 {

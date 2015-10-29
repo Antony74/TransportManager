@@ -22,11 +22,11 @@ function getDialogHandler(doneFn)
         var nDialogWidth = 800;
         var nButtonWidth = 85;
 
-        var dialogClosedFn = null;
+        var fnDialogClosed = null;
         var bDialogChanged = false;
         var bDialogButtonsEnabled = true;
-        var oRecord = {};
-        var sCurrentTable = '';
+        var sDialogName = '';
+        var arrTablesToUpdate = [];
 
         function enableButtons(bEnable)
         {
@@ -50,7 +50,7 @@ function getDialogHandler(doneFn)
 
         function setStatus(sStatus, cTrafficLight)
         {
-            var statusBar = $('#dlg' + sCurrentTable + ' .dialogStatus').find('td');
+            var statusBar = $('#dlg' + sDialogName + ' .dialogStatus').find('td');
             if (cTrafficLight == 'G')
             {
                 statusBar.html('Status: ' + sStatus)
@@ -90,11 +90,12 @@ function getDialogHandler(doneFn)
             setStatus('Updating', 'A');
             bDialogChanged = true;
 
+            /*
             var oNewRecord = {};
 
             for (var sFieldName in oRecord)
             {
-                oNewRecord[sFieldName] = $('#' + sCurrentTable + '_' + sFieldName).val();
+                oNewRecord[sFieldName] = $('#' + sDialogName + '_' + sFieldName).val();
             }
 
             var oCommitData =
@@ -127,10 +128,11 @@ function getDialogHandler(doneFn)
 								if (bCloseDialog)
 								{
 									$('#dlg' + sCurrentTable).dialog('close');
-									dialogClosedFn(bDialogChanged);
+									fnDialogClosed(bDialogChanged);
 								}
 							}
 						});
+            */
         }
 
         $('#dialogs div').each(function()
@@ -166,8 +168,8 @@ function getDialogHandler(doneFn)
                         {
                             if (bDialogButtonsEnabled)
                             {
-                                $('#dlg' + sCurrentTable).dialog('close');
-                                dialogClosedFn(bDialogChanged);
+                                $('#dlg' + sDialogName).dialog('close');
+                                fnDialogClosed(bDialogChanged);
                             }
                         }
                     },
@@ -202,17 +204,37 @@ function getDialogHandler(doneFn)
 
         var theDialogHandler = 
         {
-            doDialog: function(_sCurrentTable, _oRecord, _dialogClosedFn)
+            doDialog: function(_sDialogName, sQuery, _arrTablesToUpdate, _fnDialogClosed)
             {
                 bDialogButtonsEnabled = true;
                 bDialogChanged = false;
 
-                dialogClosedFn = _dialogClosedFn;
-                oRecord = _oRecord;
-                sCurrentTable = _sCurrentTable;
+                fnDialogClosed = _fnDialogClosed;
+                sDialogName = _sDialogName;
+                arrTablesToUpdate = _arrTablesToUpdate;
 
-                $('#dlg' + sCurrentTable).dialog("open");
-                setStatus('Ready', 'G');
+                $('#dlg' + sDialogName).dialog("open");
+
+                getCoreApiProxy().selectSql(sQuery, 0, 0, function(oData)
+                {
+ 				    if (typeof oData.Error != 'undefined')
+				    {
+					    setStatus(oData.Error, 'R');
+				    }
+                    else
+                    {
+                        var oRecord = oData['records'][0];
+
+                        for (var sFieldname in oRecord)
+                        {
+                            var input = $('#' + sDialogName + '_' + sFieldname);
+
+                            input.val(oRecord[sFieldname]);
+                        }
+
+                        setStatus('Ready', 'G');
+                    }
+                });
             }
         };
 
@@ -223,7 +245,7 @@ function getDialogHandler(doneFn)
             fnDone(theDialogHandler);
         };
 
-        // Callback anyone who was waiting for a dialogHandler
+        // Callback anyone who is already waiting for a dialogHandler
 
         for (var n = 0; n < arrFunctionsWaitingForDialogHandler.length; ++n)
         {
