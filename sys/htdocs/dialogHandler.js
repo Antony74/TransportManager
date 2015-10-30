@@ -18,7 +18,7 @@ function getDialogHandler(doneFn)
     $('#dialogs').load('raw/dialogs.html .dialogTemplate', function()
     {
         initialiseDateTimePickers({}, '.datetimepicker', '.datetimepickerbutton');
-        initialiseDateTimePickers({timepicker: false}, '.datepicker', '.datepickerbutton');
+        initialiseDateTimePickers({timepicker: false, format: 'd/m/Y'}, '.datepicker', '.datepickerbutton');
     
         var nDialogWidth = 800;
         var nButtonWidth = 85;
@@ -122,7 +122,14 @@ function getDialogHandler(doneFn)
                         else
                         {
                             oOldRecord[sFieldname] = oData['records'][0][sFieldname];
-                            oNewRecord[sFieldname] = $('#' + sDialogName + '_' + sFieldname).val();
+                            var newValue = $('#' + sDialogName + '_' + sFieldname).val();
+
+                            if (oField['Type'] == 'DATE')
+                            {
+                                newValue = (new Date(newValue)).getTime();
+                            }
+
+                            oNewRecord[sFieldname] = newValue;
                         }
 
                         if (oData['records'][0][sFieldname] != null)
