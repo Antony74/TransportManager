@@ -202,10 +202,7 @@ function postDelete()
 //
 function fileExcluded(sFilename)
 {
-    if ( (sFilename.indexOf(sPathDest + '/server/SelectStatementParser.ts')      != -1) 
-    ||   (sFilename.indexOf(sPathDest + '/server/node_modules/node-static')      != -1) 
-    ||   (sFilename.indexOf(sPathDest + '/server/node_modules/win32ole')         != -1)
-    ||   (sFilename.indexOf(sPathDest + '/devutils/node_modules/jison')          != -1)
+    if ( (sFilename.indexOf(sPathDest + '/server/node_modules/node-static')      != -1) 
     ||   (sFilename.indexOf(sPathDest + '/devutils/GenerateIcons/processing.ts') != -1)
     ||   (sFilename.indexOf(sPathDest + '/devutils/node_modules/faker')          != -1) 
     ||   (sFilename.indexOf(sPathDest + '/htdocs/lib/fullcalendar')              != -1)
