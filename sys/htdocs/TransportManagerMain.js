@@ -94,29 +94,7 @@ function allReady()
             var sTablename = 'Clients';
             var sDialogQuery = getTables()[sTablename]['query'] + ' WHERE Clients.ClientID = ' + oRecord['ClientID'];
 
-            dialogHandler.doDialog(sTablename, sDialogQuery, ['ClientsEx'], function(bChanged)
-            {
-                if (bChanged)
-                {
-                    var arrFieldNames = [];
-
-                    for (var sFieldName in oRecord)
-                    {
-                        arrFieldNames.push(sFieldName);
-                        var dialogValue = $('#' + currentTable + '_' + sFieldName).val();
-                        oRecord[sFieldName] = currentFields[sFieldName].fromDialogValue(dialogValue);
-                    }
-
-                    var oRow = $('#mainDataTable tr:nth-child(' + nRow + ')');
-
-                    oRow.find('td').each(function()
-                    {
-                        var sFieldName = arrFieldNames.shift();
-                        var value = oRecord[sFieldName];
-                        $(this).html(currentFields[sFieldName].toHtmlValue(value));
-                    });
-                }
-            });
+            dialogHandler.doDialog(sTablename, sDialogQuery, ['ClientsEx'], function(bChanged) {} );
         }
     }
 
@@ -175,12 +153,15 @@ function allReady()
 
                     for(var fld in rs)
                     {
-                        var value = rs[fld].toString().toLowerCase();
-
-                        if (value.contains(sFilter))
+                        if (rs[fld] != null)
                         {
-                            currentFilter.push(arrRecords[n]);
-                            break;
+                            var value = rs[fld].toString().toLowerCase();
+
+                            if (value.contains(sFilter))
+                            {
+                                currentFilter.push(arrRecords[n]);
+                                break;
+                            }
                         }
                     }
                 }
