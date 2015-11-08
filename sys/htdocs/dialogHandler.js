@@ -124,9 +124,17 @@ function getDialogHandler(doneFn)
                             oOldRecord[sFieldname] = oData['records'][0][sFieldname];
                             var newValue = $('#' + sDialogName + '_' + sFieldname).val();
 
-                            if (oField['Type'] == 'DATE')
+                            if (oField['Type'] == 'DATE' && newValue.length)
                             {
-                                newValue = (new Date(newValue)).getTime();
+                                newValue = parseDate(newValue);
+
+                                if (newValue == null)
+                                {
+                                    setStatus('Invalid date (expecting DD/MM/YYYY)', 'R');
+                                    return;
+                                }
+
+                                newValue = newValue.getTime();
                             }
 
                             oNewRecord[sFieldname] = newValue;
@@ -289,7 +297,23 @@ function getDialogHandler(doneFn)
                         for (var sFieldname in oRecord)
                         {
                             var input = $('#' + sDialogName + '_' + sFieldname);
-                            input.val(oRecord[sFieldname]);
+                            var newValue = oRecord[sFieldname];
+
+                            if (newValue != null)
+                            {
+                                if (input.hasClass('datetimepicker'))
+                                {
+                                    var dateValue = new Date(newValue);
+                                    newValue = getDDMMYYYY(dateValue) + '&nbsp;' + getHHMM(dateValue);
+                                }
+                                else if (input.hasClass('datepicker'))
+                                {
+                                    var dateValue = new Date(newValue);
+                                    newValue = getDDMMYYYY(dateValue);
+                                }
+                            }
+
+                            input.val(newValue);
                         }
 
                         // Decide which fields to enable/disable

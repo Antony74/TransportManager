@@ -295,13 +295,3 @@ function onShowDate(sID)
     }
 }
 
-//
-// parseDate
-//
-// jquery.datetimepicker provides a Date.parseDate function, which we simplfy here by providing the date format we are using
-//
-function parseDate(sDate)
-{
-    return Date['parseDate'](sDate, 'd/m/Y');
-}
-

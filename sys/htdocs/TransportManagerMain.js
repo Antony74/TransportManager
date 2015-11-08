@@ -233,21 +233,6 @@ function allReady()
 
                     if (fld['Type'] == 'DATE')
                     {
-						function pad(nValue)
-						{
-							return ('00' + nValue).slice(-2);
-						}
-                    
-                        function getDDMMYYYY(dateValue)
-                        {
-                            return pad(dateValue.getDate()) + '/' + pad(dateValue.getMonth() + 1) + '/' + dateValue.getFullYear();
-                        }
-
-                        function getHHMM(dateValue)
-                        {
-                            return pad(dateValue.getHours()) + ':' + pad(dateValue.getMinutes());
-                        }
-
                         converter['toHtmlValue'] = function(value)
                         {
                             var dateValue = new Date(value);
