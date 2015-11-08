@@ -182,8 +182,14 @@ function allReady()
         updateFilter();
     });
 
-    function gotJSON(root, textStatus, jqXHR)
+    function gotJSON(root)
     {
+        if (typeof(root['Error']) == 'string' && root['Error'].length)
+        {
+            setDataTableStatus(root['Error'], 'R');
+            return;
+        }
+
         if (currentQuery == root['query'])
         {
             var arrRecords = root['records'];
@@ -293,6 +299,7 @@ function allReady()
             {
                 currentData['more'] = false;
                 updateFilter();
+                setDataTableStatus('Ready', 'G');
             }
         }
     }
@@ -319,6 +326,7 @@ function allReady()
         currentSortAscending = true;
         sTableHeader = '';
 
+        setDataTableStatus('Loading', 'A');
 		getCoreApiProxy().selectSql(currentQuery, 0, 2, gotJSON);
     }
 
@@ -367,3 +375,33 @@ function allReady()
 
 }
 
+function setDataTableStatus(sStatus, cTrafficLight)
+{
+    var statusBar = $('#dataTableStatus').find('td');
+    if (cTrafficLight == 'G')
+    {
+        statusBar.html('Status: ' + sStatus)
+                    .removeClass('dialogStatusRed')
+                    .removeClass('dialogStatusAmber')
+                    .addClass('dialogStatusGreen');
+    }
+    else if (cTrafficLight == 'A')
+    {
+        statusBar.html('Status: ' + sStatus)
+                    .removeClass('dialogStatusRed')
+                    .addClass('dialogStatusAmber')
+                    .removeClass('dialogStatusGreen');
+    }
+    else
+    {
+        if (sStatus.indexOf('SyntaxError:') != 0)
+        {
+            sStatus = 'Error: ' + sStatus;
+        }
+
+        statusBar.html(sStatus)
+                    .addClass('dialogStatusRed')
+                    .removeClass('dialogStatusAmber')
+                    .removeClass('dialogStatusGreen');
+    }
+}
