@@ -137,6 +137,11 @@ function getDialogHandler(doneFn)
                                 newValue = newValue.getTime();
                             }
 
+                            if (newValue === '')
+                            {
+                                newValue = null; // Certain database checks distingush between empty string and null, so let's be consistent.
+                            }
+
                             oNewRecord[sFieldname] = newValue;
                         }
 
@@ -144,6 +149,8 @@ function getDialogHandler(doneFn)
                         {
                             bWasAllNull = false;
                         }
+
+                        oData['records'][0][sFieldname] = oNewRecord[sFieldname];
                     }
                 }
 
