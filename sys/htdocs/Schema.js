@@ -18,7 +18,8 @@ function getTables()
                 query: 'SELECT Clients.ClientID as ClientID, ClientsEx.ClientID, Title, Firstname, Initial, Surname, AddressLine1, AddressLine2, Town, Postcode, '
                 +      'HomeNumber, MobileNumber, EmailAddress, IsWheelchair, Notes, IsActive, DateofBirth, Gender '
                 +      'FROM (Clients LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)',
-                DateOnlyFields: {DateofBirth: true}
+                DateOnlyFields: {DateofBirth: true},
+                ChoiceOnlyFields: {Gender: ['M', 'F', 'X']}
             },
         "Destinations" : {},
         "DestinationType" : {},

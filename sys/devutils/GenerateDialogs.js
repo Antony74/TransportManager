@@ -174,6 +174,9 @@ function generateDialog(sTablename, sQuery)
         }
     }
 
+    var oDateOnlyFields = oTables[sTablename].DateOnlyFields;
+    var oChoiceOnlyFields = oTables[sTablename].ChoiceOnlyFields;
+
     // Now we can go through the fields properly and add them to the dialog
     for(var nFld = 0; nFld < arrFields.length; ++nFld)
     {
@@ -197,9 +200,7 @@ function generateDialog(sTablename, sQuery)
             
             if (sDbType == 'DATE')
             {
-                var oDateOnlyFields = oTables[sTablename].DateOnlyFields;
-
-                if (oDateOnlyFields != undefined && oDateOnlyFields[sFieldname] == true)
+                if (oDateOnlyFields != undefined && oDateOnlyFields[sFieldname] != undefined && oDateOnlyFields[sFieldname] == true)
                 {
                     sInputAttributes = 'type="text" class="datepicker" style="width:85%"';
                     sCalendarButton  = '&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="' + sTablename + '_' + sFieldname + '_button" class="datepickerbutton" />';
@@ -216,8 +217,26 @@ function generateDialog(sTablename, sQuery)
             }
 
             sForm += '                <td>' + sFieldname + '</td>\r\n';
-            sForm += '                <td><input ' + sInputAttributes + ' id="' + sTablename + '_' + sFieldname + '" class="dialogInput" style="width:95%"/>' + sCalendarButton + '</td>\r\n';
-            
+
+            if (oChoiceOnlyFields != undefined && oChoiceOnlyFields[sFieldname] != undefined && Array.isArray(oChoiceOnlyFields[sFieldname]))
+            {
+                sForm += '                <td>\r\n';
+                sForm += '                    <select id="' + sTablename + '_' + sFieldname + '">\r\n';
+                sForm += '                        <option></option>\r\n';
+
+                for (var n = 0; n < oChoiceOnlyFields[sFieldname].length; ++n)
+                {
+                    sForm += '                        <option>' + oChoiceOnlyFields[sFieldname][n] + '</option>\r\n';
+                }
+                
+                sForm += '                    </select>\r\n';
+                sForm += '                <td>\r\n';
+            }
+            else
+            {
+                sForm += '                <td><input ' + sInputAttributes + ' id="' + sTablename + '_' + sFieldname + '" class="dialogInput" style="width:95%"/>' + sCalendarButton + '</td>\r\n';
+            }
+
             ++nPairedCellCount;
         }
     }
