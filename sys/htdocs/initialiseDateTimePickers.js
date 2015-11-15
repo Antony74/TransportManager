@@ -189,6 +189,10 @@ function parseDateTime(sDateTime, bDateOnly)
                 }
             }
         }
+        else
+        {
+            return null; // Invalid date-time
+        }
     }
     else
     {
