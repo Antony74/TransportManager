@@ -377,7 +377,10 @@ function allReady()
 
 function setDataTableStatus(sStatus, cTrafficLight)
 {
+    $('#dataTableStatus').show();
+
     var statusBar = $('#dataTableStatus').find('td');
+
     if (cTrafficLight == 'G')
     {
         statusBar.html('Status: ' + sStatus)
