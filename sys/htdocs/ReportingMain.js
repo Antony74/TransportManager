@@ -17,35 +17,12 @@ $(document).ready(function()
     '.reportdatetimepickerbutton');
 
     // Try to provide sensible default dates.  Most likely we will want to generate a
-    // report for the quarter which has just finished.
-    // (a 'quarter' being one of four three-month periods which make up a year)
+    // report for the quarter which has just finished.  
 
-    var now = new Date();
-    var startOfPreviousQuarter = null;
-
-    switch(now.getMonth())
-    {
-    case 0:
-    case 1:
-    case 2:
-        startOfPreviousQuarter = new Date(now.getFullYear() - 1, 9, 1);
-        break;
-    case 3:
-    case 4:
-    case 5:
-        startOfPreviousQuarter = new Date(now.getFullYear(), 0, 1);
-        break;
-    case 6:
-    case 7:
-    case 8:
-        startOfPreviousQuarter = new Date(now.getFullYear(), 3, 1);
-        break;
-    case 9:
-    case 10:
-    case 11:
-        startOfPreviousQuarter = new Date(now.getFullYear(), 6, 1);
-        break;
-    }
+    var baseDate = new Date();
+	baseDate = addMonths(1, baseDate); //Annoyingly DVC has to report upon non-standard quarters.
+	var startOfPreviousQuarter = getStartOfPreviousQuarter(baseDate);
+    startOfPreviousQuarter = addMonths(-1, startOfPreviousQuarter); //Annoyingly DVC has to report upon non-standard quarters.
 
     var endOfPreviousQuarter = addMonths(3, startOfPreviousQuarter);
     endOfPreviousQuarter = addDays(-1, endOfPreviousQuarter);
@@ -293,5 +270,41 @@ function onShowDate(sID)
             }
         }
     }
+}
+
+//
+// getStartOfPreviousQuarter
+//
+// (a 'quarter' being one of four three-month periods which make up a year)
+//
+function getStartOfPreviousQuarter(baseDate)
+{
+    var startOfPreviousQuarter = null;
+
+    switch(baseDate.getMonth())
+    {
+    case 0:
+    case 1:
+    case 2:
+        startOfPreviousQuarter = new Date(baseDate.getFullYear() - 1, 9, 1);
+        break;
+    case 3:
+    case 4:
+    case 5:
+        startOfPreviousQuarter = new Date(baseDate.getFullYear(), 0, 1);
+        break;
+    case 6:
+    case 7:
+    case 8:
+        startOfPreviousQuarter = new Date(baseDate.getFullYear(), 3, 1);
+        break;
+    case 9:
+    case 10:
+    case 11:
+        startOfPreviousQuarter = new Date(baseDate.getFullYear(), 6, 1);
+        break;
+    }
+
+	return startOfPreviousQuarter;
 }
 
