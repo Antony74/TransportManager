@@ -17,9 +17,47 @@ function getDialogHandler(doneFn)
     // Load the dialogs
     $('#dialogs').load('raw/dialogs.html .dialogTemplate', function()
     {
+        function makeLooseDatesStrict()
+        {
+            var sCurrentValue = $(this).val().trim();
+            var sNewValue = '';
+
+            for (var n = 0; n < sCurrentValue.length; ++n)
+            {
+                if (n == 6 && sCurrentValue.length == 8)
+                {
+                    // This string is not going to be accepted as a date, so if we assume the century is 19 and missing,
+                    // then it shouldn't make anything worse and there's a chance it might be helpful.
+                    // (it's easier to change the century to 20 than it is to retype the entire date)
+
+                    // BAD ASSUMPTION - USE SPLIT FURTHER DOWN
+
+                    sNewValue += '19';
+                }
+
+                if (sCurrentValue[n] == '.' || sCurrentValue[n] == '-')
+                {
+                    sNewValue += '/';
+                }
+                else
+                {
+                    sNewValue += sCurrentValue[n];
+                }
+            }
+
+            if (sCurrentValue != sNewValue)
+            {
+                $(this).val(sNewValue);
+            }
+        }
+
         initialiseDateTimePickers({}, '.datetimepicker', '.datetimepickerbutton');
         initialiseDateTimePickers({timepicker: false, format: 'd/m/Y'}, '.datepicker', '.datepickerbutton');
-    
+
+        // Ensure we get in with a more liberal interpretation of what a date is befor jquery.datetimepicker gets to it
+        $('.datetimepicker').change(makeLooseDatesStrict);
+        $('.datepicker').change(makeLooseDatesStrict);
+
         var nDialogWidth = 800;
         var nButtonWidth = 85;
 
