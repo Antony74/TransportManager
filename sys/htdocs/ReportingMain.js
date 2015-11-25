@@ -1,6 +1,7 @@
 ///<reference path='./initialiseDateTimePickers.ts' />
 ///<reference path='../interface/jquery.ui.datetimepicker.d.ts' />
 ///<reference path='./ProxyApi.ts' />
+///<reference path='./dialogHandler.ts' />
 
 $(document).ready(function()
 {
@@ -84,6 +85,18 @@ $(document).ready(function()
                     {
                         $(newWindow.document.body).append(oReport['output']);
                     }
+
+                    $('#reportLog').find('A').each(function()
+                    {
+                        $(this).click(function()
+                        {
+                            var sClientID = $(this).attr('href').substring(1);
+                            getDialogHandler(function(dialogHandler)
+                            {
+                                 dialogHandler.doClientDialog(sClientID);
+                            });
+                        });
+                    });
                 }
 
                 $('#generateSlaReport').html('Generate Report').prop('disabled', false);

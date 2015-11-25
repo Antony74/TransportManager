@@ -1,5 +1,4 @@
 ///<reference path='../interface/jqueryui.d.ts' />
-///<reference path='./Schema.ts' />
 ///<reference path='./proxyApi.ts' />
 ///<reference path='./dialogHandler.ts' />
 
@@ -91,10 +90,7 @@ function allReady()
 
             var oRecord = currentFilter ? currentFilter[nRow] : currentData.records[nRow];
 
-            var sTablename = 'Clients';
-            var sDialogQuery = getTables()[sTablename]['query'] + ' WHERE Clients.ClientID = ' + oRecord['ClientID'];
-
-            dialogHandler.doDialog(sTablename, sDialogQuery, ['ClientsEx'], function(bChanged) {} );
+            dialogHandler.doClientDialog(oRecord['ClientID']);
         }
     }
 

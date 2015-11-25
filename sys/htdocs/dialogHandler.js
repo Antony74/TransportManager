@@ -2,6 +2,7 @@
 ///<reference path='../interface/jquery.ui.datetimepicker.d.ts' />
 ///<reference path='./initialiseDateTimePickers.ts' />
 ///<reference path='./ProxyApi.ts' />
+///<reference path='./Schema.ts' />
 
 function getDialogHandler(doneFn)
 {
@@ -313,6 +314,13 @@ function getDialogHandler(doneFn)
 
         var theDialogHandler = 
         {
+            doClientDialog: function(clientID)
+            {
+                var sTablename = 'Clients';
+                var sDialogQuery = getTables()[sTablename]['query'] + ' WHERE Clients.ClientID = ' + clientID;
+                this.doDialog(sTablename, sDialogQuery, ['ClientsEx'], function(bChanged) {} );
+            },
+
             doDialog: function(_sDialogName, sQuery, _arrTablesToUpdate, _fnDialogClosed)
             {
                 bDialogButtonsEnabled = true;
