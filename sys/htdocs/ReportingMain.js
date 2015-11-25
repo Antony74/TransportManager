@@ -5,6 +5,8 @@
 
 $(document).ready(function()
 {
+    $('#generateSlaReport').html('Generate Report').prop('disabled', false);
+
     initialiseDateTimePickers(
     {
         timepicker : false,
