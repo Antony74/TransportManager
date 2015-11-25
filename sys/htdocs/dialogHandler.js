@@ -24,17 +24,6 @@ function getDialogHandler(doneFn)
 
             for (var n = 0; n < sCurrentValue.length; ++n)
             {
-                if (n == 6 && sCurrentValue.length == 8)
-                {
-                    // This string is not going to be accepted as a date, so if we assume the century is 19 and missing,
-                    // then it shouldn't make anything worse and there's a chance it might be helpful.
-                    // (it's easier to change the century to 20 than it is to retype the entire date)
-
-                    // BAD ASSUMPTION - USE SPLIT FURTHER DOWN
-
-                    sNewValue += '19';
-                }
-
                 if (sCurrentValue[n] == '.' || sCurrentValue[n] == '-')
                 {
                     sNewValue += '/';
@@ -45,6 +34,16 @@ function getDialogHandler(doneFn)
                 }
             }
 
+            // Convert two digit dates to four
+            var arrDateComponents = sNewValue.split('/');
+
+            if (arrDateComponents.length == 3 && arrDateComponents[2].length == 2)
+            {
+                arrDateComponents[2] = '19' + arrDateComponents[2];
+                sNewValue = arrDateComponents.join('/');
+            }
+
+            // Update the date box, but only if we've changed anything (we don't want to be looping forever)
             if (sCurrentValue != sNewValue)
             {
                 $(this).val(sNewValue);
