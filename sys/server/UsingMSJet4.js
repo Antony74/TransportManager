@@ -159,8 +159,6 @@ function getIndices()
 
 function updateDatabase(obj)
 {
-    console.log(JSON.stringify(obj, null, 4));
-
     var result = dface.updateDatabase(sDatabaseFilename, obj);
 
     if (typeof result.Error == 'string')
