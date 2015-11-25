@@ -2,9 +2,21 @@
 
 function generateReport(arrSpans, coreApi, fnDone)
 {
+    var sLog = '';
+
     var arrAgeThresholds = [60, 80]; // This configures what age-ranges we report upon
 
-    var sLog = '';
+    //
+    // Calculate date thresholds (use start of first span for consistency)
+    //
+
+    var arrDateThresholds = [];
+    for (var n = 0; n < arrAgeThresholds.length; ++n)
+    {
+        var dateThreshold = new Date(arrSpans[0].dateFrom);
+        dateThreshold.setFullYear(dateThreshold.getFullYear() - arrAgeThresholds[n]);
+        arrDateThresholds.push(dateThreshold);
+    }
 
     //
     // Cache the destination types
@@ -213,35 +225,76 @@ function generateReport(arrSpans, coreApi, fnDone)
 
                 selectSql(sSql + sSubquery + ')', fnFailed, function(oResult)
                 {
-                    // Where gender is not specified, see if we can infer it from title
-                    for (var n = 0; n < oResult.records.length; ++n)
+                    function getFullName(oRecord)
                     {
-                        if (oResult.records[n]['Gender'] == null)
+                        return oRecord['Title'] + ' ' + oRecord['Firstname'] + ' ' + oRecord['Initial'] + ' ' + oRecord['Surname'];
+                    }
+
+                    for (var nRecord = 0; nRecord < oResult.records.length; ++nRecord)
+                    {
+                        // Where gender is not specified, see if we can infer it from title
+                        if (oResult.records[nRecord]['Gender'] == null)
                         {
-                            var sTitle = oResult.records[n]['Title'];
+                            var sTitle = oResult.records[nRecord]['Title'];
 
                             if (sTitle == 'Mr.')
                             {
-                                oResult.records[n]['Gender'] = 'M';
+                                oResult.records[nRecord]['Gender'] = 'M';
                             }
                             else if (sTitle == 'Mrs.' || sTitle == 'Miss.' || sTitle == 'Ms.')
                             {
-                                oResult.records[n]['Gender'] = 'F';
+                                oResult.records[nRecord]['Gender'] = 'F';
                             }
                             else
                             {
-                                oResult.records[n]['Gender'] = 'Unknown';
+                                oResult.records[nRecord]['Gender'] = 'Unknown';
 
-                                sLog += '<A href="#' + oResult.records[n]['ClientID'] + '">';
-                                sLog += 'Could not infer gender of ' + oResult.records[n]['Title'] + ' ' + oResult.records[n]['Firstname'] + ' ' + oResult.records[n]['Initial'] + ' ' + oResult.records[n]['Surname'];
+                                sLog += '<A href="#' + oResult.records[nRecord]['ClientID'] + '">';
+                                sLog += 'Could not infer gender of ' + getFullName(oResult.records[nRecord]);
                                 sLog += '</A><BR>\n';
                             }
                         }
-                    }
-                    // Finished trying to infer gender
 
+                        // Find age-band
+                        var dob = new Date(oResult.records[nRecord]['DateofBirth']);
+
+                        if (oResult.records[nRecord]['DateofBirth'] == null)
+                        {
+                            oResult.records[nRecord]['AgeBand'] = 'Unknown';
+
+                            sLog += '<A href="#' + oResult.records[nRecord]['ClientID'] + '">';
+                            sLog += 'No date of birth for ' + getFullName(oResult.records[nRecord]);
+                            sLog += '</A><BR>\n';
+                        }
+                        else if (dob <= arrDateThresholds[arrDateThresholds.length - 1])
+                        {
+                            oResult.records[nRecord]['AgeBand'] = arrAgeThresholds[arrAgeThresholds.length - 1] + '+';
+                        }
+                        else
+                        {
+                            for (var nThreshold = 0; nThreshold < arrDateThresholds.length; ++nThreshold)
+                            {
+                                if (dob > arrDateThresholds[nThreshold])
+                                {
+                                    if (nThreshold == 0)
+                                    {
+                                        oResult.records[nRecord]['AgeBand'] = 'Under ' + arrAgeThresholds[0];
+                                    }
+                                    else
+                                    {
+                                        oResult.records[nRecord]['AgeBand'] = arrAgeThresholds[nThreshold-1] + '-' + arrAgeThresholds[nThreshold];
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                   }
+ 
                     var oGenders = reportCountValues(oResult.records, 'Gender');
                     oJsonReport.clientGender.push(oGenders);
+
+                    var oAgeBands = reportCountValues(oResult.records, 'AgeBand');
+                    oJsonReport.clientAge.push(oAgeBands);
 
                     // We can use this total to fill in 'Number of clients travelling at least once'
                     oJsonReport.uniqueClients.push(oGenders['Total']);
@@ -344,9 +397,19 @@ function generateReport(arrSpans, coreApi, fnDone)
             'Dr.',
             'Miscellaneous',
             'Other',
-            'Total',
-            'Total client journey-legs'
         ];
+
+        arrSpecialOrdering.push('Under ' + arrAgeThresholds[0]);
+
+        for (var nThreshold = 1; nThreshold < arrAgeThresholds.length; ++nThreshold)
+        {
+            arrSpecialOrdering.push(arrAgeThresholds[nThreshold-1] + '-' + arrAgeThresholds[nThreshold]);
+        }
+
+        arrSpecialOrdering.push(arrAgeThresholds[arrAgeThresholds.length - 1] + '+');
+        arrSpecialOrdering.push('Unknown');
+        arrSpecialOrdering.push('Total');
+        arrSpecialOrdering.push('Total client journey-legs');
 
         return rows.sort(function(row1, row2)
         {
@@ -467,6 +530,9 @@ function generateReport(arrSpans, coreApi, fnDone)
 
         sHtml += reportSubHeading("Client gender", nColCount);
         sHtml += reportHtmlRow(oJsonReport.clientGender, bShowTotals);
+
+        sHtml += reportSubHeading("Client age", nColCount);
+        sHtml += reportHtmlRow(oJsonReport.clientAge, bShowTotals);
 
         sHtml += reportSubHeading('Jobs in period', nColCount);
         sHtml += reportHtmlRow(oJsonReport.jobStatus, bShowTotals);
