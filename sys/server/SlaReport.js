@@ -2,6 +2,10 @@
 
 function generateReport(arrSpans, coreApi, fnDone)
 {
+    var arrAgeThresholds = [60, 80]; // This configures what age-ranges we report upon
+
+    var sLog = '';
+
     //
     // Cache the destination types
     //
@@ -25,8 +29,9 @@ function generateReport(arrSpans, coreApi, fnDone)
             periodStart        : [],
             periodEnd          : [],
             uniqueClients      : [],
+            clientGender       : [],
+            clientAge          : [],
             jobStatus          : [],
-            clientTitle        : [],
             isOneWay           : [],
             involvesWheelchair : [],
             typeOfDestination  : [],
@@ -45,7 +50,12 @@ function generateReport(arrSpans, coreApi, fnDone)
             {
                 reportUniqueClients(oJsonReport, simpleSelectSql, fnFailed, function()
                 {
-                    fnDone(reportHtml(oJsonReport));
+                    if (sLog == '')
+                    {
+                        sLog = '&nbsp;';
+                    }
+
+                    fnDone({output: reportHtml(oJsonReport), log: sLog});
                 });
             }
         }
@@ -133,7 +143,7 @@ function generateReport(arrSpans, coreApi, fnDone)
         {
             oJsonReport.jobStatus.push(reportCountValues(oResult.records, 'status'));
 
-            var sSql = 'SELECT JobIsDVOWheelchair OR Clients.IsWheelchair AS Wheelchair, IsJobOneWay, Clients.Title, Clients.Firstname, Clients.Surname, Destinations.TypeID AS DestinationTypeID'
+            var sSql = 'SELECT JobIsDVOWheelchair OR Clients.IsWheelchair AS Wheelchair, IsJobOneWay, Destinations.TypeID AS DestinationTypeID'
                      + ' FROM (jobs'
                      + ' INNER JOIN Clients ON jobs.ClientID = Clients.ClientID)'
                      + ' INNER JOIN Destinations ON jobs.DestinationID = Destinations.DestinationID'
@@ -146,29 +156,6 @@ function generateReport(arrSpans, coreApi, fnDone)
                     var oRecord = oResult.records[n];
                     oRecord.DestinationTypeID = oDestinationTypes[oRecord.DestinationTypeID];
                 }
-
-                var oSummaryOfClientTitles = reportCountValues(oResult.records, 'Title');
-
-                for (var nJob = 0; nJob < oResult.records.length; ++nJob)
-                {
-                    var sTitle = oResult.records[nJob]['Title'];
-
-                    // If title does not imply gender...
-                    if (sTitle != 'Mr.' && sTitle != 'Mrs.' && sTitle != 'Miss.' && sTitle != 'Ms.')
-                    {
-                        // ...we need to display the clients name in the report...
-                        var sFirstname = oResult.records[nJob]['Firstname'];
-                        var sSurname = oResult.records[nJob]['Surname'];
-            
-                        // ...but it does need to be asterisked out while we're still discussing the report via e-mail
-                        var sFullName = [sTitle, asterisk(sFirstname), asterisk(sSurname)].join(' ');
-
-                        oSummaryOfClientTitles[sTitle] += '<BR/> ' + sFullName;
-                    }
-                }
-
-                combineSummaryRecords(oSummaryOfClientTitles, ['Mrs.', 'Miss.', 'Ms.'], '');
-                oJsonReport.clientTitle.push(oSummaryOfClientTitles);
 
                 var oSummaryIsJobOneWay = reportCountValues(oResult.records, 'IsJobOneWay');
 
@@ -199,7 +186,9 @@ function generateReport(arrSpans, coreApi, fnDone)
     //
     function reportUniqueClients(oJsonReport, selectSql, fnFailed, fnDone)
     {
-        var sSql = 'SELECT COUNT(ClientID) FROM Clients WHERE ClientID IN (SELECT ClientID FROM jobs WHERE ';
+        var sSql = 'SELECT Clients.ClientID, Title, Gender, DateofBirth, Firstname, Initial, Surname FROM (Clients'
+                 + ' LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)'
+                 + ' WHERE Clients.ClientID IN (SELECT ClientID FROM jobs WHERE ';
 
         var arrPeriodSubQueries = [];
         for (var nPeriod = 0; nPeriod < oJsonReport.periodStart.length; ++nPeriod)
@@ -224,9 +213,38 @@ function generateReport(arrSpans, coreApi, fnDone)
 
                 selectSql(sSql + sSubquery + ')', fnFailed, function(oResult)
                 {
-                    var oRecord = oResult['records'][0];
-                    var nUniqueClients = oRecord[Object.keys(oRecord)[0]];
-                    oJsonReport.uniqueClients.push(nUniqueClients);
+                    // Where gender is not specified, see if we can infer it from title
+                    for (var n = 0; n < oResult.records.length; ++n)
+                    {
+                        if (oResult.records[n]['Gender'] == null)
+                        {
+                            var sTitle = oResult.records[n]['Title'];
+
+                            if (sTitle == 'Mr.')
+                            {
+                                oResult.records[n]['Gender'] = 'M';
+                            }
+                            else if (sTitle == 'Mrs.' || sTitle == 'Miss.' || sTitle == 'Ms.')
+                            {
+                                oResult.records[n]['Gender'] = 'F';
+                            }
+                            else
+                            {
+                                oResult.records[n]['Gender'] = 'Unknown';
+
+                                sLog += '<A href="#' + oResult.records[n]['ClientID'] + '">';
+                                sLog += 'Could not infer gender of ' + oResult.records[n]['Title'] + ' ' + oResult.records[n]['Firstname'] + ' ' + oResult.records[n]['Initial'] + ' ' + oResult.records[n]['Surname'];
+                                sLog += '</A><BR>\n';
+                            }
+                        }
+                    }
+                    // Finished trying to infer gender
+
+                    var oGenders = reportCountValues(oResult.records, 'Gender');
+                    oJsonReport.clientGender.push(oGenders);
+
+                    // We can use this total to fill in 'Number of clients travelling at least once'
+                    oJsonReport.uniqueClients.push(oGenders['Total']);
 
                     subquery();
                 });
@@ -447,13 +465,13 @@ function generateReport(arrSpans, coreApi, fnDone)
         }
         sHtml += '        </tr>\r\n'
 
+        sHtml += reportSubHeading("Client gender", nColCount);
+        sHtml += reportHtmlRow(oJsonReport.clientGender, bShowTotals);
+
         sHtml += reportSubHeading('Jobs in period', nColCount);
         sHtml += reportHtmlRow(oJsonReport.jobStatus, bShowTotals);
 
         sHtml += reportSubHeading('Now considering only "Closed" jobs', nColCount);
-
-        sHtml += reportSubHeading("Client's title", nColCount);
-        sHtml += reportHtmlRow(oJsonReport.clientTitle, bShowTotals);
 
         sHtml += reportSubHeading("Job is one way?", nColCount);
         sHtml += reportHtmlRow(oJsonReport.isOneWay, bShowTotals);

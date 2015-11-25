@@ -77,10 +77,12 @@ $(document).ready(function()
                 }
                 else
                 {
+                    $('#reportLog').html(oReport['log']);
+
                     var newWindow = window.open();
                     if (newWindow)
                     {
-                        $(newWindow.document.body).append(oReport);
+                        $(newWindow.document.body).append(oReport['output']);
                     }
                 }
 
