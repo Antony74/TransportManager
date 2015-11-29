@@ -53,10 +53,10 @@ function report_sla(arrSpans, fnDone)
     oSlaReport.generateReport(arrSpans, exports, fnDone);
 }
 
-function report_DriverActivity(dateFrom, dateTo, fnDone)
+function report_DriverActivity(dateFrom, dateTo, bSummaryOnly, fnDone)
 {
     var oDriverActivityReport = require('./DriverActivityReport.js');
-    oDriverActivityReport.generateReport(dateFrom, dateTo, exports, fnDone);
+    oDriverActivityReport.generateReport(dateFrom, dateTo, bSummaryOnly, exports, fnDone);
 }
 
 exports.selectSql      = selectSql;

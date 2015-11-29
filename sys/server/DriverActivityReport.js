@@ -1,6 +1,6 @@
 ///<reference path='../interface/node.d.ts' />
 
-function generateReport(dateFrom, dateTo, coreApi, fnDone)
+function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone)
 {
     function fnFailed(sMsg)
     {
@@ -76,7 +76,7 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
 
             if (oRecord['DriverID'] != nPreviousDriverID)
             {
-                if (nPreviousDriverID != -1)
+                if (nPreviousDriverID != -1 && !bSummaryOnly)
                 {
                     sHtml += '</TD></TR></table>\r\n';
                 }
@@ -89,10 +89,14 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
                 sHtml += '<TD>' + oDriverToDriveCount[oRecord['DriverID']] + '</TD>';
 
                 sHtml += '</TR>'
-                sHtml += '<TR><TD colspan="4" style="padding:0px">\r\n';
 
-                sHtml += '<table style="width:100%">\r\n';
-                sHtml += '<TH>Date</TH><TH>Client Name</TH><TH>Postcode</TH><TH>Destination</TH>\r\n';
+                if (!bSummaryOnly)
+                {
+                    sHtml += '<TR><TD colspan="4" style="padding:0px">\r\n';
+
+                    sHtml += '<table style="width:100%">\r\n';
+                    sHtml += '<TH>Date</TH><TH>Client Name</TH><TH>Postcode</TH><TH>Destination</TH></TR>\r\n';
+                }
 
                 nPreviousDriverID = oRecord['DriverID'];
             }
@@ -100,12 +104,15 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
             var sClientName = oRecord['Clients.Title'] + ' ' + oRecord['Clients.Firstname'] + ' ' + oRecord['Initial'] + ' ' + oRecord['Clients.Surname'];
             var jobDate = new Date(oRecord['JobPickUpDateTime']);
 
-            sHtml += '<TR>';
-            sHtml += '    <TD>' + dateUtil.getDDMMYYYY(jobDate) + '</TD>';
-            sHtml += '    <TD>' + sClientName + '</TD>';
-            sHtml += '    <TD>' + oRecord['Postcode'] + '</TD>';
-            sHtml += '    <TD>' + oRecord['DestinationName'] + '</TD>';
-            sHtml += '</TR>';
+            if (!bSummaryOnly)
+            {
+                sHtml += '<TR>';
+                sHtml += '    <TD>' + dateUtil.getDDMMYYYY(jobDate) + '</TD>';
+                sHtml += '    <TD>' + sClientName + '</TD>';
+                sHtml += '    <TD>' + oRecord['Postcode'] + '</TD>';
+                sHtml += '    <TD>' + oRecord['DestinationName'] + '</TD>';
+                sHtml += '</TR>';
+            }
         }
 
         sHtml += '</TD></TR></table>\r\n';

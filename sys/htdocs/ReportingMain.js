@@ -108,6 +108,16 @@ $(document).ready(function()
 
     $('#generateDriverActivityReport').click(function()
     {
+        generateDriverActivityReport(false);
+    });
+
+    $('#generateDriverActivitySummaryReport').click(function()
+    {
+        generateDriverActivityReport(true);
+    });
+
+    function generateDriverActivityReport(bSummaryOnly)
+    {
         var retval = validateDateSpan('DriverActivityStart', 'DriverActivityEnd');
 
         if (retval.bValid == true)
@@ -115,7 +125,7 @@ $(document).ready(function()
             $('#generateSlaReport').html('Processing...').prop('disabled', true);
             $('#reportLog').html('&nbsp;');
 
-            getCoreApiProxy().report_DriverActivity(retval.dateFrom, retval.dateTo, function(oReport)
+            getCoreApiProxy().report_DriverActivity(retval.dateFrom, retval.dateTo, bSummaryOnly, function(oReport)
             {
                 if (oReport['Error'] != undefined)
                 {
@@ -137,7 +147,7 @@ $(document).ready(function()
         {
             alert(retval.sMessage);
         }
-    });
+    }
 
     $('#generateDestinationSummaryReport').click(function()
     {
