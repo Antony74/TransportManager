@@ -112,7 +112,26 @@ $(document).ready(function()
 
         if (retval.bValid == true)
         {
-            alert('Dates valid.  Antony is still working on the Driver Activity report');
+            $('#generateSlaReport').html('Processing...').prop('disabled', true);
+            $('#reportLog').html('&nbsp;');
+
+            getCoreApiProxy().report_DriverActivity(retval.dateFrom, retval.dateTo, function(oReport)
+            {
+                if (oReport['Error'] != undefined)
+                {
+                    alert(oReport['Error']);
+                }
+                else
+                {
+                    var newWindow = window.open();
+                    if (newWindow)
+                    {
+                        $(newWindow.document.body).append(oReport['output']);
+                    }
+                }
+
+                $('#generateSlaReport').html('Generate Report').prop('disabled', false);
+            });
         }
         else
         {

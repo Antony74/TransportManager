@@ -645,14 +645,6 @@ function generateReport(arrSpans, coreApi, fnDone)
     }
 
     //
-    // asterisk
-    //
-    function asterisk(s)
-    {
-        return Array(s.length + 1).join('*');
-    }
-
-    //
     // fnFailed
     //
     function fnFailed(sMsg)

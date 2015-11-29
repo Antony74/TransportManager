@@ -53,8 +53,14 @@ function report_sla(arrSpans, fnDone)
     oSlaReport.generateReport(arrSpans, exports, fnDone);
 }
 
+function report_DriverActivity(dateFrom, dateTo, fnDone)
+{
+    var oDriverActivityReport = require('./DriverActivityReport.js');
+    oDriverActivityReport.generateReport(dateFrom, dateTo, exports, fnDone);
+}
+
 exports.selectSql      = selectSql;
 exports.getIndices     = getIndices;
 exports.updateDatabase = updateDatabase;
 exports.report_sla = report_sla;
-
+exports.report_DriverActivity = report_DriverActivity;

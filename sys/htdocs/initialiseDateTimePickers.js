@@ -1,4 +1,5 @@
 ///<reference path='../interface/jquery.ui.datetimepicker.d.ts' />
+///<reference path='../interface/node.d.ts' />
 
 //
 // initialiseDateTimePickers
@@ -200,5 +201,10 @@ function parseDateTime(sDateTime, bDateOnly)
     }
 
     return new Date(Date.UTC(nYear, nMonth - 1, nDay, nHour, nMinute, nSecond));
+}
+
+if (typeof(exports) != 'undefined')
+{
+    exports.getDDMMYYYY = getDDMMYYYY;
 }
 
