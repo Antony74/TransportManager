@@ -2,6 +2,8 @@
 
 function generateReport(arrSpans, coreApi, fnDone)
 {
+    var utils = require('./ReportingUtils.js');
+
     var sLog = '';
 
     var arrAgeThresholds = [60, 80]; // This configures what age-ranges we report upon
@@ -22,7 +24,7 @@ function generateReport(arrSpans, coreApi, fnDone)
     // Cache the destination types
     //
 
-    simpleSelectSql('SELECT DestinationTypeID, DestinationLevel1 FROM DestinationType', fnFailed, function(oResult)
+    utils.simpleSelectSql('SELECT DestinationTypeID, DestinationLevel1 FROM DestinationType', coreApi, fnFailed, function(oResult)
     {
         var oDestinationTypes = {};
 
@@ -56,11 +58,11 @@ function generateReport(arrSpans, coreApi, fnDone)
             {
                 var oSpan = arrSpans.shift();
 
-                reportGeneratePeriod(formatdate(oSpan.dateFrom), formatdate(oSpan.dateTo), oJsonReport, simpleSelectSql, fnFailed, nextSpan, oDestinationTypes);
+                reportGeneratePeriod(utils.formatdate(oSpan.dateFrom), utils.formatdate(oSpan.dateTo), oJsonReport, fnFailed, nextSpan, oDestinationTypes);
             }
             else
             {
-                reportUniqueClients(oJsonReport, simpleSelectSql, fnFailed, function()
+                reportUniqueClients(oJsonReport, fnFailed, function()
                 {
                     if (sLog == '')
                     {
@@ -72,86 +74,22 @@ function generateReport(arrSpans, coreApi, fnDone)
             }
         }
 
-        function asTwoCharacterString(n)
-        {
-            var s = n.toString();
-            return (s.length == 1) ? (0 + s) : s;
-        }
-
-        function formatdate(date)
-        {
-            if (typeof(date) == 'string')
-            {
-                date = new Date(date);
-            }
-
-            return date.getFullYear().toString() + '/' + asTwoCharacterString(date.getMonth() + 1) + '/' + asTwoCharacterString(date.getDate());
-        }
-
         nextSpan();
     });
 
     //
-    // simpleSelectSql
-    //
-    function simpleSelectSql(sSql, fnFailed, fnDone)
-    {
-        var oJson = null;
-        getMoreData(0);
-
-        function getMoreData(nStartRecord)
-        {
-            coreApi.selectSql(sSql, nStartRecord, 0, function(data)
-            {
-                if (data.Error != undefined)
-                {
-                    fnFailed(data.Error);
-                }
-                else
-                {
-                    if (oJson == null)
-                    {
-                        oJson = data;
-                    }
-                    else
-                    {
-                        oJson['records'] = oJson['records'].concat(data['records']);
-                    }
-
-                    if (data.more)
-                    {
-                        getMoreData(data.startRecord + data.records.length);
-                    }
-                    else
-                    {
-                        fnDone(oJson);
-                    }
-                }
-            });
-        }
-    }
-
-    //
-    // getPeriodSubQuery
-    //
-    function getPeriodSubQuery(sPeriodStart, sPeriodEnd)
-    {
-        return '(JobAppointmentDateTime > #' + sPeriodStart + ' 00:00# AND JobAppointmentDateTime < #' + sPeriodEnd + ' 23:59#)';
-    }
-
-    //
     // reportGeneratePeriod
     //
-    function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, selectSql, fnFailed, fnDone, oDestinationTypes)
+    function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, fnFailed, fnDone, oDestinationTypes)
     {
         oJsonReport.periodStart.push(sPeriodStart);
         oJsonReport.periodEnd.push(sPeriodEnd);
 
-        var sPeriodSubQuery = getPeriodSubQuery(sPeriodStart, sPeriodEnd);
+        var sPeriodSubQuery = utils.getPeriodSubQuery(sPeriodStart, sPeriodEnd);
 
         var sStatusQuery = 'SELECT status FROM jobs WHERE ' + sPeriodSubQuery;
 
-        selectSql(sStatusQuery, fnFailed, function(oResult)
+        utils.simpleSelectSql(sStatusQuery, coreApi, fnFailed, function(oResult)
         {
             oJsonReport.jobStatus.push(reportCountValues(oResult.records, 'status'));
 
@@ -161,7 +99,7 @@ function generateReport(arrSpans, coreApi, fnDone)
                      + ' INNER JOIN Destinations ON jobs.DestinationID = Destinations.DestinationID'
                      + ' WHERE status="Closed" AND ' + sPeriodSubQuery;
 
-            selectSql(sSql, fnFailed, function(oResult)
+            utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult)
             {
                 for (var n = 0; n < oResult.records.length; ++n)
                 {
@@ -196,7 +134,7 @@ function generateReport(arrSpans, coreApi, fnDone)
     //
     // reportUniqueClients
     //
-    function reportUniqueClients(oJsonReport, selectSql, fnFailed, fnDone)
+    function reportUniqueClients(oJsonReport, fnFailed, fnDone)
     {
         var sSql = 'SELECT Clients.ClientID, Title, Gender, DateofBirth, Firstname, Initial, Surname FROM (Clients'
                  + ' LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)'
@@ -205,7 +143,7 @@ function generateReport(arrSpans, coreApi, fnDone)
         var arrPeriodSubQueries = [];
         for (var nPeriod = 0; nPeriod < oJsonReport.periodStart.length; ++nPeriod)
         {
-            var sPeriodSubQuery = getPeriodSubQuery(oJsonReport.periodStart[nPeriod], oJsonReport.periodEnd[nPeriod]);
+            var sPeriodSubQuery = utils.getPeriodSubQuery(oJsonReport.periodStart[nPeriod], oJsonReport.periodEnd[nPeriod]);
             arrPeriodSubQueries.push(sPeriodSubQuery);
         }
 
@@ -223,7 +161,7 @@ function generateReport(arrSpans, coreApi, fnDone)
             {
                 var sSubquery = arrPeriodSubQueries.pop();
 
-                selectSql(sSql + sSubquery + ')', fnFailed, function(oResult)
+                utils.simpleSelectSql(sSql + sSubquery + ')', coreApi, fnFailed, function(oResult)
                 {
                     function getFullName(oRecord)
                     {

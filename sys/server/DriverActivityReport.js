@@ -2,80 +2,15 @@
 
 function generateReport(dateFrom, dateTo, coreApi, fnDone)
 {
-    var dateUtil = require('../htdocs/initialiseDateTimePickers.js');
-
-    //
-    // simpleSelectSql
-    //
-    function simpleSelectSql(sSql, fnFailed, fnDone)
-    {
-        var oJson = null;
-        getMoreData(0);
-
-        function getMoreData(nStartRecord)
-        {
-            coreApi.selectSql(sSql, nStartRecord, 0, function(data)
-            {
-                if (data.Error != undefined)
-                {
-                    fnFailed(data.Error);
-                }
-                else
-                {
-                    if (oJson == null)
-                    {
-                        oJson = data;
-                    }
-                    else
-                    {
-                        oJson['records'] = oJson['records'].concat(data['records']);
-                    }
-
-                    if (data.more)
-                    {
-                        getMoreData(data.startRecord + data.records.length);
-                    }
-                    else
-                    {
-                        fnDone(oJson);
-                    }
-                }
-            });
-        }
-    }
-
-    //
-    // getPeriodSubQuery
-    //
-    function getPeriodSubQuery(sPeriodStart, sPeriodEnd)
-    {
-        return '(JobAppointmentDateTime > #' + sPeriodStart + ' 00:00# AND JobAppointmentDateTime < #' + sPeriodEnd + ' 23:59#)';
-    }
-
-    function formatdate(date)
-    {
-        if (typeof(date) == 'string')
-        {
-            date = new Date(date);
-        }
-
-        return date.getFullYear().toString() + '/' + asTwoCharacterString(date.getMonth() + 1) + '/' + asTwoCharacterString(date.getDate());
-    }
-
-    function asTwoCharacterString(n)
-    {
-        var s = n.toString();
-        return (s.length == 1) ? (0 + s) : s;
-    }
-
     function fnFailed(sMsg)
     {
         fnDone({Error:sMsg});
     }
 
-    // Done bringing in functions via copy-paste.  TO DO: Find a saner way of re-using these!
+    var utils = require('./ReportingUtils.js');
+    var dateUtil = require('../htdocs/initialiseDateTimePickers.js');
 
-    var sPeriodSubQuery = getPeriodSubQuery(formatdate(dateFrom), formatdate(dateTo));
+    var sPeriodSubQuery = utils.getPeriodSubQuery(utils.formatdate(dateFrom), utils.formatdate(dateTo));
 
     var sSql = 'SELECT Drivers.DriverID, Drivers.Title, Drivers.Firstname, Drivers.Surname, JobPickUpDateTime, Clients.Title, Clients.Firstname, Clients.Initial, Clients.Surname, Clients.Postcode, Destinations.Name AS DestinationName'
              + ' FROM (((jobs'
@@ -85,7 +20,7 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
              + ' WHERE status="Closed" AND ' + sPeriodSubQuery
              + ' ORDER BY Drivers.Surname, Drivers.FirstName, JobPickUpDateTime';
 
-    simpleSelectSql(sSql, fnFailed, function(oResult)
+    utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult)
     {
         // First pass, count number of drives for each driver
         var oDriverToDriveCount = {};
