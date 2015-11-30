@@ -182,7 +182,23 @@ $(document).ready(function()
 
         if (retval.bValid == true)
         {
-            alert('Dates valid.  Antony is still working on the Cancellation List report');
+            $('#reportLog').html('&nbsp;');
+
+            getCoreApiProxy().report_CancellationList(retval.dateFrom, retval.dateTo, function(oReport)
+            {
+                if (oReport['Error'] != undefined)
+                {
+                    alert(oReport['Error']);
+                }
+                else
+                {
+                    var newWindow = window.open();
+                    if (newWindow)
+                    {
+                        $(newWindow.document.body).append(oReport['output']);
+                    }
+                }
+            });
         }
         else
         {
