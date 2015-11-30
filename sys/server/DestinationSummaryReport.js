@@ -52,7 +52,7 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
         var sHtml = '<!DOCTYPE html>                             \r\n'
                   + '<html>                                      \r\n'
                   + '<head>                                      \r\n'
-                  + '    <title>DVC - Destination Report</title> \r\n'
+                  + '    <title>DVC - Destination Summary Report</title> \r\n'
                   + '    <style>                                 \r\n'
                   + '        table, td, th                       \r\n'
                   + '        {                                   \r\n'
