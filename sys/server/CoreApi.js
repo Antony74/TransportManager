@@ -59,8 +59,16 @@ function report_DriverActivity(dateFrom, dateTo, bSummaryOnly, fnDone)
     oDriverActivityReport.generateReport(dateFrom, dateTo, bSummaryOnly, exports, fnDone);
 }
 
+function report_DestinationSummary(dateFrom, dateTo, fnDone)
+{
+    var oDestinationReport = require('./DestinationSummaryReport.js');
+    oDestinationReport.generateReport(dateFrom, dateTo, exports, fnDone);
+}
+
 exports.selectSql      = selectSql;
 exports.getIndices     = getIndices;
 exports.updateDatabase = updateDatabase;
 exports.report_sla = report_sla;
 exports.report_DriverActivity = report_DriverActivity;
+exports.report_DestinationSummary = report_DestinationSummary;
+

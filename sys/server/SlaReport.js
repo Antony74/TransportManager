@@ -441,7 +441,7 @@ function generateReport(arrSpans, coreApi, fnDone)
 
         for (var n = 0; n < oJsonReport.periodStart.length; ++n)
         {
-            var sPeriod = reverseDateFormat(oJsonReport.periodStart[n]) + ' - ' + reverseDateFormat(oJsonReport.periodEnd[n]);
+            var sPeriod = utils.reverseDateFormat(oJsonReport.periodStart[n]) + ' - ' + utils.reverseDateFormat(oJsonReport.periodEnd[n]);
             sHtml += '            <th>' + sPeriod + '</th>           \r\n';
         }
 
@@ -572,14 +572,6 @@ function generateReport(arrSpans, coreApi, fnDone)
         }
 
         return sHtml;
-    }
-
-    //
-    // reverseDateFormat
-    //
-    function reverseDateFormat(sDate)
-    {
-        return sDate.split('/').reverse().join('/');
     }
 
     //

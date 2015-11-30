@@ -3,6 +3,7 @@
 exports.simpleSelectSql = simpleSelectSql;
 exports.getPeriodSubQuery = getPeriodSubQuery;
 exports.formatdate = formatdate;
+exports.reverseDateFormat = reverseDateFormat;
 
 //
 // simpleSelectSql
@@ -72,5 +73,13 @@ function asTwoCharacterString(n)
 {
     var s = n.toString();
     return (s.length == 1) ? (0 + s) : s;
+}
+
+//
+// reverseDateFormat
+//
+function reverseDateFormat(sDate)
+{
+    return sDate.split('/').reverse().join('/');
 }
 
