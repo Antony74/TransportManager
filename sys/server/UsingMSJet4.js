@@ -188,7 +188,7 @@ function ensureShortcutExists()
     sScript += '"' + process.execPath + '" "' + __dirname + '\\TransportManagerInWindowsSysTray.js"\r\n';
     fs.writeFile(sBatchFile, sScript);
 
-    var sShortcutFile = __dirname + '/../../Transport Manager Reports.url';
+    var sShortcutFile = __dirname + '/../../Tr-Man- Reports.url';
     fs.writeFile(sShortcutFile, '[InternetShortcut]\r\n'
                               + 'URL=file://' + __dirname + '\\TransportManager.bat\r\n'
                               + 'WorkingDir=' + __dirname + '\r\n'
