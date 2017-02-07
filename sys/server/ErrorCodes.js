@@ -1,4 +1,3 @@
-///<reference path='../interface/node.d.ts' />
 
 exports.PLATFORM_ISSUE = 101;
 exports.PORT_IN_USE =    102;
@@ -10,6 +9,6 @@ exports.errorText[exports.PORT_IN_USE]    = "Port already in use.  This usually 
 exports.setExitCode = function(nExitCode)
 {
     process.on('exit', function() { process.exit(nExitCode); });
-}
+};
 
 

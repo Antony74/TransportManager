@@ -1,4 +1,3 @@
-///<reference path='../interface/node.d.ts' />
 
 var fs = require('fs');
 var dface = require('dface');
@@ -19,7 +18,7 @@ function copyFile(source, target, doneCopying)
         console.log(err);
     });
 
-    streamOut.on('close', function(ex)
+    streamOut.on('close', function()
     {
         doneCopying();
     });
@@ -52,7 +51,7 @@ function runSQL(sFilenameSql)
     var arrSql2 = [];
 
     // Remove empty statements
-    for (var n = 0; n < arrSql1.length; ++n)
+    for (n = 0; n < arrSql1.length; ++n)
     {
         var sStatement = arrSql1[n].trim();
         
@@ -69,7 +68,6 @@ function runSQL(sFilenameSql)
 function ensureDatabaseIsReady(doneEnsuring)
 {
     var sFilenameEmpty = __dirname + '/Blank2002Database.mdb';
-    var sFilenameSql = __dirname + '../../TransportManager.sql';
 
     fs.exists(sDatabaseFilename, function(bExists)
     {

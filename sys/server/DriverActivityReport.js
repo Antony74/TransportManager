@@ -1,4 +1,3 @@
-///<reference path='../interface/node.d.ts' />
 
 function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone)
 {
@@ -70,7 +69,7 @@ function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone)
 
         var nPreviousDriverID = -1;
 
-        for (var nRecord = 0; nRecord < oResult['records'].length; ++nRecord)
+        for (nRecord = 0; nRecord < oResult['records'].length; ++nRecord)
         {
             var oRecord = oResult['records'][nRecord];
 
@@ -88,7 +87,7 @@ function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone)
                 sHtml += '<TD><B>Journeys:</B></TD>';
                 sHtml += '<TD>' + oDriverToDriveCount[oRecord['DriverID']] + '</TD>';
 
-                sHtml += '</TR>'
+                sHtml += '</TR>';
 
                 if (!bSummaryOnly)
                 {

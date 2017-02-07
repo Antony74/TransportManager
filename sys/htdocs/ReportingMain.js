@@ -1,7 +1,3 @@
-///<reference path='./initialiseDateTimePickers.ts' />
-///<reference path='../interface/jquery.ui.datetimepicker.d.ts' />
-///<reference path='./ProxyApi.ts' />
-///<reference path='./dialogHandler.ts' />
 
 $(document).ready(function()
 {
@@ -11,7 +7,7 @@ $(document).ready(function()
     {
         timepicker : false,
         format     : 'd/m/Y',
-        onShow: function(date, input, event)
+        onShow: function(date, input)
         {
             onShowDate(input.context.id);
         }
@@ -315,7 +311,7 @@ function onShowDate(sID)
         {
             var datePrev = null;
 
-            for (var nSpan = 3; nSpan >= 1; --nSpan)
+            for (nSpan = 3; nSpan >= 1; --nSpan)
             {
                 var date = parseDate($('#SLA' + (nSpan+1) + 'Start').val());
                 if (date == null)

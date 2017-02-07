@@ -1,6 +1,3 @@
-///<reference path='../interface/jqueryui.d.ts' />
-///<reference path='./proxyApi.ts' />
-///<reference path='./dialogHandler.ts' />
 
 var dialogHandler = null;
 var currentFields = {};
@@ -24,7 +21,7 @@ function allReady()
     var currentQuery = 'select * from Clients order by ClientID';
     var sTableHeader = '';
 
-    var mainButtonset = $('#radio').buttonset();
+    $('#radio').buttonset();
     $('#radio span').css('width', '100px');
 
     function getCompareFunction(sFieldname, bAscending)
@@ -46,7 +43,7 @@ function allReady()
             {
                 return 0;
             }
-        }
+        };
     }
 
     function onTableHeaderClick()
@@ -98,7 +95,7 @@ function allReady()
     {
         var sHtml = '';
 
-        for(var n = 0 in arrRecords)
+        for(var n in arrRecords)
         {
             var rs = arrRecords[n];
 
@@ -220,30 +217,30 @@ function allReady()
                         {
                             var dateValue = new Date(value);
                             return getDDMMYYYY(dateValue) + '&nbsp;' + getHHMM(dateValue);
-                        }
+                        };
 
                         converter['toDialogValue'] = function(value)
                         {
                             var dateValue = new Date(value);
                             return getDDMMYYYY(dateValue) + ' ' + getHHMM(dateValue);
-                        }
+                        };
 
                         converter['fromDialogValue'] = function(dv)
                         {
                             return dv;
-                        }
+                        };
                     }
                     else
                     {
                         converter['toDialogValue'] = function(value)
                         {
                             return value;
-                        }
+                        };
 
                         converter['fromDialogValue'] = function(dv)
                         {
                             return dv;
-                        }
+                        };
 
                         if (fld['Type'] == 'YESNO')
                         {
@@ -257,7 +254,7 @@ function allReady()
                                 {
                                     return '&#x2716'; // Cross
                                 }
-                            }
+                            };
                         }
                         else
                         {
@@ -271,7 +268,7 @@ function allReady()
                                 {
                                     return this.toDialogValue(value);
                                 }
-                            }
+                            };
                         }
                     }
                     

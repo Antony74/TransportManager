@@ -1,4 +1,3 @@
-///<reference path='../interface/node.d.ts' />
 
 // Use this findCallback function for APIs where the callback is always the last argument.
 // If this not true of your API, please provide your own findCallback function.
@@ -18,21 +17,23 @@ function generateProxyApiSourceCode(api, sGetProxyFunctionName, sUrlPrefix, fnFi
 
 	var sOutput = '';
 
-    sOutput += "// THIS IS AN AUTO-GENERATED FILE (created by " + __filename + ", " + ts.getFullYear() + "/" + pad(ts.getMonth()+1) + "/" + pad(ts.getDate()) + " " + pad(ts.getHours()) + ":" + pad(ts.getMinutes()) + ")\n\n";
+    sOutput += "// THIS IS AN AUTO-GENERATED FILE (created by " + __filename + ", " + ts.getFullYear() + "/" + pad(ts.getMonth()+1) + "/" + pad(ts.getDate()) + " " + pad(ts.getHours()) + ":" + pad(ts.getMinutes()) + ")\r\n\r\n";
 
-	sOutput += "function " + sGetProxyFunctionName + "() {          \n\n";
+	sOutput += sGetProxyFunctionName + " = function() {          \r\n\r\n";
 
-    sOutput += "    function improveErrorMessage(numberStatus, textStatus) {  \n";
-    sOutput += "        if (textStatus == 'timeout')                \n";
-    sOutput += "            textStatus = 'Request timed out';       \n";
-    sOutput += "        else if (numberStatus == 0)                 \n";
-    sOutput += "            textStatus = 'No response from server'; \n";
-    sOutput += "                                                    \n";
-    sOutput += "        console.log(textStatus);                    \n";
-    sOutput += "        return textStatus;                          \n";
-    sOutput += "    }                                               \n\n";
+    sOutput += "    function improveErrorMessage(numberStatus, textStatus) {  \r\n";
+    sOutput += "        if (textStatus == 'timeout')                \r\n";
+    sOutput += "            textStatus = 'Request timed out';       \r\n";
+    sOutput += "        else if (numberStatus == 0)                 \r\n";
+    sOutput += "            textStatus = 'No response from server'; \r\n";
+    sOutput += "                                                    \r\n";
+    sOutput += "        console.log(textStatus);                    \r\n";
+    sOutput += "        return textStatus;                          \r\n";
+    sOutput += "    }                                               \r\n\r\n";
 
-	sOutput += "    var proxy = {                                   \n";
+	sOutput += "    var proxy = {                                   \r\n";
+
+    var arrFnSrc = [];
 
 	for (var sFnName in api)
 	{
@@ -69,44 +70,52 @@ function generateProxyApiSourceCode(api, sGetProxyFunctionName, sUrlPrefix, fnFi
 
 				var nCallback = fnFindCallback(fn.name, fn.argumentNames);
 
-				sOutput += '        ' + fn.name + ': function(' + fn.argumentNames.join(', ') + ') {\n';
-				sOutput += "            $.ajax(\n";
-				sOutput += "            {\n";
-				sOutput += "                type: 'POST',\n";
-				sOutput += "                url: '" + sUrlPrefix + fn.name + "',\n";
-				sOutput += '                data: JSON.stringify({\n';
+                var sFnSrc = '';
+				sFnSrc += '        ' + fn.name + ': function(' + fn.argumentNames.join(', ') + ') {\r\n';
+				sFnSrc += "            $.ajax(\r\n";
+				sFnSrc += "            {\r\n";
+				sFnSrc += "                type: 'POST',\r\n";
+				sFnSrc += "                url: '" + sUrlPrefix + fn.name + "',\r\n";
+				sFnSrc += '                data: JSON.stringify({\r\n';
 
 				var sIndent = '                ';
+                var arrLines = [];
 
-				for (var n = 0; n < fn.argumentNames.length; ++n)
+				for (n = 0; n < fn.argumentNames.length; ++n)
 				{
 					if (n != nCallback)
 					{
-						sOutput += sIndent + '    ' + fn.argumentNames[n] + ': ' + fn.argumentNames[n] + ',\n';
+						arrLines.push(sIndent + '    ' + fn.argumentNames[n] + ': ' + fn.argumentNames[n]);
 					}
 				}
 
-				sOutput += sIndent + '}, null, 4),\n'
-				sOutput += '                success: function(returnedData) {\n'
-				sOutput += '                    ' +fn.argumentNames[nCallback] + '(JSON.parse(returnedData));\n';
-				sOutput += '                },\n';
-				sOutput += '                error: function(jqXHR, textStatus, errorThrown) {\n';
-				sOutput += '                    ' + fn.argumentNames[nCallback] + "({Error:improveErrorMessage(jqXHR.status, textStatus)});\n";
-				sOutput += '                }\n';
-				sOutput += '            });\n';
-				sOutput += '        },\n';
+                sFnSrc += arrLines.join(',\r\n') + '\r\n';
+
+				sFnSrc += sIndent + '}, null, 4),\r\n';
+				sFnSrc += '                success: function(returnedData) {\r\n';
+				sFnSrc += '                    ' +fn.argumentNames[nCallback] + '(JSON.parse(returnedData));\r\n';
+				sFnSrc += '                },\r\n';
+				sFnSrc += '                error: function(jqXHR, textStatus) {\r\n';
+				sFnSrc += '                    ' + fn.argumentNames[nCallback] + "({Error:improveErrorMessage(jqXHR.status, textStatus)});\r\n";
+				sFnSrc += '                }\r\n';
+				sFnSrc += '            });\r\n';
+				sFnSrc += '        }';
+
+                arrFnSrc.push(sFnSrc);
 			}
 		}
 	}
 
-	sOutput += '    };                 \n\n';
+    sOutput += arrFnSrc.join(',\r\n') + '\r\n';
 
-	sOutput += "    " + sGetProxyFunctionName + " = function() {  \n";
-    sOutput += "        return proxy;  \n"
-	sOutput += '    }\n\n';
+	sOutput += '    };                 \r\n\r\n';
 
-    sOutput += "    return proxy;      \n"
-	sOutput += '}                      \n\n';
+	sOutput += "    " + sGetProxyFunctionName + " = function() {  \r\n";
+    sOutput += "        return proxy;  \r\n";
+	sOutput += '    };\r\n\r\n';
+
+    sOutput += "    return proxy;      \r\n";
+	sOutput += '};                     \r\n\r\n';
 
 	return {
 
@@ -187,7 +196,7 @@ function generateProxyApiSourceCode(api, sGetProxyFunctionName, sUrlPrefix, fnFi
 						if (typeof(postedData[sArgName]) == undefined)
 						{
 							var sMsg = 'Remote function "' + sRequestedFunction
-									 + '" called with no "' + sArgName + '" argument ';
+                                     + '" called with no "' + sArgName + '" argument ';
 
 							console.log(sMsg);
 							response.write(JSON.stringify({'Error': sMsg}, null, 4));
@@ -205,7 +214,7 @@ function generateProxyApiSourceCode(api, sGetProxyFunctionName, sUrlPrefix, fnFi
 
 				api[sRequestedFunction].apply(api, arrArguments);
 			});
-		},
+		}
 	};
 }
 

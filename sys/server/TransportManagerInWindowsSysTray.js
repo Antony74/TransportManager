@@ -1,4 +1,3 @@
-///<reference path='../interface/node.d.ts' />
 
 var wrapper = require('winsystraywrapper');
 var spawn = require('child_process').spawn;

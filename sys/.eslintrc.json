@@ -1,7 +1,17 @@
 {
     "env": {
         "browser": true,
-        "node": true
+        "node": true,
+        "jquery": true
+    },
+    "globals": { // Don't want any of these to be quite this global
+        "WScript": false,
+        "getDialogHandler": false,
+        "getDDMMYYYY": false,
+        "getHHMM": false,
+        "getCoreApiProxy": true,
+        "initialiseDateTimePickers": false,
+        "parseDate": false
     },
     "extends": "eslint:recommended",
     "rules": {
@@ -10,7 +20,7 @@
             "windows"
         ],
         "quotes": [
-            2, // "error",
+            0, // was "error",
             "single"
         ],
         "semi": [
@@ -27,6 +37,9 @@
         "no-warning-comments": [
             2, // "error",
             { "terms": [ "reference path" ], "location": "anywhere" }
+        ],
+        "no-func-assign": [
+            0 // "off"
         ]
     }
 }

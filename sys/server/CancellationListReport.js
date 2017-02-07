@@ -1,4 +1,3 @@
-///<reference path='../interface/node.d.ts' />
 
 function generateReport(dateFrom, dateTo, coreApi, fnDone)
 {
@@ -51,7 +50,7 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
             var sJobID = oResult['records'][nRow]['JobID'];
             var sNotes = oResult['records'][nRow]['Notes'];
 
-            sHtml += '<TR>\r\n'
+            sHtml += '<TR>\r\n';
             sHtml += '    <TD>' + sJobID + '</TD>\r\n';
             sHtml += '    <TD>' + sNotes + '</TD>\r\n';
             sHtml += '    <TD>&nbsp;</TD>        \r\n';

@@ -1,4 +1,3 @@
-///<reference path='../interface/node.d.ts' />
 
 if (typeof process == 'undefined' || typeof process.versions == 'undefined' || typeof process.versions.node == 'undefined')
 {
@@ -55,8 +54,7 @@ var proxy = proxyGenerator.generateProxyApiSourceCode(
 									sServerUrl,
 									proxyGenerator.findCallback_LastArgument);
 
-var sProxyApiSourceCode = "///<reference path='../interface/jquery.d.ts' />\n\n"
-						+ proxy.sSourceCode;
+var sProxyApiSourceCode = proxy.sSourceCode;
 
 // Done proxying the core API
 

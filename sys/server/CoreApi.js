@@ -1,4 +1,3 @@
-///<reference path='../interface/node.d.ts' />
 
 var platform = require('./UsingMSJet4.js');
 

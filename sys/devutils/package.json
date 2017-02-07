@@ -22,7 +22,8 @@
     "true": "0.0.2"
   },
   "scripts": {
-    "lint": "eslint ../server/*.js || node node_modules/true/index.js",
-    "lintdev": "eslint *.js || node node_modules/true/index.js"
+    "lint1": "eslint ../server/*.js || node node_modules/true/index.js",
+    "lint2": "eslint ../htdocs/*.js || node node_modules/true/index.js",
+    "lint3": "eslint *.js           || node node_modules/true/index.js"
   }
 }

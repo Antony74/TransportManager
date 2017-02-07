@@ -1,4 +1,3 @@
-///<reference path='../interface/node.d.ts' />
 
 function generateReport(dateFrom, dateTo, coreApi, fnDone)
 {
@@ -84,7 +83,7 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
             var sDestination = arrSummary[nRow].sDestination;
             var nCount       = arrSummary[nRow].nCount;
 
-            sHtml += '<tr>\r\n'
+            sHtml += '<tr>\r\n';
             sHtml += '    <td class="firstColumn">' + sDestination + '</td>\r\n';
             sHtml += '    <td>' + nCount + '</td>\r\n';
             sHtml += '</tr>\r\n';

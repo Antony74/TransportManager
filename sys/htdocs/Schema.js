@@ -7,8 +7,6 @@
 // and for which date-time fields we only care about the date and not the time.
 //
 
-///<reference path='../interface/node.d.ts' />
-
 function getTables()
 {
     var tables =
@@ -30,7 +28,7 @@ function getTables()
             },
         "DriverVacation" : {},
         "JobLog" : {},
-        "Jobs" : {},
+        "Jobs" : {}
     };
         
     for (var sTablename in tables)
@@ -44,7 +42,7 @@ function getTables()
     getTables = function()
     {
         return tables;
-    }
+    };
 
     return tables;
 }

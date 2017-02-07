@@ -1,4 +1,3 @@
-///<reference path='../interface/node.d.ts' />
 
 exports.simpleSelectSql = simpleSelectSql;
 exports.getPeriodSubQuery = getPeriodSubQuery;

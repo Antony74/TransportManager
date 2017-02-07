@@ -1,4 +1,3 @@
-///<reference path='../interface/node.d.ts' />
 
 function generateReport(arrSpans, coreApi, fnDone)
 {
@@ -334,7 +333,7 @@ function generateReport(arrSpans, coreApi, fnDone)
             'No',
             'Dr.',
             'Miscellaneous',
-            'Other',
+            'Other'
         ];
 
         arrSpecialOrdering.push('Under ' + arrAgeThresholds[0]);
@@ -458,13 +457,13 @@ function generateReport(arrSpans, coreApi, fnDone)
 
         sHtml += reportSubHeading('Number of clients travelling at least once', nColCount);
 
-        sHtml += '        <tr>\r\n'
+        sHtml += '        <tr>\r\n';
         sHtml += '            <td class="firstColumn">Number of clients travelling at least once</td>\r\n';
         for (var nPeriod = 0; nPeriod < oJsonReport.uniqueClients.length; ++nPeriod)
         {
             sHtml += '            <td>' + oJsonReport.uniqueClients[nPeriod] + '</td>\r\n';
         }
-        sHtml += '        </tr>\r\n'
+        sHtml += '        </tr>\r\n';
 
         sHtml += reportSubHeading("Client gender", nColCount);
         sHtml += reportHtmlRow(oJsonReport.clientGender, bShowTotals);
@@ -538,12 +537,12 @@ function generateReport(arrSpans, coreApi, fnDone)
         for (var nRow = 0; nRow < arrRowHeadings.length; ++nRow)
         {
             var sRowHeading = arrRowHeadings[nRow];
-            sHtml += '        <tr>\r\n'
+            sHtml += '        <tr>\r\n';
             sHtml += '            <td class="firstColumn">' + sRowHeading + '</td>\r\n';
 
             var nTotal = 0;
 
-            for (var nPeriod = 0; nPeriod < arrSummaryRecords.length; ++nPeriod)
+            for (nPeriod = 0; nPeriod < arrSummaryRecords.length; ++nPeriod)
             {
                 var oRows = arrSummaryRecords[nPeriod];
                 var nValue = 0;
