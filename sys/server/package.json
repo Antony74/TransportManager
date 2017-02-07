@@ -12,12 +12,10 @@
   },
   "license": "MIT",
   "dependencies": {
-    "node-static": ">=0.7.1"
+    "node-static": "0.7.7",
+    "node-adodb":  "2.0.3"
   },
   "version": "0.1.0",
-  "engines": {
-    "node": ">= 0.10.1"
-  },
   "readme": "The scripts in this folder have a few dependancies not included in the repository.  This installs them.",
   "bugs": {
     "url": "https://github.com/Antony74/TransportManager/issues"

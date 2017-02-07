@@ -10,16 +10,18 @@
     "type": "git",
     "url": "http://github.com/Antony74/TransportManager"
   },
-  "license": "MIT",
-  "dependencies": {
-    "faker": ">=0.0.6"
-  },
   "version": "0.1.0",
-  "engines": {
-    "node": ">= 0.10.1"
-  },
   "readme": "The scripts in this folder have a few dependancies.  This installs them.",
   "bugs": {
     "url": "https://github.com/Antony74/TransportManager/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "faker": "2.0.1",
+    "eslint": "3.15",
+    "true": "0.0.2"
+  },
+  "scripts": {
+    "lint": "eslint .. || node node_modules/true/index.js"
   }
 }
