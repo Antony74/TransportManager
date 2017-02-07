@@ -23,6 +23,10 @@
 		"no-fallthrough":  [
 			"error",
 			{ "commentPattern": "Drop thro" }	
+		],
+		"no-warning-comments": [
+			"error",
+			{ "terms": ["reference path"], "location":  "anywhere"}
 		]
     }
 }
