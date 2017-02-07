@@ -18,10 +18,11 @@
   "license": "MIT",
   "dependencies": {
     "faker": "2.0.1",
-    "eslint": "3.15",
+    "eslint": "1.10.3",
     "true": "0.0.2"
   },
   "scripts": {
-    "lint": "eslint .. || node node_modules/true/index.js"
+    "lint": "eslint ../server/*.js || node node_modules/true/index.js",
+    "lintdev": "eslint *.js || node node_modules/true/index.js"
   }
 }

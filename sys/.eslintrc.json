@@ -1,32 +1,32 @@
 {
     "env": {
         "browser": true,
-		"node":  true
+        "node": true
     },
     "extends": "eslint:recommended",
     "rules": {
         "linebreak-style": [
-            "error",
+            2, // "error",
             "windows"
         ],
         "quotes": [
-            "error",
+            2, // "error",
             "single"
         ],
         "semi": [
-            "error",
+            2, // "error",
             "always"
         ],
-		"no-console": [
-			"off"
-		],
-		"no-fallthrough":  [
-			"error",
-			{ "commentPattern": "Drop thro" }	
-		],
-		"no-warning-comments": [
-			"error",
-			{ "terms": ["reference path"], "location":  "anywhere"}
-		]
+        "no-console": [
+            0 // "off"
+        ],
+        "no-fallthrough": [
+            0 // was "error"
+            //			{ "commentPattern": "Drop thro" }
+        ],
+        "no-warning-comments": [
+            2, // "error",
+            { "terms": [ "reference path" ], "location": "anywhere" }
+        ]
     }
 }
