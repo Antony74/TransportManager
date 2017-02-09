@@ -1,4 +1,3 @@
-///<reference path='../interface/node.d.ts' />
 
 var platform = require('../server/usingMSJet4.js');
 var faker = require('Faker');
@@ -110,7 +109,7 @@ function generateTestDriverFields()
         IsActive     : true,
         IsWheelchair : true,
         DateofBirth  : (new Date(1974, 12 - 1, 27)).getTime(),
-        ExpiryDate   : (new Date(2016, 01 - 1, 31)).getTime()
+        ExpiryDate   : (new Date(2016,  1 - 1, 31)).getTime()
     };
 
     return retval;

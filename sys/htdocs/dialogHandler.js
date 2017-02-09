@@ -1,10 +1,5 @@
-///<reference path='../interface/jqueryui.d.ts' />
-///<reference path='../interface/jquery.ui.datetimepicker.d.ts' />
-///<reference path='./initialiseDateTimePickers.ts' />
-///<reference path='./ProxyApi.ts' />
-///<reference path='./Schema.ts' />
 
-function getDialogHandler(doneFn)
+getDialogHandler = function(doneFn)
 {
     // Queue this request for a dialog handler
     var arrFunctionsWaitingForDialogHandler = [doneFn];
@@ -13,7 +8,7 @@ function getDialogHandler(doneFn)
     getDialogHandler = function(doneFn)
     {
         arrFunctionsWaitingForDialogHandler.push(doneFn);
-    }
+    };
 
     // Load the dialogs
     $('#dialogs').load('raw/dialogs.html .dialogTemplate', function()
@@ -201,7 +196,7 @@ function getDialogHandler(doneFn)
                         [
                             {
                                 operationName : 'add',
-                                newRecord     : oNewRecord,
+                                newRecord     : oNewRecord
                             }
                         ]
                     });
@@ -216,7 +211,7 @@ function getDialogHandler(doneFn)
                             {
                                 operationName : 'edit',
                                 oldRecord     : oOldRecord,
-                                newRecord     : oNewRecord,
+                                newRecord     : oNewRecord
                             }
                         ]
                     });
@@ -224,25 +219,25 @@ function getDialogHandler(doneFn)
 
             }
 
-			getCoreApiProxy().updateDatabase(
-						arrCommits,
-						function(oData)
-						{
-							if (typeof oData.Error != 'undefined')
-							{
-								setStatus(oData.Error, 'R');
-							}
-							else
-							{
-								setStatus('Ready', 'G');
+            getCoreApiProxy().updateDatabase(
+                        arrCommits,
+                        function(oData)
+                        {
+                            if (typeof oData.Error != 'undefined')
+                            {
+                                setStatus(oData.Error, 'R');
+                            }
+                            else
+                            {
+                                setStatus('Ready', 'G');
 
-								if (bCloseDialog)
-								{
-									$('#dlg' + sDialogName).dialog('close');
-									fnDialogClosed(bDialogChanged);
-								}
-							}
-						});
+                                if (bCloseDialog)
+                                {
+                                    $('#dlg' + sDialogName).dialog('close');
+                                    fnDialogClosed(bDialogChanged);
+                                }
+                            }
+                        });
         }
 
         $('#dialogs div').each(function()
@@ -295,9 +290,9 @@ function getDialogHandler(doneFn)
                                 commitChanges(false);
                             }
                         }
-                    },
+                    }
 
-                ],
+                ]
             }).on('keydown', function(event)
             {
                 if (event.keyCode === $.ui.keyCode.ESCAPE)
@@ -318,7 +313,7 @@ function getDialogHandler(doneFn)
             {
                 var sTablename = 'Clients';
                 var sDialogQuery = getTables()[sTablename]['query'] + ' WHERE Clients.ClientID = ' + clientID;
-                this.doDialog(sTablename, sDialogQuery, ['ClientsEx'], function(bChanged) {} );
+                this.doDialog(sTablename, sDialogQuery, ['ClientsEx'], function() {} );
             },
 
             doDialog: function(_sDialogName, sQuery, _arrTablesToUpdate, _fnDialogClosed)
@@ -338,10 +333,10 @@ function getDialogHandler(doneFn)
                 {
                     oData = _oData;
                 
- 				    if (typeof oData.Error != 'undefined')
-				    {
-					    setStatus(oData.Error, 'R');
-				    }
+                    if (typeof oData.Error != 'undefined')
+                    {
+                        setStatus(oData.Error, 'R');
+                    }
                     else
                     {
                         var oRecord = oData['records'][0];
@@ -410,5 +405,5 @@ function getDialogHandler(doneFn)
             fn(theDialogHandler);
         }
     });
-}
+};
 

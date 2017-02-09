@@ -6,12 +6,14 @@
     },
     "globals": { // Don't want any of these to be quite this global
         "WScript": false,
-        "getDialogHandler": false,
-        "getDDMMYYYY": false,
-        "getHHMM": false,
+        "phantom":  false,
+        "getDialogHandler": true,
+        "getDDMMYYYY": true,
+        "getHHMM": true,
         "getCoreApiProxy": true,
-        "initialiseDateTimePickers": false,
-        "parseDate": false
+        "initialiseDateTimePickers": true,
+        "parseDate": true,
+        "getTables": true
     },
     "extends": "eslint:recommended",
     "rules": {
@@ -39,6 +41,9 @@
             { "terms": [ "reference path" ], "location": "anywhere" }
         ],
         "no-func-assign": [
+            0 // "off"
+        ],
+        "no-redeclare": [
             0 // "off"
         ]
     }

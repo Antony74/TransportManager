@@ -1,4 +1,3 @@
-///<reference path='../interface/node.d.ts' />
 
 var fs = require('fs');
 var dface = require('../server/node_modules/dface');
@@ -133,7 +132,7 @@ function generateDialog(sTablename, sQuery)
         'Drivers'             : 'Driver',
         'DriverVacation'      : 'Driver Vacation',
         'JobLog'              : 'Job Log',
-        'Jobs'                : 'Job',
+        'Jobs'                : 'Job'
     };
 
     var sTitle = sTablename;

@@ -1,15 +1,11 @@
-///<reference path='../interface/node.d.ts' />
 
 var fs = require('fs');
 var schema = require('../htdocs/Schema.js');
 var dface =  require('../server/node_modules/dface');
 
-var arrPrimaryKeys = [];
-var arrIndices = [];
-
 var sFilenameExisting = __dirname + "/TransportManager.mdb";
 var sFilenameSql = __dirname + "/../TransportManager.sql";
-var sFilenameClone = __dirname + "/../../TransportManager.mdb"
+var sFilenameClone = __dirname + "/../../TransportManager.mdb";
 
 var bExists = fs.existsSync(sFilenameExisting);
 
@@ -22,7 +18,7 @@ if (bExists)
     fs.writeFile(sFilenameSql, sSql);
 
     // If the main database is present, get its schema too so we can check they're the same
-    bExists = fs.existsSync(sFilenameClone)
+    bExists = fs.existsSync(sFilenameClone);
 
     if (bExists)
     {

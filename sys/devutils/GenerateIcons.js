@@ -1,8 +1,7 @@
-///<reference path='../interface/phantomjs.d.ts' />
 
 if (typeof phantom == 'undefined')
 {
-    var usage = '\r\n'
+    var usage = '\r\n';
     usage +=    'Usage: phantomjs GenerateIcons.js\r\n\r\n';
     usage +=    'Sorry, are you trying to use a different JavaScript engine?\r\n\r\n';
     usage +=    'Note you can install PhantomJS with npm:\r\n';
@@ -15,11 +14,11 @@ if (typeof phantom == 'undefined')
 else (function()
 {
     var fs = require('fs');
-    var iconDir = "GenerateIcons/"
+    var iconDir = "GenerateIcons/";
     var myList = fs.list(iconDir);
 
     var arrIcons = [];
-    var sHtml = '<html><head><title>Icons for Transport Manager</title>\n'
+    var sHtml = '<html><head><title>Icons for Transport Manager</title>\n';
     sHtml    += '<script src="' + iconDir + 'processing.js"></script><body>\n';
 
     for(var n in myList)

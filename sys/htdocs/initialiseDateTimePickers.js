@@ -1,6 +1,3 @@
-///<reference path='../interface/jquery.ui.datetimepicker.d.ts' />
-///<reference path='../interface/node.d.ts' />
-
 //
 // initialiseDateTimePickers
 //
@@ -8,7 +5,7 @@
 // automatically when you click on the date-time fields, but instead open when you click
 // the little calendar buttons.
 //
-function initialiseDateTimePickers(oExtraOptions, sPickerQuery, sPickerButtonQuery)
+initialiseDateTimePickers = function(oExtraOptions, sPickerQuery, sPickerButtonQuery)
 {
     var sCurrentPickerButton = '';
     var sOpenPickerButton = '';
@@ -54,22 +51,22 @@ function initialiseDateTimePickers(oExtraOptions, sPickerQuery, sPickerButtonQue
         sCurrentPickerButton = event.target['id'];
     }).mouseleave(function()
     {
-	    sCurrentPickerButton = '';
+        sCurrentPickerButton = '';
     }).click(function ()
     {
-	    sOpenPickerButton = '';
+        sOpenPickerButton = '';
 
-	    var ctrl = $('#' + this.id.substring(0, this.id.length - '_button'.length));
-	    ctrl.datetimepicker({value: ctrl.val()});
-	    ctrl.datetimepicker('toggle');
+        var ctrl = $('#' + this.id.substring(0, this.id.length - '_button'.length));
+        ctrl.datetimepicker({value: ctrl.val()});
+        ctrl.datetimepicker('toggle');
     });
-}
+};
 
 // This file is also a good place to define some shared date/time handling functions
 
 function pad(nValue)
 {
-	return ('00' + nValue).slice(-2);
+    return ('00' + nValue).slice(-2);
 }
                     
 function getDDMMYYYY(dateValue)
@@ -77,15 +74,15 @@ function getDDMMYYYY(dateValue)
     return pad(dateValue.getUTCDate()) + '/' + pad(dateValue.getUTCMonth() + 1) + '/' + dateValue.getUTCFullYear();
 }
 
-function getHHMM(dateValue)
+getHHMM = function(dateValue)
 {
     return pad(dateValue.getUTCHours()) + ':' + pad(dateValue.getUTCMinutes());
-}
+};
 
-function parseDate(sDate)
+parseDate = function(sDate)
 {
     return parseDateTime(sDate, true);
-}
+};
 
 function parseDateTime(sDateTime, bDateOnly)
 {
