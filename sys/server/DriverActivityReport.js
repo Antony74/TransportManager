@@ -1,8 +1,7 @@
 
-function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone)
-{
-    function fnFailed(sMsg)
-    {
+function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone) {
+
+    function fnFailed(sMsg) {
         fnDone({Error:sMsg});
     }
 
@@ -19,21 +18,18 @@ function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone)
              + ' WHERE status="Closed" AND ' + sPeriodSubQuery
              + ' ORDER BY Drivers.Surname, Drivers.FirstName, JobPickUpDateTime';
 
-    utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult)
-    {
+    utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
+
         // First pass, count number of drives for each driver
         var oDriverToDriveCount = {};
 
-        for (var nRecord = 0; nRecord < oResult['records'].length; ++nRecord)
-        {
+        for (var nRecord = 0; nRecord < oResult['records'].length; ++nRecord) {
+
             var nDriverID = oResult['records'][nRecord]['DriverID'];
 
-            if (typeof oDriverToDriveCount[nDriverID] == 'undefined')
-            {
+            if (typeof oDriverToDriveCount[nDriverID] == 'undefined') {
                 oDriverToDriveCount[nDriverID] = 1;
-            }
-            else
-            {
+            } else {
                 ++oDriverToDriveCount[nDriverID];
             }
         }
@@ -69,14 +65,13 @@ function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone)
 
         var nPreviousDriverID = -1;
 
-        for (nRecord = 0; nRecord < oResult['records'].length; ++nRecord)
-        {
+        for (nRecord = 0; nRecord < oResult['records'].length; ++nRecord) {
+
             var oRecord = oResult['records'][nRecord];
 
-            if (oRecord['DriverID'] != nPreviousDriverID)
-            {
-                if (nPreviousDriverID != -1 && !bSummaryOnly)
-                {
+            if (oRecord['DriverID'] != nPreviousDriverID) {
+
+                if (nPreviousDriverID != -1 && !bSummaryOnly) {
                     sHtml += '</TD></TR></table>\r\n';
                 }
 
@@ -89,8 +84,8 @@ function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone)
 
                 sHtml += '</TR>';
 
-                if (!bSummaryOnly)
-                {
+                if (!bSummaryOnly) {
+
                     sHtml += '<TR><TD colspan="4" style="padding:0px">\r\n';
 
                     sHtml += '<table style="width:100%">\r\n';
@@ -103,8 +98,8 @@ function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone)
             var sClientName = oRecord['Clients.Title'] + ' ' + oRecord['Clients.Firstname'] + ' ' + oRecord['Initial'] + ' ' + oRecord['Clients.Surname'];
             var jobDate = new Date(oRecord['JobPickUpDateTime']);
 
-            if (!bSummaryOnly)
-            {
+            if (!bSummaryOnly) {
+
                 sHtml += '<TR>';
                 sHtml += '    <TD>' + dateUtil.getDDMMYYYY(jobDate) + '</TD>';
                 sHtml += '    <TD>' + sClientName + '</TD>';

@@ -1,17 +1,15 @@
 
 // Use this findCallback function for APIs where the callback is always the last argument.
 // If this not true of your API, please provide your own findCallback function.
-function findCallback_LastArgument(sFunctionName, arrArguments)
-{
+function findCallback_LastArgument(sFunctionName, arrArguments) {
 	return arrArguments.length - 1;
 }
 
-function generateProxyApiSourceCode(api, sGetProxyFunctionName, sUrlPrefix, fnFindCallback)
-{
+function generateProxyApiSourceCode(api, sGetProxyFunctionName, sUrlPrefix, fnFindCallback) {
+
     var ts = new Date();    
 
-	function pad(nValue)
-	{
+	function pad(nValue) {
 		return ('00' + nValue).slice(-2);
 	}
 
@@ -35,35 +33,30 @@ function generateProxyApiSourceCode(api, sGetProxyFunctionName, sUrlPrefix, fnFi
 
     var arrFnSrc = [];
 
-	for (var sFnName in api)
-	{
+	for (var sFnName in api) {
+
 		var fn = api[sFnName];
 
-		if (typeof(fn) != 'function')
-		{
+		if (typeof(fn) != 'function') {
 			console.log('Generating "' + sGetProxyFunctionName + '", "' + sFnName + '" is not a function');
-		}
-		else
-		{
+		} else {
+
 			var src = fn.toString();
 			var nOpenBracket = src.indexOf('(');
 			var nCloseBracket = src.indexOf(')', nOpenBracket);
 
-			if (nOpenBracket == -1 || nCloseBracket == -1 || nCloseBracket <= nOpenBracket)
-			{
+			if (nOpenBracket == -1 || nCloseBracket == -1 || nCloseBracket <= nOpenBracket) {
 				console.log('Generating "' + sGetProxyFunctionName + '", failed to parse function "' + sFnName + '"');
-			}
-			else
-			{
+			} else {
+
 				var arrArgumentsNames = src.substring(nOpenBracket + 1, nCloseBracket).split(',');
 
 				fn.argumentNames = [];
 
-				for (var n = 0; n < arrArgumentsNames.length; ++n)
-				{
+				for (var n = 0; n < arrArgumentsNames.length; ++n) {
+
 					var sArgName = arrArgumentsNames[n].trim();
-					if (sArgName.length)
-					{
+					if (sArgName.length) {
 						fn.argumentNames.push(sArgName);
 					}
 				}
@@ -81,10 +74,9 @@ function generateProxyApiSourceCode(api, sGetProxyFunctionName, sUrlPrefix, fnFi
 				var sIndent = '                ';
                 var arrLines = [];
 
-				for (n = 0; n < fn.argumentNames.length; ++n)
-				{
-					if (n != nCallback)
-					{
+				for (n = 0; n < fn.argumentNames.length; ++n) {
+
+					if (n != nCallback) {
 						arrLines.push(sIndent + '    ' + fn.argumentNames[n] + ': ' + fn.argumentNames[n]);
 					}
 				}
@@ -121,39 +113,35 @@ function generateProxyApiSourceCode(api, sGetProxyFunctionName, sUrlPrefix, fnFi
 
 		sSourceCode: sOutput,
 
-		fnAcceptUrl: function(parsedUrl)
-		{
+		fnAcceptUrl: function(parsedUrl) {
+
 			if (parsedUrl.pathname.length
 			&&  parsedUrl.pathname[0] == '/'
-			&&  typeof(api[parsedUrl.pathname.substring(1)]) == 'function')
-			{
+			&&  typeof(api[parsedUrl.pathname.substring(1)]) == 'function') {
+
 				return true;
-			}
-			else
-			{
+			} else {
 				return false;
 			}
 		},
 
-		fnHandleRequest: function(request, response)
-		{
+		fnHandleRequest: function(request, response) {
+
 			var sPostedData = '';
 
-			request.on('data', function(data)
-			{
+			request.on('data', function(data) {
 				sPostedData += data;
 			});
 
-			request.on('end', function()
-			{
+			request.on('end', function() {
 				var postedData;
 
-				try
-				{
+				try	{
+
 					postedData = JSON.parse(sPostedData);
-				}
-				catch(e)
-				{
+
+				} catch(e) {
+
 					console.log(e.toString());
 					var oError = {'Error': e.toString()};
 					response.write(JSON.stringify(oError, null, 4));
@@ -169,18 +157,15 @@ function generateProxyApiSourceCode(api, sGetProxyFunctionName, sUrlPrefix, fnFi
 
 				var arrArguments = [];
 
-				for (var n = 0; n < api[sRequestedFunction].argumentNames.length; ++n)
-				{
-					if (n == nCallback)
-					{
-						arrArguments.push(function()
-						{
-							if (arguments.length == 1)
-							{
+				for (var n = 0; n < api[sRequestedFunction].argumentNames.length; ++n) {
+
+					if (n == nCallback) {
+
+						arrArguments.push(function() {
+
+							if (arguments.length == 1) {
 								response.write(JSON.stringify(arguments[0], null, 4));
-							}
-							else
-							{
+							} else {
 								response.write(JSON.stringify(arguments, null, 4));
 							}
 
@@ -188,13 +173,13 @@ function generateProxyApiSourceCode(api, sGetProxyFunctionName, sUrlPrefix, fnFi
 							request.connection.end();     //close the socket
 							request.connection.destroy(); //close it really
 						});
-					}
-					else
-					{
+
+					} else {
+
 						var sArgName = api[sRequestedFunction].argumentNames[n];
 
-						if (typeof(postedData[sArgName]) == undefined)
-						{
+						if (typeof(postedData[sArgName]) == undefined) {
+
 							var sMsg = 'Remote function "' + sRequestedFunction
                                      + '" called with no "' + sArgName + '" argument ';
 
@@ -204,9 +189,8 @@ function generateProxyApiSourceCode(api, sGetProxyFunctionName, sUrlPrefix, fnFi
 							request.connection.end();     //close the socket
 							request.connection.destroy(); //close it really
 							return;
-						}
-						else
-						{
+
+						} else {
 							arrArguments.push(postedData[sArgName]);
 						}
 					}

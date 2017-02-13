@@ -6,7 +6,7 @@
     },
     "globals": { // Don't want any of these to be quite this global
         "WScript": false,
-        "phantom":  false,
+        "phantom": false,
         "getDialogHandler": true,
         "getDDMMYYYY": true,
         "getHHMM": true,
@@ -36,15 +36,16 @@
             0 // was "error"
             //			{ "commentPattern": "Drop thro" }
         ],
-        "no-warning-comments": [
-            2, // "error",
-            { "terms": [ "reference path" ], "location": "anywhere" }
-        ],
         "no-func-assign": [
             0 // "off"
         ],
         "no-redeclare": [
             0 // "off"
+        ],
+        "brace-style": [
+            2, // "error"
+            "1tbs"
         ]
     }
 }
+

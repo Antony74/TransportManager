@@ -3,8 +3,8 @@ var wrapper = require('winsystraywrapper');
 var spawn = require('child_process').spawn;
 var http = require('http');
 
-wrapper.run(
-{
+wrapper.run({
+
     'title'       : 'Transport Manager',
     'icon'        : __dirname + '/../htdocs/icons/Car.ico',
     'exe'         : process.execPath,
@@ -15,8 +15,7 @@ wrapper.run(
                       {
                           'caption'  : 'Transport Manager',
                           'default'  : true,
-                          'function' : function()
-                                       {
+                          'function' : function() {
                                           spawn('cmd.exe', ['/c', 'start', 'http://localhost:8080/']);
                                        }
                       },
@@ -26,18 +25,18 @@ wrapper.run(
                       },
                       {
                           'caption'  : 'Stop',
-                          'function' : function()
-                          {
-                              function requestFinished()
-                              {
+                          'function' : function() {
+
+                              function requestFinished() {
+
                                   wrapper.waitForExit(5000);
                                   wrapper.stop();
                               }
                         
                               var request = http.request({host:'localhost', port:8080, path:'/quitTransportManager'}, requestFinished);
                             
-                              request.on('error', function(e)
-                              {
+                              request.on('error', function(e) {
+
                                   console.log('problem with request: ' + e.message);
                                   requestFinished();
                               });

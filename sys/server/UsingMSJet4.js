@@ -4,30 +4,27 @@ var dface = require('dface');
 
 var sDatabaseFilename = __dirname + '/../../TransportManager.mdb';
 
-function copyFile(source, target, doneCopying)
-{
+function copyFile(source, target, doneCopying) {
+
     var streamIn = fs.createReadStream(source);
-    streamIn.on('error', function(err)
-    {
+    streamIn.on('error', function(err) {
         console.log(err);
     });
 
     var streamOut = fs.createWriteStream(target);
-    streamOut.on('error', function(err)
-    {
+    streamOut.on('error', function(err) {
         console.log(err);
     });
 
-    streamOut.on('close', function()
-    {
+    streamOut.on('close', function() {
         doneCopying();
     });
 
     streamIn.pipe(streamOut);
 }
 
-function runSQL(sFilenameSql)
-{
+function runSQL(sFilenameSql) {
+
     console.log('Running ' + sFilenameSql);
 
     // Load the SQL
@@ -37,11 +34,11 @@ function runSQL(sFilenameSql)
     var arrLines = String(sSql).split("\n");
     sSql = "";
 
-    for (var n = 0; n < arrLines.length; ++n)
-    {
+    for (var n = 0; n < arrLines.length; ++n) {
+
         var sLine = arrLines[n].trim();
-        if (sLine.charAt(0) != '#')
-        {
+
+        if (sLine.charAt(0) != '#') {
             sSql += sLine;
         }
     }
@@ -51,12 +48,11 @@ function runSQL(sFilenameSql)
     var arrSql2 = [];
 
     // Remove empty statements
-    for (n = 0; n < arrSql1.length; ++n)
-    {
+    for (n = 0; n < arrSql1.length; ++n) {
+
         var sStatement = arrSql1[n].trim();
         
-        if (sStatement.length)
-        {
+        if (sStatement.length) {
             arrSql2.push(sStatement);
         }
     }
@@ -65,35 +61,32 @@ function runSQL(sFilenameSql)
     dface.runSql(sDatabaseFilename, arrSql2);
 }
 
-function ensureDatabaseIsReady(doneEnsuring)
-{
+function ensureDatabaseIsReady(doneEnsuring) {
+
     var sFilenameEmpty = __dirname + '/Blank2002Database.mdb';
 
-    fs.exists(sDatabaseFilename, function(bExists)
-    {
-        if (bExists)
-        {
+    fs.exists(sDatabaseFilename, function(bExists) {
+
+        if (bExists) {
             ensureDatabaseIsUpgraded(doneEnsuring);
-        }
-        else
-        {
+        } else {
+
             console.log('Database not found... creating empty database');
 
             // Copy empty database
-            copyFile(sFilenameEmpty, sDatabaseFilename, function()
-            {
+            copyFile(sFilenameEmpty, sDatabaseFilename, function() {
                 ensureDatabaseIsUpgraded(doneEnsuring);
             });
         }
     });
 }
 
-function ensureDatabaseIsUpgraded(doneEnsuring)
-{
+function ensureDatabaseIsUpgraded(doneEnsuring) {
+
     var oIndices = dface.getIndices(sDatabaseFilename);
 
-    if (typeof oIndices.records == 'undefined')
-    {
+    if (typeof oIndices.records == 'undefined') {
+
         console.log('Error getting information from database: ' + oIndices.Error);
         doneEnsuring(false);
         return;
@@ -101,27 +94,26 @@ function ensureDatabaseIsUpgraded(doneEnsuring)
 
     var nUpgradeLevel = 0;
 
-    for (var nRecord in oIndices.records)
-    {
+    for (var nRecord in oIndices.records) {
+
         var oRecord = oIndices.records[nRecord];
     
-        if (oRecord.TABLE_NAME == 'Clients')
-        {
+        if (oRecord.TABLE_NAME == 'Clients') {
+
             nUpgradeLevel = Math.max(1, nUpgradeLevel);
-        }
-        else if (oRecord.TABLE_NAME == 'ClientsEx')
-        {
+
+        } else if (oRecord.TABLE_NAME == 'ClientsEx') {
+
             nUpgradeLevel = Math.max(2, nUpgradeLevel);
+
         }
     }
 
-    if (nUpgradeLevel > 0 && nUpgradeLevel < 1)
-    {
+    if (nUpgradeLevel > 0 && nUpgradeLevel < 1) {
         console.log('Upgrading database');
     }
 
-    switch(nUpgradeLevel)
-    {
+    switch(nUpgradeLevel) {
     case 0:
         runSQL(__dirname + '../../TransportManager.sql');
         // Drop through!!1!
@@ -134,33 +126,32 @@ function ensureDatabaseIsUpgraded(doneEnsuring)
     doneEnsuring(true);
 }
 
-function selectSql(obj)
-{
+function selectSql(obj) {
+
     obj.databaseFilename = sDatabaseFilename;
     obj.numberOfRecordsToGet = 2000;
 
     var result = dface.selectSql(obj);
 
-    if (typeof result.error == 'string')
-    {
+    if (typeof result.error == 'string') {
+
         console.log('Error getting data from database: ' + result.error);
     }
 
     return result;
 }
 
-function getIndices()
-{
+function getIndices() {
+
     var result = dface.getIndices(sDatabaseFilename);
     return result;
 }
 
-function updateDatabase(obj)
-{
+function updateDatabase(obj) {
+
     var result = dface.updateDatabase(sDatabaseFilename, obj);
 
-    if (typeof result.Error == 'string')
-    {
+    if (typeof result.Error == 'string') {
         console.log('Error updating database: ' + result.Error);
     }
 
@@ -172,8 +163,8 @@ function updateDatabase(obj)
 // utility functions which are Windows specific.
 //
 
-function ensureShortcutExists()
-{
+function ensureShortcutExists() {
+
     // Ensure we have a shortcut to make it easier to run this program.  Obviously
     // it's annoying having to run once without a shortcut, but it has to contain
     // an absolute path which we can't know in advance.  Also it can't contain

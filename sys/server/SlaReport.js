@@ -1,6 +1,6 @@
 
-function generateReport(arrSpans, coreApi, fnDone)
-{
+function generateReport(arrSpans, coreApi, fnDone) {
+
     var utils = require('./ReportingUtils.js');
 
     var sLog = '';
@@ -12,8 +12,9 @@ function generateReport(arrSpans, coreApi, fnDone)
     //
 
     var arrDateThresholds = [];
-    for (var n = 0; n < arrAgeThresholds.length; ++n)
-    {
+
+    for (var n = 0; n < arrAgeThresholds.length; ++n) {
+
         var dateThreshold = new Date(arrSpans[0].dateFrom);
         dateThreshold.setFullYear(dateThreshold.getFullYear() - arrAgeThresholds[n]);
         arrDateThresholds.push(dateThreshold);
@@ -23,12 +24,11 @@ function generateReport(arrSpans, coreApi, fnDone)
     // Cache the destination types
     //
 
-    utils.simpleSelectSql('SELECT DestinationTypeID, DestinationLevel1 FROM DestinationType', coreApi, fnFailed, function(oResult)
-    {
+    utils.simpleSelectSql('SELECT DestinationTypeID, DestinationLevel1 FROM DestinationType', coreApi, fnFailed, function(oResult) {
+
         var oDestinationTypes = {};
 
-        for (var n = 0; n < oResult.records.length; ++n)
-        {
+        for (var n = 0; n < oResult.records.length; ++n) {
             var oRecord = oResult.records[n];
             oDestinationTypes[oRecord.DestinationTypeID] = oRecord.DestinationLevel1;
         }
@@ -37,8 +37,7 @@ function generateReport(arrSpans, coreApi, fnDone)
         // Generate report
         //
 
-        var oJsonReport = 
-        {
+        var oJsonReport = {
             periodStart        : [],
             periodEnd          : [],
             uniqueClients      : [],
@@ -51,20 +50,19 @@ function generateReport(arrSpans, coreApi, fnDone)
             purposeOfJourney   : []
         };
 
-        function nextSpan()
-        {
-            if (arrSpans.length)
-            {
+        function nextSpan() {
+
+            if (arrSpans.length) {
+
                 var oSpan = arrSpans.shift();
 
                 reportGeneratePeriod(utils.formatdate(oSpan.dateFrom), utils.formatdate(oSpan.dateTo), oJsonReport, fnFailed, nextSpan, oDestinationTypes);
-            }
-            else
-            {
-                reportUniqueClients(oJsonReport, fnFailed, function()
-                {
-                    if (sLog == '')
-                    {
+
+            } else {
+
+                reportUniqueClients(oJsonReport, fnFailed, function() {
+
+                    if (sLog == '') {
                         sLog = '&nbsp;';
                     }
 
@@ -79,8 +77,8 @@ function generateReport(arrSpans, coreApi, fnDone)
     //
     // reportGeneratePeriod
     //
-    function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, fnFailed, fnDone, oDestinationTypes)
-    {
+    function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, fnFailed, fnDone, oDestinationTypes) {
+
         oJsonReport.periodStart.push(sPeriodStart);
         oJsonReport.periodEnd.push(sPeriodEnd);
 
@@ -88,8 +86,8 @@ function generateReport(arrSpans, coreApi, fnDone)
 
         var sStatusQuery = 'SELECT status FROM jobs WHERE ' + sPeriodSubQuery;
 
-        utils.simpleSelectSql(sStatusQuery, coreApi, fnFailed, function(oResult)
-        {
+        utils.simpleSelectSql(sStatusQuery, coreApi, fnFailed, function(oResult) {
+
             oJsonReport.jobStatus.push(reportCountValues(oResult.records, 'status'));
 
             var sSql = 'SELECT JobIsDVOWheelchair OR Clients.IsWheelchair AS Wheelchair, IsJobOneWay, Destinations.TypeID AS DestinationTypeID'
@@ -98,10 +96,9 @@ function generateReport(arrSpans, coreApi, fnDone)
                      + ' INNER JOIN Destinations ON jobs.DestinationID = Destinations.DestinationID'
                      + ' WHERE status="Closed" AND ' + sPeriodSubQuery;
 
-            utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult)
-            {
-                for (var n = 0; n < oResult.records.length; ++n)
-                {
+            utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
+
+                for (var n = 0; n < oResult.records.length; ++n) {
                     var oRecord = oResult.records[n];
                     oRecord.DestinationTypeID = oDestinationTypes[oRecord.DestinationTypeID];
                 }
@@ -133,57 +130,48 @@ function generateReport(arrSpans, coreApi, fnDone)
     //
     // reportUniqueClients
     //
-    function reportUniqueClients(oJsonReport, fnFailed, fnDone)
-    {
+    function reportUniqueClients(oJsonReport, fnFailed, fnDone) {
+
         var sSql = 'SELECT Clients.ClientID, Title, Gender, DateofBirth, Firstname, Initial, Surname FROM (Clients'
                  + ' LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)'
                  + ' WHERE Clients.ClientID IN (SELECT ClientID FROM jobs WHERE ';
 
         var arrPeriodSubQueries = [];
-        for (var nPeriod = 0; nPeriod < oJsonReport.periodStart.length; ++nPeriod)
-        {
+        for (var nPeriod = 0; nPeriod < oJsonReport.periodStart.length; ++nPeriod) {
+
             var sPeriodSubQuery = utils.getPeriodSubQuery(oJsonReport.periodStart[nPeriod], oJsonReport.periodEnd[nPeriod]);
             arrPeriodSubQueries.push(sPeriodSubQuery);
         }
 
         // If there's more than one then we also need the total
-        if (arrPeriodSubQueries.length > 1)
-        {
+        if (arrPeriodSubQueries.length > 1) {
             arrPeriodSubQueries.push(arrPeriodSubQueries.join(' OR '));
         }
 
         subquery();
 
-        function subquery()
-        {
-            if (arrPeriodSubQueries.length)
-            {
+        function subquery() {
+
+            if (arrPeriodSubQueries.length) {
+
                 var sSubquery = arrPeriodSubQueries.pop();
 
-                utils.simpleSelectSql(sSql + sSubquery + ')', coreApi, fnFailed, function(oResult)
-                {
-                    function getFullName(oRecord)
-                    {
+                utils.simpleSelectSql(sSql + sSubquery + ')', coreApi, fnFailed, function(oResult) {
+
+                    function getFullName(oRecord) {
                         return oRecord['Title'] + ' ' + oRecord['Firstname'] + ' ' + oRecord['Initial'] + ' ' + oRecord['Surname'];
                     }
 
-                    for (var nRecord = 0; nRecord < oResult.records.length; ++nRecord)
-                    {
+                    for (var nRecord = 0; nRecord < oResult.records.length; ++nRecord) {
                         // Where gender is not specified, see if we can infer it from title
-                        if (oResult.records[nRecord]['Gender'] == null)
-                        {
+                        if (oResult.records[nRecord]['Gender'] == null) {
                             var sTitle = oResult.records[nRecord]['Title'];
 
-                            if (sTitle == 'Mr.')
-                            {
+                            if (sTitle == 'Mr.') {
                                 oResult.records[nRecord]['Gender'] = 'M';
-                            }
-                            else if (sTitle == 'Mrs.' || sTitle == 'Miss.' || sTitle == 'Ms.')
-                            {
+                            } else if (sTitle == 'Mrs.' || sTitle == 'Miss.' || sTitle == 'Ms.') {
                                 oResult.records[nRecord]['Gender'] = 'F';
-                            }
-                            else
-                            {
+                            } else {
                                 oResult.records[nRecord]['Gender'] = 'Unknown';
 
                                 sLog += '<A href="#' + oResult.records[nRecord]['ClientID'] + '">';
@@ -195,37 +183,37 @@ function generateReport(arrSpans, coreApi, fnDone)
                         // Find age-band
                         var dob = new Date(oResult.records[nRecord]['DateofBirth']);
 
-                        if (oResult.records[nRecord]['DateofBirth'] == null)
-                        {
+                        if (oResult.records[nRecord]['DateofBirth'] == null) {
+
                             oResult.records[nRecord]['AgeBand'] = 'Unknown';
 
                             sLog += '<A href="#' + oResult.records[nRecord]['ClientID'] + '">';
                             sLog += 'No date of birth for ' + getFullName(oResult.records[nRecord]);
                             sLog += '</A><BR>\n';
-                        }
-                        else if (dob <= arrDateThresholds[arrDateThresholds.length - 1])
-                        {
+
+                        } else if (dob <= arrDateThresholds[arrDateThresholds.length - 1]) {
+
                             oResult.records[nRecord]['AgeBand'] = arrAgeThresholds[arrAgeThresholds.length - 1] + '+';
-                        }
-                        else
-                        {
-                            for (var nThreshold = 0; nThreshold < arrDateThresholds.length; ++nThreshold)
-                            {
-                                if (dob > arrDateThresholds[nThreshold])
-                                {
-                                    if (nThreshold == 0)
-                                    {
+
+                        } else {
+
+                            for (var nThreshold = 0; nThreshold < arrDateThresholds.length; ++nThreshold) {
+
+                                if (dob > arrDateThresholds[nThreshold]) {
+
+                                    if (nThreshold == 0) {
+
                                         oResult.records[nRecord]['AgeBand'] = 'Under ' + arrAgeThresholds[0];
-                                    }
-                                    else
-                                    {
+
+                                    } else {
+
                                         oResult.records[nRecord]['AgeBand'] = arrAgeThresholds[nThreshold-1] + '-' + arrAgeThresholds[nThreshold];
                                     }
                                     break;
                                 }
                             }
                         }
-                   }
+                    }
  
                     var oGenders = reportCountValues(oResult.records, 'Gender');
                     oJsonReport.clientGender.push(oGenders);
@@ -238,9 +226,8 @@ function generateReport(arrSpans, coreApi, fnDone)
 
                     subquery();
                 });
-            }
-            else
-            {
+
+            } else {
                 fnDone();
             }
         }
@@ -249,29 +236,23 @@ function generateReport(arrSpans, coreApi, fnDone)
     //
     // reportCountValues
     //
-    function reportCountValues(arrRecords, sFieldname)
-    {
+    function reportCountValues(arrRecords, sFieldname) {
+
         var oSummaryRecord = {};
 
-        for (var n = 0; n < arrRecords.length; ++n)
-        {
+        for (var n = 0; n < arrRecords.length; ++n) {
+
             var sThingToCount = arrRecords[n][sFieldname];
 
-            if (sThingToCount == true || sThingToCount == '65535')
-            {
+            if (sThingToCount == true || sThingToCount == '65535') {
                 sThingToCount = 'Yes';
-            }
-            else if (sThingToCount == false || sThingToCount == '0')
-            {
+            } else if (sThingToCount == false || sThingToCount == '0') {
                 sThingToCount = 'No';
             }
 
-            if (typeof oSummaryRecord[sThingToCount] == 'undefined')
-            {
+            if (typeof oSummaryRecord[sThingToCount] == 'undefined') {
                 oSummaryRecord[sThingToCount] = 1;
-            }
-            else
-            {
+            } else {
                 ++oSummaryRecord[sThingToCount];
             }
         }
@@ -284,30 +265,28 @@ function generateReport(arrSpans, coreApi, fnDone)
     //
     // combineSummaryRecords
     //
-    function combineSummaryRecords(oSummaryRecord, arrHeadingsToCombine, sCombinedHeading)
-    {
+    function combineSummaryRecords(oSummaryRecord, arrHeadingsToCombine, sCombinedHeading) {
+
         var nCombinedValue = 0;
         var arrHeadingsPresent = [];
 
-        for (var n = 0; n < arrHeadingsToCombine.length; ++n)
-        {
+        for (var n = 0; n < arrHeadingsToCombine.length; ++n) {
+
             var sHeading = arrHeadingsToCombine[n];
 
-            if (typeof oSummaryRecord[sHeading] != 'undefined')
-            {
+            if (typeof oSummaryRecord[sHeading] != 'undefined') {
+
                 nCombinedValue += oSummaryRecord[sHeading];
                 arrHeadingsPresent.push(sHeading);
                 delete oSummaryRecord[sHeading];
             }
         }
 
-        if (sCombinedHeading == '')
-        {
+        if (sCombinedHeading == '') {
             sCombinedHeading = arrHeadingsPresent.join('/');
         }
 
-        if (nCombinedValue > 0)
-        {
+        if (nCombinedValue > 0) {
             oSummaryRecord[sCombinedHeading] = nCombinedValue;
         }
     }
@@ -315,16 +294,14 @@ function generateReport(arrSpans, coreApi, fnDone)
     //
     // sortRowHeaders
     //
-    function sortRowHeaders(rows)
-    {
+    function sortRowHeaders(rows) {
+
         // Perhaps we've been passed an object which needs to be converted to an array?
-        if (!Array.isArray(rows))
-        {
+        if (!Array.isArray(rows)) {
             rows = Object.keys(rows);
         }
 
-        var arrSpecialOrdering =
-        [
+        var arrSpecialOrdering = [
             'Closed',
             'Primary Medical Care',
             'Secondary Medical Care',
@@ -338,8 +315,7 @@ function generateReport(arrSpans, coreApi, fnDone)
 
         arrSpecialOrdering.push('Under ' + arrAgeThresholds[0]);
 
-        for (var nThreshold = 1; nThreshold < arrAgeThresholds.length; ++nThreshold)
-        {
+        for (var nThreshold = 1; nThreshold < arrAgeThresholds.length; ++nThreshold) {
             arrSpecialOrdering.push(arrAgeThresholds[nThreshold-1] + '-' + arrAgeThresholds[nThreshold]);
         }
 
@@ -348,40 +324,29 @@ function generateReport(arrSpans, coreApi, fnDone)
         arrSpecialOrdering.push('Total');
         arrSpecialOrdering.push('Total client journey-legs');
 
-        return rows.sort(function(row1, row2)
-        {
+        return rows.sort(function(row1, row2) {
+
             var n1 = arrSpecialOrdering.indexOf(row1);
             var n2 = arrSpecialOrdering.indexOf(row2);
             var nOther = arrSpecialOrdering.indexOf('*');
 
-            if (n1 == -1)
-            {
+            if (n1 == -1) {
                 n1 = nOther;
             }
 
-            if (n2 == -1)
-            {
+            if (n2 == -1) {
                 n2 = nOther;
             }
 
-            if (n1 < n2)
-            {
+            if (n1 < n2) {
                 return -1;
-            }
-            else if (n1 > n2)
-            {
+            } else if (n1 > n2) {
                 return 1;
-            }
-            else if (row1 < row2)
-            {
+            } else if (row1 < row2) {
                 return -1;
-            }
-            else if (row1 > row2)
-            {
+            } else if (row1 > row2) {
                 return 1;
-            }
-            else
-            {
+            } else {
                 return 0;
             }
         });
@@ -390,17 +355,14 @@ function generateReport(arrSpans, coreApi, fnDone)
     //
     // reportHtml
     //
-    function reportHtml(oJsonReport)
-    {
+    function reportHtml(oJsonReport) {
+
         var bShowTotals;
         var nColCount = oJsonReport.periodStart.length + 1;
 
-        if (oJsonReport.periodStart.length <= 1)
-        {
+        if (oJsonReport.periodStart.length <= 1) {
             bShowTotals = false;
-        }
-        else
-        {
+        } else {
             bShowTotals = true;
             ++nColCount;
         }
@@ -438,14 +400,13 @@ function generateReport(arrSpans, coreApi, fnDone)
         sHtml    += '        <tr>                                    \r\n'
                   + '            <td class="firstColumn">&nbsp;</td> \r\n';
 
-        for (var n = 0; n < oJsonReport.periodStart.length; ++n)
-        {
+        for (var n = 0; n < oJsonReport.periodStart.length; ++n) {
             var sPeriod = utils.reverseDateFormat(oJsonReport.periodStart[n]) + ' - ' + utils.reverseDateFormat(oJsonReport.periodEnd[n]);
             sHtml += '            <th>' + sPeriod + '</th>           \r\n';
         }
 
-        if (bShowTotals)
-        {
+        if (bShowTotals) {
+
             sHtml += '            <th>Total</th>                     \r\n';
         }
 
@@ -459,10 +420,12 @@ function generateReport(arrSpans, coreApi, fnDone)
 
         sHtml += '        <tr>\r\n';
         sHtml += '            <td class="firstColumn">Number of clients travelling at least once</td>\r\n';
-        for (var nPeriod = 0; nPeriod < oJsonReport.uniqueClients.length; ++nPeriod)
-        {
+
+        for (var nPeriod = 0; nPeriod < oJsonReport.uniqueClients.length; ++nPeriod) {
+
             sHtml += '            <td>' + oJsonReport.uniqueClients[nPeriod] + '</td>\r\n';
         }
+
         sHtml += '        </tr>\r\n';
 
         sHtml += reportSubHeading("Client gender", nColCount);
@@ -502,8 +465,7 @@ function generateReport(arrSpans, coreApi, fnDone)
     //
     // reportSubHeading
     //
-    function reportSubHeading(sSubHeading, nColCount)
-    {
+    function reportSubHeading(sSubHeading, nColCount) {
         return '        <tr>                       \r\n'
         +      '            <td class="subheading" colspan="' + nColCount + '"> \r\n'
         +      '                ' + sSubHeading + '\r\n'
@@ -514,17 +476,16 @@ function generateReport(arrSpans, coreApi, fnDone)
     //
     // reportHtmlRow
     //
-    function reportHtmlRow(arrSummaryRecords, bShowTotals)
-    {
+    function reportHtmlRow(arrSummaryRecords, bShowTotals) {
+
         var oRowHeadings = {};
 
         // Collect row headings from all periods
-        for (var nPeriod = 0; nPeriod < arrSummaryRecords.length; ++nPeriod)
-        {
+        for (var nPeriod = 0; nPeriod < arrSummaryRecords.length; ++nPeriod) {
+
             var arrHeadings = Object.keys(arrSummaryRecords[nPeriod]);
         
-            for (var nHeading = 0; nHeading < arrHeadings.length; ++nHeading)
-            {
+            for (var nHeading = 0; nHeading < arrHeadings.length; ++nHeading) {
                 var sHeading = arrHeadings[nHeading];
                 oRowHeadings[sHeading] = sHeading;
             }
@@ -534,39 +495,39 @@ function generateReport(arrSpans, coreApi, fnDone)
 
         var sHtml = '';
 
-        for (var nRow = 0; nRow < arrRowHeadings.length; ++nRow)
-        {
+        for (var nRow = 0; nRow < arrRowHeadings.length; ++nRow) {
+
             var sRowHeading = arrRowHeadings[nRow];
             sHtml += '        <tr>\r\n';
             sHtml += '            <td class="firstColumn">' + sRowHeading + '</td>\r\n';
 
             var nTotal = 0;
 
-            for (nPeriod = 0; nPeriod < arrSummaryRecords.length; ++nPeriod)
-            {
+            for (nPeriod = 0; nPeriod < arrSummaryRecords.length; ++nPeriod) {
+
                 var oRows = arrSummaryRecords[nPeriod];
                 var nValue = 0;
 
-                if (typeof oRows[sRowHeading] != 'undefined')
-                {
+                if (typeof oRows[sRowHeading] != 'undefined') {
+
                     nValue = oRows[sRowHeading];
                 }
 
                 sHtml += '            <td>' + nValue + '</td>\r\n';
 
                 var sSplit = nValue.toString().split('<BR');
-                if (sSplit.length > 1)
-                {
+
+                if (sSplit.length > 1) {
                     nValue = parseInt(sSplit[0]);
                 }
 
                 nTotal += nValue;
             }
 
-            if (bShowTotals)
-            {
+            if (bShowTotals) {
                 sHtml += '            <td>' + nTotal + '</td>\r\n';
             }
+
             sHtml += '        </tr>\r\n';
         }
 
@@ -576,8 +537,7 @@ function generateReport(arrSpans, coreApi, fnDone)
     //
     // fnFailed
     //
-    function fnFailed(sMsg)
-    {
+    function fnFailed(sMsg) {
         fnDone({Error:sMsg});
     }
 }

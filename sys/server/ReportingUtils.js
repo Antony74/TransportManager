@@ -7,36 +7,27 @@ exports.reverseDateFormat = reverseDateFormat;
 //
 // simpleSelectSql
 //
-function simpleSelectSql(sSql, coreApi, fnFailed, fnDone)
-{
+function simpleSelectSql(sSql, coreApi, fnFailed, fnDone) {
     var oJson = null;
     getMoreData(0);
 
-    function getMoreData(nStartRecord)
-    {
-        coreApi.selectSql(sSql, nStartRecord, 0, function(data)
-        {
-            if (data.Error != undefined)
-            {
+    function getMoreData(nStartRecord) {
+
+        coreApi.selectSql(sSql, nStartRecord, 0, function(data) {
+
+            if (data.Error != undefined) {
                 fnFailed(data.Error);
-            }
-            else
-            {
-                if (oJson == null)
-                {
+            } else {
+
+                if (oJson == null) {
                     oJson = data;
-                }
-                else
-                {
+                } else {
                     oJson['records'] = oJson['records'].concat(data['records']);
                 }
 
-                if (data.more)
-                {
+                if (data.more) {
                     getMoreData(data.startRecord + data.records.length);
-                }
-                else
-                {
+                } else {
                     fnDone(oJson);
                 }
             }
@@ -47,18 +38,17 @@ function simpleSelectSql(sSql, coreApi, fnFailed, fnDone)
 //
 // getPeriodSubQuery
 //
-function getPeriodSubQuery(sPeriodStart, sPeriodEnd)
-{
+function getPeriodSubQuery(sPeriodStart, sPeriodEnd) {
+
     return '(JobAppointmentDateTime > #' + sPeriodStart + ' 00:00# AND JobAppointmentDateTime < #' + sPeriodEnd + ' 23:59#)';
 }
 
 //
 // formatdate
 //
-function formatdate(date)
-{
-    if (typeof(date) == 'string')
-    {
+function formatdate(date) {
+
+    if (typeof(date) == 'string') {
         date = new Date(date);
     }
 
@@ -68,8 +58,7 @@ function formatdate(date)
 //
 // asTwoCharacterString
 //
-function asTwoCharacterString(n)
-{
+function asTwoCharacterString(n) {
     var s = n.toString();
     return (s.length == 1) ? (0 + s) : s;
 }
@@ -77,8 +66,7 @@ function asTwoCharacterString(n)
 //
 // reverseDateFormat
 //
-function reverseDateFormat(sDate)
-{
+function reverseDateFormat(sDate) {
     return sDate.split('/').reverse().join('/');
 }
 
