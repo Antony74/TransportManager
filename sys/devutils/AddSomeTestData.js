@@ -2,8 +2,8 @@
 var platform = require('../server/usingMSJet4.js');
 var faker = require('Faker');
 
-platform.ensureDatabaseIsReady(function()
-{
+platform.ensureDatabaseIsReady(function() {
+
     // Ensure there isn't already client data in this database
     
     var existingClients = platform.selectSql(
@@ -11,8 +11,7 @@ platform.ensureDatabaseIsReady(function()
         query: 'select * from clients'
     });
 
-    if (existingClients.records.length != 0)
-    {
+    if (existingClients.records.length != 0) {
         console.log('This database already contains clients');
         return;
     }
@@ -24,16 +23,16 @@ platform.ensureDatabaseIsReady(function()
         query: 'select * from drivers'
     });
 
-    if (existingDrivers.records.length != 0)
-    {
+    if (existingDrivers.records.length != 0) {
         console.log('This database already contains drivers');
         return;
     }
 
     // Add one test client at a time in a loop of eight.  Though there shouldn't be anything to
     // stop us from batching up eight new test clients in a single updateDatabase call.
-    for (var n = 0; n < 8; ++n)
-    {
+
+    for (var n = 0; n < 8; ++n) {
+
         platform.updateDatabase( 
         [
             {
@@ -50,8 +49,8 @@ platform.ensureDatabaseIsReady(function()
     }
 
     // Add test drivers
-    for (var n = 0; n < 1; ++n)
-    {
+    for (var n = 0; n < 1; ++n) {
+
         platform.updateDatabase( 
         [
             {
@@ -69,8 +68,8 @@ platform.ensureDatabaseIsReady(function()
     
 });
 
-function generateTestClientFields()
-{
+function generateTestClientFields() {
+
     var retval =
     {
         Title        : "",
@@ -91,8 +90,8 @@ function generateTestClientFields()
     return retval;
 }
 
-function generateTestDriverFields()
-{
+function generateTestDriverFields() {
+
     var retval =
     {
         Title        : "",

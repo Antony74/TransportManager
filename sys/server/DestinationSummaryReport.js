@@ -1,6 +1,6 @@
 
-function generateReport(dateFrom, dateTo, coreApi, fnDone)
-{
+function generateReport(dateFrom, dateTo, coreApi, fnDone) {
+
     var utils = require('./ReportingUtils.js');
 
     var sPeriodStart = utils.formatdate(dateFrom);
@@ -14,22 +14,19 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
                 + ' INNER JOIN DestinationType ON Destinations.TypeID = DestinationType.DestinationTypeID)'
                 + ' WHERE status="Closed" AND ' + sPeriodSubQuery;
 
-    utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult)
-    {
+    utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
+
         var arrRecords = oResult['records'];
 
         var oSummaryRecord = {};
 
-        for (var n = 0; n < arrRecords.length; ++n)
-        {
+        for (var n = 0; n < arrRecords.length; ++n) {
+
             var sThingToCount = arrRecords[n]['DestinationLevel2'];
 
-            if (typeof oSummaryRecord[sThingToCount] == 'undefined')
-            {
+            if (typeof oSummaryRecord[sThingToCount] == 'undefined') {
                 oSummaryRecord[sThingToCount] = 1;
-            }
-            else
-            {
+            } else {
                 ++oSummaryRecord[sThingToCount];
             }
         }
@@ -38,13 +35,11 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
 
         var arrSummary = [];
 
-        for (var sHeading in oSummaryRecord)
-        {
+        for (var sHeading in oSummaryRecord) {
             arrSummary.push({sDestination: sHeading, nCount: oSummaryRecord[sHeading]});
         }
 
-        arrSummary.sort(function(a,b)
-        {
+        arrSummary.sort(function(a,b) {
             return b.nCount - a.nCount;
         });
 
@@ -78,8 +73,8 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
         var sPeriod = utils.reverseDateFormat(sPeriodStart) + ' - ' + utils.reverseDateFormat(sPeriodEnd);
         sHtml += '<th>' + sPeriod + '</th></tr>\r\n';
 
-        for (var nRow = 0; nRow < arrSummary.length; ++nRow)
-        {
+        for (var nRow = 0; nRow < arrSummary.length; ++nRow) {
+
             var sDestination = arrSummary[nRow].sDestination;
             var nCount       = arrSummary[nRow].nCount;
 
@@ -97,8 +92,7 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
     //
     // fnFailed
     //
-    function fnFailed(sMsg)
-    {
+    function fnFailed(sMsg) {
         fnDone({Error:sMsg});
     }
 }

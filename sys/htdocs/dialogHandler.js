@@ -1,47 +1,46 @@
 
-getDialogHandler = function(doneFn)
-{
+getDialogHandler = function(doneFn) {
+
     // Queue this request for a dialog handler
     var arrFunctionsWaitingForDialogHandler = [doneFn];
 
     // Queue any subsequent request we get for a dialog handler while we are waiting for it
-    getDialogHandler = function(doneFn)
-    {
+    getDialogHandler = function(doneFn) {
         arrFunctionsWaitingForDialogHandler.push(doneFn);
     };
 
     // Load the dialogs
-    $('#dialogs').load('raw/dialogs.html .dialogTemplate', function()
-    {
-        function makeLooseDatesStrict()
-        {
+    $('#dialogs').load('raw/dialogs.html .dialogTemplate', function() {
+
+        function makeLooseDatesStrict() {
+
             var sCurrentValue = $(this).val().trim();
             var sNewValue = '';
 
-            for (var n = 0; n < sCurrentValue.length; ++n)
-            {
-                if (sCurrentValue[n] == '.' || sCurrentValue[n] == '-')
-                {
+            for (var n = 0; n < sCurrentValue.length; ++n) {
+
+                if (sCurrentValue[n] == '.' || sCurrentValue[n] == '-') {
+
                     sNewValue += '/';
-                }
-                else
-                {
+
+                } else {
+
                     sNewValue += sCurrentValue[n];
+
                 }
             }
 
             // Convert two digit dates to four
             var arrDateComponents = sNewValue.split('/');
 
-            if (arrDateComponents.length == 3 && arrDateComponents[2].length == 2)
-            {
+            if (arrDateComponents.length == 3 && arrDateComponents[2].length == 2) {
+
                 arrDateComponents[2] = '19' + arrDateComponents[2];
                 sNewValue = arrDateComponents.join('/');
             }
 
             // Update the date box, but only if we've changed anything (we don't want to be looping forever)
-            if (sCurrentValue != sNewValue)
-            {
+            if (sCurrentValue != sNewValue) {
                 $(this).val(sNewValue);
             }
         }
@@ -63,19 +62,19 @@ getDialogHandler = function(doneFn)
         var arrTablesToUpdate = [];
         var oData = {Error: 'No data'};
 
-        function enableButtons(bEnable)
-        {
+        function enableButtons(bEnable) {
+
             bDialogButtonsEnabled = bEnable;
 
-            if (bEnable)
-            {
+            if (bEnable) {
+
                 $('.ui-dialog-titlebar-close').css('display', 'inherit');
                 $('#dialogApply').removeClass('buttonDisabled');
                 $('#dialogOK').removeClass('buttonDisabled');
                 $('#dialogCancel').removeClass('buttonDisabled');
-            }
-            else
-            {
+
+            } else {
+
                 $('.ui-dialog-titlebar-close').css('display', 'none');
                 $('#dialogApply').addClass('buttonDisabled');
                 $('#dialogOK').addClass('buttonDisabled');
@@ -83,31 +82,32 @@ getDialogHandler = function(doneFn)
             }
         }
 
-        function setStatus(sStatus, cTrafficLight)
-        {
+        function setStatus(sStatus, cTrafficLight) {
+
             var statusBar = $('#dlg' + sDialogName + ' .dialogStatus').find('td');
-            if (cTrafficLight == 'G')
-            {
+
+            if (cTrafficLight == 'G') {
+
                 statusBar.html('Status: ' + sStatus)
                          .removeClass('dialogStatusRed')
                          .removeClass('dialogStatusAmber')
                          .addClass('dialogStatusGreen');
 
                 enableButtons(true);
-            }
-            else if (cTrafficLight == 'A')
-            {
+ 
+           } else if (cTrafficLight == 'A') {
+
                 statusBar.html('Status: ' + sStatus)
                          .removeClass('dialogStatusRed')
                          .addClass('dialogStatusAmber')
                          .removeClass('dialogStatusGreen');
 
                 enableButtons(false);
-            }
-            else
-            {
-                if (sStatus.indexOf('SyntaxError:') != 0)
-                {
+
+            } else {
+
+                if (sStatus.indexOf('SyntaxError:') != 0) {
+
                     sStatus = 'Error: ' + sStatus;
                 }
 
@@ -120,15 +120,15 @@ getDialogHandler = function(doneFn)
             }
         }
 
-        function commitChanges(bCloseDialog)
-        {
+        function commitChanges(bCloseDialog) {
+
             setStatus('Updating', 'A');
             bDialogChanged = true;
             
             var arrCommits = [];
 
-            for (var nTable in arrTablesToUpdate)
-            {
+            for (var nTable in arrTablesToUpdate) {
+
                 var sTablename = arrTablesToUpdate[nTable];
                 var oOldRecord = {};
                 var oNewRecord = {};
@@ -136,33 +136,33 @@ getDialogHandler = function(doneFn)
 
                 var bWasAllNull = true;
 
-                for (var nField in arrFields)
-                {
+                for (var nField in arrFields) {
+
                     var oField = arrFields[nField];
                     var sFieldname = oField['name'];                    
 
-                    if (oField['Tablename'] == sTablename)
-                    {
+                    if (oField['Tablename'] == sTablename) {
+
                         var arrParts = sFieldname.split('.');
-                        if (arrParts.length == 2)
-                        {
+
+                        if (arrParts.length == 2) {
+
                             var sKeyFieldname = arrParts[1];
                             var sValue = oData['records'][0][sKeyFieldname];
 
                             oOldRecord[sKeyFieldname] = sValue;
                             oNewRecord[sKeyFieldname] = sValue;
-                        }
-                        else
-                        {
+
+                        } else {
+
                             oOldRecord[sFieldname] = oData['records'][0][sFieldname];
                             var newValue = $('#' + sDialogName + '_' + sFieldname).val();
 
-                            if (oField['Type'] == 'DATE' && newValue.length)
-                            {
+                            if (oField['Type'] == 'DATE' && newValue.length) {
+
                                 newValue = parseDate(newValue);
 
-                                if (newValue == null)
-                                {
+                                if (newValue == null) {
                                     setStatus('Invalid date (expecting DD/MM/YYYY)', 'R');
                                     return;
                                 }
@@ -170,16 +170,14 @@ getDialogHandler = function(doneFn)
                                 newValue = newValue.getTime();
                             }
 
-                            if (newValue === '')
-                            {
+                            if (newValue === '') {
                                 newValue = null; // Certain database checks distingush between empty string and null, so let's be consistent.
                             }
 
                             oNewRecord[sFieldname] = newValue;
                         }
 
-                        if (oData['records'][0][sFieldname] != null)
-                        {
+                        if (oData['records'][0][sFieldname] != null) {
                             bWasAllNull = false;
                         }
 
@@ -187,28 +185,22 @@ getDialogHandler = function(doneFn)
                     }
                 }
 
-                if (bWasAllNull)
-                {
-                    arrCommits.push(
-                    {
+                if (bWasAllNull) {
+
+                    arrCommits.push({
                         table : sTablename,
-                        operations:
-                        [
-                            {
+                        operations: [ {
                                 operationName : 'add',
                                 newRecord     : oNewRecord
                             }
                         ]
                     });
-                }
-                else
-                {
-                    arrCommits.push(
-                    {
+
+                } else {
+
+                    arrCommits.push( {
                         table : sTablename,
-                        operations:
-                        [
-                            {
+                        operations: [ {
                                 operationName : 'edit',
                                 oldRecord     : oOldRecord,
                                 newRecord     : oNewRecord
@@ -220,85 +212,79 @@ getDialogHandler = function(doneFn)
             }
 
             getCoreApiProxy().updateDatabase(
-                        arrCommits,
-                        function(oData)
-                        {
-                            if (typeof oData.Error != 'undefined')
-                            {
-                                setStatus(oData.Error, 'R');
-                            }
-                            else
-                            {
-                                setStatus('Ready', 'G');
+                arrCommits,
+                function(oData) {
 
-                                if (bCloseDialog)
-                                {
-                                    $('#dlg' + sDialogName).dialog('close');
-                                    fnDialogClosed(bDialogChanged);
-                                }
-                            }
-                        });
+                    if (typeof oData.Error != 'undefined') {
+
+                        setStatus(oData.Error, 'R');
+
+                    } else {
+
+                        setStatus('Ready', 'G');
+
+                        if (bCloseDialog) {
+                            $('#dlg' + sDialogName).dialog('close');
+                            fnDialogClosed(bDialogChanged);
+                        }
+                    }
+                }
+			);
         }
 
-        $('#dialogs div').each(function()
-        {
-            $(this).dialog(
-            {
+        $('#dialogs div').each(function() {
+
+            $(this).dialog( {
                 modal         : true,
                 autoOpen      : false,
                 closeOnEscape : false,
                 resizable     : false,
                 width         : nDialogWidth,
-                buttons       :
-                [
-                    {
-                        text  : 'OK',
-                        id    : 'dialogOK',
-                        icons : {primary: 'ui-icon-check'},
-                        width : nButtonWidth,
-                        click : function()
-                        {
-                            if (bDialogButtonsEnabled)
-                            {
-                                commitChanges(true);
-                            }
-                        }
-                    },
-                    {
-                        text  : 'Cancel',
-                        id    : 'dialogCancel',
-                        width : nButtonWidth,
-                        icons : {primary: 'ui-icon-closethick'},
-                        click : function()
-                        {
-                            if (bDialogButtonsEnabled)
-                            {
-                                $('#dlg' + sDialogName).dialog('close');
-                                fnDialogClosed(bDialogChanged);
-                            }
-                        }
-                    },
-                    {
-                        text  : 'Apply',
-                        id    : 'dialogApply',
-                        icons : {primary: 'ui-icon-check'},
-                        width : nButtonWidth,
-                        click : function()
-                        {
-                            if (bDialogButtonsEnabled)
-                            {
-                                commitChanges(false);
-                            }
-                        }
-                    }
+                buttons       : [
+					{
+						text  : 'OK',
+						id    : 'dialogOK',
+						icons : {primary: 'ui-icon-check'},
+						width : nButtonWidth,
+						click : function() {
 
+							if (bDialogButtonsEnabled) {
+								commitChanges(true);
+							}
+						}
+					},
+					{
+						text  : 'Cancel',
+						id    : 'dialogCancel',
+						width : nButtonWidth,
+						icons : {primary: 'ui-icon-closethick'},
+						click : function() {
+
+							if (bDialogButtonsEnabled) {
+								$('#dlg' + sDialogName).dialog('close');
+								fnDialogClosed(bDialogChanged);
+							}
+						}
+					},
+					{
+						text  : 'Apply',
+						id    : 'dialogApply',
+						icons : {primary: 'ui-icon-check'},
+						width : nButtonWidth,
+						click : function() {
+
+							if (bDialogButtonsEnabled) {
+								commitChanges(false);
+							}
+						}
+					}
                 ]
-            }).on('keydown', function(event)
-            {
-                if (event.keyCode === $.ui.keyCode.ESCAPE)
-                {
-                    if (bDialogButtonsEnabled)
-                    {
+
+            }).on('keydown', function(event) {
+
+                if (event.keyCode === $.ui.keyCode.ESCAPE) {
+
+                    if (bDialogButtonsEnabled) {
                         $(this).dialog('close');
                     }
                 } 
@@ -307,17 +293,16 @@ getDialogHandler = function(doneFn)
 
         // And now we're ready to create the dialogHandler
 
-        var theDialogHandler = 
-        {
-            doClientDialog: function(clientID)
-            {
+        var theDialogHandler =  {
+
+            doClientDialog: function(clientID) {
                 var sTablename = 'Clients';
                 var sDialogQuery = getTables()[sTablename]['query'] + ' WHERE Clients.ClientID = ' + clientID;
                 this.doDialog(sTablename, sDialogQuery, ['ClientsEx'], function() {} );
             },
 
-            doDialog: function(_sDialogName, sQuery, _arrTablesToUpdate, _fnDialogClosed)
-            {
+            doDialog: function(_sDialogName, sQuery, _arrTablesToUpdate, _fnDialogClosed) {
+
                 bDialogButtonsEnabled = true;
                 bDialogChanged = false;
 
@@ -329,32 +314,32 @@ getDialogHandler = function(doneFn)
 
                 $('#dlg' + sDialogName).dialog("open");
 
-                getCoreApiProxy().selectSql(sQuery, 0, 2, function(_oData)
-                {
+                getCoreApiProxy().selectSql(sQuery, 0, 2, function(_oData) {
+
                     oData = _oData;
                 
-                    if (typeof oData.Error != 'undefined')
-                    {
+                    if (typeof oData.Error != 'undefined') {
+
                         setStatus(oData.Error, 'R');
-                    }
-                    else
-                    {
+
+                    } else {
+
                         var oRecord = oData['records'][0];
 
-                        for (var sFieldname in oRecord)
-                        {
+                        for (var sFieldname in oRecord) {
+
                             var input = $('#' + sDialogName + '_' + sFieldname);
                             var newValue = oRecord[sFieldname];
 
-                            if (newValue != null)
-                            {
-                                if (input.hasClass('datetimepicker'))
-                                {
+                            if (newValue != null) {
+
+                                if (input.hasClass('datetimepicker')) {
+
                                     var dateValue = new Date(newValue);
                                     newValue = getDDMMYYYY(dateValue) + '&nbsp;' + getHHMM(dateValue);
-                                }
-                                else if (input.hasClass('datepicker'))
-                                {
+
+                                } else if (input.hasClass('datepicker')) {
+
                                     var dateValue = new Date(newValue);
                                     newValue = getDDMMYYYY(dateValue);
                                 }
@@ -366,16 +351,15 @@ getDialogHandler = function(doneFn)
                         // Decide which fields to enable/disable
                         var arrFields = oData['fields'];
                         
-                        for (var nField in arrFields)
-                        {
+                        for (var nField in arrFields) {
+
                             var bDisabled = true;
                             var sFieldname = arrFields[nField]['name'];
                             var sTablename = arrFields[nField]['Tablename'];
 
-                            for (var nTable in arrTablesToUpdate)
-                            {
-                                if (sTablename == arrTablesToUpdate[nTable])
-                                {
+                            for (var nTable in arrTablesToUpdate) {
+
+                                if (sTablename == arrTablesToUpdate[nTable]) {
                                     bDisabled = false;
                                 }
                             }
@@ -392,15 +376,13 @@ getDialogHandler = function(doneFn)
 
         // Subsequent calls to getDialogHandler can simply be immediately called back with the dialogHandler
 
-        getDialogHandler = function(fnDone)
-        {
+        getDialogHandler = function(fnDone) {
             fnDone(theDialogHandler);
         };
 
         // Callback anyone who is already waiting for a dialogHandler
 
-        for (var n = 0; n < arrFunctionsWaitingForDialogHandler.length; ++n)
-        {
+        for (var n = 0; n < arrFunctionsWaitingForDialogHandler.length; ++n) {
             var fn = arrFunctionsWaitingForDialogHandler[n];
             fn(theDialogHandler);
         }

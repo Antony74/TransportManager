@@ -2,17 +2,16 @@
 var dialogHandler = null;
 var currentFields = {};
 
-$(document).ready(function()
-{
-    getDialogHandler(function(_dialogHandler)
-    {
+$(document).ready(function() {
+
+    getDialogHandler(function(_dialogHandler) {
         dialogHandler = _dialogHandler;
         allReady();
     });
 });
 
-function allReady()
-{
+function allReady() {
+
     var currentData = null;
     var currentFilter = null;
     var currentSort = -1;
@@ -24,65 +23,51 @@ function allReady()
     $('#radio').buttonset();
     $('#radio span').css('width', '100px');
 
-    function getCompareFunction(sFieldname, bAscending)
-    {
+    function getCompareFunction(sFieldname, bAscending) {
+
         var nLessThan = bAscending ? -1 :  1;
         var nMoreThan = bAscending ?  1 : -1;
     
-        return function(recA, recB)
-        {
-            if (recA[sFieldname] < recB[sFieldname])
-            {
+        return function(recA, recB) {
+
+            if (recA[sFieldname] < recB[sFieldname]) {
                 return nLessThan;
-            }
-            else if (recA[sFieldname] > recB[sFieldname])
-            {
+            } else if (recA[sFieldname] > recB[sFieldname]) {
                 return nMoreThan;
-            }
-            else
-            {
+            } else {
                 return 0;
             }
         };
     }
 
-    function onTableHeaderClick()
-    {
+    function onTableHeaderClick() {
+
         var nIndex = $(this).index();
         var sFieldname = currentData['fields'][$(this).index()].name;
-        if (currentSort == nIndex)
-        {
+        if (currentSort == nIndex) {
             currentSortAscending = !currentSortAscending;
-        }
-        else
-        {
+        } else {
             currentSort = nIndex;
             currentSortAscending = true;
         }
 
-        if (currentFilter == null)
-        {
+        if (currentFilter == null) {
             currentFilter = currentData.records.concat();
         }
 
         currentFilter.sort(getCompareFunction(sFieldname, currentSortAscending));
         displayRecords(currentFilter, false);
         
-        if (currentSortAscending)
-        {
+        if (currentSortAscending) {
             $('#mainDataTable th:nth-child(' + (nIndex+1) + ')').html(sFieldname + "&nbsp;&#x25BC;");
-        }
-        else
-        {
+        } else {
             $('#mainDataTable th:nth-child(' + (nIndex+1) + ')').html(sFieldname + "&nbsp;&#x25B2;");
         }
     }
 
-    function onTableCellClick()
-    {
+    function onTableCellClick() {
         var dlg = $("#dlg" +currentTable);
-        if (dlg.length)
-        {
+        if (dlg.length) {
             var nRow = $(this).parent().index() - 1;
 
             var oRecord = currentFilter ? currentFilter[nRow] : currentData.records[nRow];
@@ -91,18 +76,17 @@ function allReady()
         }
     }
 
-    function displayRecords(arrRecords, bAppend)
-    {
+    function displayRecords(arrRecords, bAppend) {
         var sHtml = '';
 
-        for(var n in arrRecords)
-        {
+        for(var n in arrRecords) {
+
             var rs = arrRecords[n];
 
             sHtml += '<tr>\n';
             
-            for(var fld in rs)
-            {
+            for(var fld in rs) {
+
                 var htmlValue = currentFields[fld].toHtmlValue(rs[fld]);
 
                 sHtml += '<td>' + htmlValue + '</td>\n';
@@ -111,12 +95,9 @@ function allReady()
             sHtml += '</tr>\n';
         }
         
-        if (bAppend)
-        {
+        if (bAppend) {
             $('#mainDataTable').append(sHtml);
-        }
-        else
-        {
+        } else {
             $('#mainDataTable').empty().append(sTableHeader + sHtml);
         }
 
@@ -124,34 +105,32 @@ function allReady()
         $('#mainDataTable td').dblclick(onTableCellClick);
     }
 
-    function updateFilter()
-    {
-        if (currentData && currentData['more'] == false)
-        {
+    function updateFilter() {
+
+        if (currentData && currentData['more'] == false) {
+
             var sFilter = $('#filterText').val().trim().toLowerCase();
 
-            if (sFilter == '')
-            {
+            if (sFilter == '') {
+
                 currentFilter = null;
                 displayRecords(currentData['records'], false);
-            }
-            else
-            {
+            } else {
+
                 currentFilter = [];
                 var arrRecords = currentData['records'];
 
-                for(var n in arrRecords)
-                {
+                for(var n in arrRecords) {
+
                     var rs = arrRecords[n];
 
-                    for(var fld in rs)
-                    {
-                        if (rs[fld] != null)
-                        {
+                    for(var fld in rs) {
+
+                        if (rs[fld] != null) {
+
                             var value = rs[fld].toString().toLowerCase();
 
-                            if (value.contains(sFilter))
-                            {
+                            if (value.contains(sFilter)) {
                                 currentFilter.push(arrRecords[n]);
                                 break;
                             }
@@ -164,108 +143,89 @@ function allReady()
         }
     }
 
-    $('#filterText').on('input', function()
-    {
+    $('#filterText').on('input', function() {
         updateFilter();
     });
 
-    $('#filterCancel').click(function()
-    {
+    $('#filterCancel').click(function() {
         $('#filterText').val('');
         updateFilter();
     });
 
-    function gotJSON(root)
-    {
-        if (typeof(root['Error']) == 'string' && root['Error'].length)
-        {
+    function gotJSON(root) {
+
+        if (typeof(root['Error']) == 'string' && root['Error'].length) {
+
             setDataTableStatus(root['Error'], 'R');
             return;
         }
 
-        if (currentQuery == root['query'])
-        {
+        if (currentQuery == root['query']) {
+
             var arrRecords = root['records'];
 
-            if (currentData == null)
-            {
+            if (currentData == null) {
                 currentData = root;
-            }
-            else
-            {
+            } else {
                 currentData['records'] = currentData['records'].concat(arrRecords);
             }
 
-            if (root['startRecord'] == 0)
-            {
+            if (root['startRecord'] == 0) {
+
                 var arrFields = root['fields'];
                 
                 sTableHeader = '<tr>\n';
 
                 currentFields = {};
 
-                for(var nFld in arrFields)
-                {
+                for(var nFld in arrFields) {
+
                     var fld = arrFields[nFld];
                     sTableHeader += '<th style="width:' + fld.width + '">' + fld.name + '</th>\n';
                     
                     var converter = {};
 
-                    if (fld['Type'] == 'DATE')
-                    {
-                        converter['toHtmlValue'] = function(value)
-                        {
+                    if (fld['Type'] == 'DATE') {
+
+                        converter['toHtmlValue'] = function(value) {
                             var dateValue = new Date(value);
                             return getDDMMYYYY(dateValue) + '&nbsp;' + getHHMM(dateValue);
                         };
 
-                        converter['toDialogValue'] = function(value)
-                        {
+                        converter['toDialogValue'] = function(value) {
                             var dateValue = new Date(value);
                             return getDDMMYYYY(dateValue) + ' ' + getHHMM(dateValue);
                         };
 
-                        converter['fromDialogValue'] = function(dv)
-                        {
+                        converter['fromDialogValue'] = function(dv) {
                             return dv;
                         };
-                    }
-                    else
-                    {
-                        converter['toDialogValue'] = function(value)
-                        {
+
+                    } else {
+
+                        converter['toDialogValue'] = function(value) {
                             return value;
                         };
 
-                        converter['fromDialogValue'] = function(dv)
-                        {
+                        converter['fromDialogValue'] = function(dv) {
                             return dv;
                         };
 
-                        if (fld['Type'] == 'YESNO')
-                        {
-                            converter['toHtmlValue'] = function(value)
-                            {
-                                if (value)
-                                {
+                        if (fld['Type'] == 'YESNO') {
+                            converter['toHtmlValue'] = function(value) {
+
+                                if (value) {
                                     return '&#x2714'; // Tick
-                                }
-                                else
-                                {
+                                } else {
                                     return '&#x2716'; // Cross
                                 }
                             };
-                        }
-                        else
-                        {
-                            converter['toHtmlValue'] = function(value)
-                            {
-                                if (value === null || value === '')
-                                {
+                        } else {
+                            converter['toHtmlValue'] = function(value) {
+
+                                if (value === null || value === '') {
                                     return '&nbsp;';
-                                }
-                                else
-                                {
+                                } else {
                                     return this.toDialogValue(value);
                                 }
                             };
@@ -278,18 +238,16 @@ function allReady()
                 sTableHeader += '</tr>\n';
             
                 displayRecords(arrRecords, false);
-            }
-            else
-            {
+
+            } else {
                 displayRecords(arrRecords, true);                
             }
 
-            if (root['more'])
-            {
+            if (root['more']) {
+
 				getCoreApiProxy().selectSql(root['query'], arrRecords.length + root['startRecord'], 0, gotJSON);
-            }
-            else
-            {
+
+            } else {
                 currentData['more'] = false;
                 updateFilter();
                 setDataTableStatus('Ready', 'G');
@@ -297,8 +255,8 @@ function allReady()
         }
     }
 
-    function beginPopulateCalendar()
-    {
+    function beginPopulateCalendar() {
+
         $('#mainDataTable').empty();
 
         currentTable = '';
@@ -307,8 +265,8 @@ function allReady()
         currentFilter = null;
     }
 
-    function beginPopulateTable()
-    {
+    function beginPopulateTable() {
+
         $('#reports').hide();
         $('#dataTable').show();
         $('#mainDataTable').empty();
@@ -323,36 +281,31 @@ function allReady()
 		getCoreApiProxy().selectSql(currentQuery, 0, 2, gotJSON);
     }
 
-    function beginPopulateJobs()
-    {
+    function beginPopulateJobs() {
         currentTable = 'Clients';
         currentQuery = 'select * from Jobs order by JobID';
         beginPopulateTable();
     }
 
-    function beginPopulateClients()
-    {
+    function beginPopulateClients() {
         currentTable = 'Clients';
         currentQuery = 'select * from Clients order by ClientID';
         beginPopulateTable();
     }
 
-    function beginPopulateDrivers()
-    {
+    function beginPopulateDrivers() {
         currentTable = 'Drivers';
         currentQuery = 'select * from Drivers order by DriverID';
         beginPopulateTable();
     }
 
-    function beginPopulateDestinations()
-    {
+    function beginPopulateDestinations() {
         currentTable = 'Destinations';
         currentQuery = 'select * from Destinations order by DestinationID';
         beginPopulateTable();
     }
 
-    function showReports()
-    {
+    function showReports() {
         $('#dataTable').hide();
         $('#reports').show();
     }
@@ -368,30 +321,29 @@ function allReady()
 
 }
 
-function setDataTableStatus(sStatus, cTrafficLight)
-{
+function setDataTableStatus(sStatus, cTrafficLight) {
+
     $('#dataTableStatus').show();
 
     var statusBar = $('#dataTableStatus').find('td');
 
-    if (cTrafficLight == 'G')
-    {
+    if (cTrafficLight == 'G') {
+
         statusBar.html('Status: ' + sStatus)
                     .removeClass('dialogStatusRed')
                     .removeClass('dialogStatusAmber')
                     .addClass('dialogStatusGreen');
-    }
-    else if (cTrafficLight == 'A')
-    {
+ 
+   } else if (cTrafficLight == 'A') {
+
         statusBar.html('Status: ' + sStatus)
                     .removeClass('dialogStatusRed')
                     .addClass('dialogStatusAmber')
                     .removeClass('dialogStatusGreen');
-    }
-    else
-    {
-        if (sStatus.indexOf('SyntaxError:') != 0)
-        {
+
+    } else {
+
+        if (sStatus.indexOf('SyntaxError:') != 0) {
             sStatus = 'Error: ' + sStatus;
         }
 

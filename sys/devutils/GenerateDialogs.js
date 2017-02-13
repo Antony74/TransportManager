@@ -9,8 +9,7 @@ out.write(generateHeader());
 out.write('<BR>\r\n');
 out.write('<p style="text-align:center">\r\n');
 
-for (var sTablename in oTables)
-{
+for (var sTablename in oTables) {
     out.write(generateButton(sTablename));
 }
 
@@ -20,8 +19,7 @@ out.write('<script>\r\n');
 out.write('$(document).ready(function()\r\n');
 out.write('{\r\n');
 
-for (var sTablename in oTables)
-{
+for (var sTablename in oTables) {
     out.write(generateButtonScript(sTablename));
 }
 
@@ -29,8 +27,7 @@ out.write('});\r\n');
 out.write('</script>\r\n');
 out.write('\r\n');
 
-for (var sTablename in oTables)
-{
+for (var sTablename in oTables) {
     var sQuery = oTables[sTablename]['query'];
 
     out.write(generateDialog(sTablename, sQuery));
@@ -43,12 +40,10 @@ out.end();
 //
 // generateHeader
 //
-function generateHeader()
-{
+function generateHeader() {
     var ts = new Date();    
 
-	function pad(nValue)
-	{
+	function pad(nValue) {
 		return ('00' + nValue).slice(-2);
 	}
 
@@ -76,8 +71,7 @@ function generateHeader()
 //
 // generateFooter
 //
-function generateFooter()
-{
+function generateFooter() {
     var s = '\r\n';
     s    += '</body>\r\n';
     s    += '</html>\r\n';
@@ -87,8 +81,7 @@ function generateFooter()
 //
 // generateButton
 //
-function generateButton(sTablename)
-{
+function generateButton(sTablename) {
     var s = '    <button id="' + sTablename + '">' + sTablename + '</button>\r\n';
     return s;
 }
@@ -96,8 +89,8 @@ function generateButton(sTablename)
 //
 // generateButtonScript
 //
-function generateButtonScript(sTablename)
-{
+function generateButtonScript(sTablename) {
+
     var s = "    $('#dlg" + sTablename + "').dialog({modal: true, autoOpen: false, width: 800});\r\n";
     s    += "    $('#" + sTablename + "').click(function()\r\n";
     s    += "    {\r\n";
@@ -109,11 +102,9 @@ function generateButtonScript(sTablename)
 //
 // generateDialog
 //
-function generateDialog(sTablename, sQuery)
-{
+function generateDialog(sTablename, sQuery) {
 
-    var options =
-    {
+    var options = {
         'query'                : sQuery,
         'startRecord'          : 0,
         'schemaLevel'          : 2,
@@ -123,8 +114,7 @@ function generateDialog(sTablename, sQuery)
 
     var oDays = {'Mon': null, 'Tue': null, 'Wed': null, 'Thu': null, 'Fri': null, 'Sat': null, 'Sun':null};
 
-    var oTitles =
-    {
+    var oTitles = {
         'Clients'             : 'Client',
         'Destinations'        : 'Destination',
         'DestinationType'     : 'Destination Type',
@@ -137,15 +127,13 @@ function generateDialog(sTablename, sQuery)
 
     var sTitle = sTablename;
 
-    if (typeof oTitles[sTablename] !== undefined)
-    {
+    if (typeof oTitles[sTablename] !== undefined) {
         sTitle = oTitles[sTablename];
     }
 
     var json = dface.selectSql(options);
 
-    if (typeof json.Error != 'undefined')
-    {
+    if (typeof json.Error != 'undefined') {
         console.log(sQuery);
         console.log(json.Error);
         return '<!--' + json.Error + '-->';
@@ -162,12 +150,12 @@ function generateDialog(sTablename, sQuery)
     var nPairedCellCount = 0;
 
     // Quick first pass of fields to eliminate unwanted fields (e.g. ClientEx.ClientID)
-    for(var nFld = 0; nFld < arrFields.length; ++nFld)
-    {
+    for(var nFld = 0; nFld < arrFields.length; ++nFld) {
+
         var sFieldname = arrFields[nFld].name;
 
-        if (sFieldname.indexOf('.') != -1)
-        {
+        if (sFieldname.indexOf('.') != -1) {
+
             arrFields.splice(nFld, 1);
             --nFld;
         }
@@ -177,16 +165,15 @@ function generateDialog(sTablename, sQuery)
     var oChoiceOnlyFields = oTables[sTablename].ChoiceOnlyFields;
 
     // Now we can go through the fields properly and add them to the dialog
-    for(var nFld = 0; nFld < arrFields.length; ++nFld)
-    {
+    for(var nFld = 0; nFld < arrFields.length; ++nFld) {
+
         var sFieldname = arrFields[nFld].name;
 
-        if (typeof oDays[sFieldname] === 'undefined')
-        {
-            if (nFld % nColumns == 0)
-            {
-                if (nFld != 0)
-                {
+        if (typeof oDays[sFieldname] === 'undefined') {
+
+            if (nFld % nColumns == 0) {
+
+                if (nFld != 0) {
                     sForm += '            </tr>\r\n';
                 }
                 sForm += '            <tr>\r\n';
@@ -197,42 +184,39 @@ function generateDialog(sTablename, sQuery)
             
             var sDbType = arrFields[nFld].Type;
             
-            if (sDbType == 'DATE')
-            {
-                if (oDateOnlyFields != undefined && oDateOnlyFields[sFieldname] != undefined && oDateOnlyFields[sFieldname] == true)
-                {
+            if (sDbType == 'DATE') {
+
+                if (oDateOnlyFields != undefined && oDateOnlyFields[sFieldname] != undefined && oDateOnlyFields[sFieldname] == true) {
+
                     sInputAttributes = 'type="text" class="datepicker" style="width:85%"';
                     sCalendarButton  = '&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="' + sTablename + '_' + sFieldname + '_button" class="datepickerbutton" />';
-                }
-                else
-                {
+
+                } else {
                     sInputAttributes = 'type="text" class="datetimepicker" style="width:85%"';
                     sCalendarButton  = '&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="' + sTablename + '_' + sFieldname + '_button" class="datetimepickerbutton" />';
                 }
-            }
-            else if (sDbType == 'YESNO')
-            {
+
+            } else if (sDbType == 'YESNO') {
                 sInputAttributes = 'type="checkbox" style="text-align:left"';
             }
 
             sForm += '                <td>' + sFieldname + '</td>\r\n';
 
-            if (oChoiceOnlyFields != undefined && oChoiceOnlyFields[sFieldname] != undefined && Array.isArray(oChoiceOnlyFields[sFieldname]))
-            {
+            if (oChoiceOnlyFields != undefined && oChoiceOnlyFields[sFieldname] != undefined && Array.isArray(oChoiceOnlyFields[sFieldname])) {
+
                 sForm += '                <td>\r\n';
                 sForm += '                    <select id="' + sTablename + '_' + sFieldname + '">\r\n';
                 sForm += '                        <option></option>\r\n';
 
-                for (var n = 0; n < oChoiceOnlyFields[sFieldname].length; ++n)
-                {
+                for (var n = 0; n < oChoiceOnlyFields[sFieldname].length; ++n) {
+
                     sForm += '                        <option>' + oChoiceOnlyFields[sFieldname][n] + '</option>\r\n';
                 }
                 
                 sForm += '                    </select>\r\n';
                 sForm += '                <td>\r\n';
-            }
-            else
-            {
+
+            } else {
                 sForm += '                <td><input ' + sInputAttributes + ' id="' + sTablename + '_' + sFieldname + '" class="dialogInput" style="width:95%"/>' + sCalendarButton + '</td>\r\n';
             }
 
@@ -240,8 +224,7 @@ function generateDialog(sTablename, sQuery)
         }
     }
     
-    while (nPairedCellCount % nColumns)
-    {
+    while (nPairedCellCount % nColumns) {
         sForm += '                <td colspan="2">&nbsp;</td>\r\n';
         ++nPairedCellCount;
     }
@@ -249,8 +232,8 @@ function generateDialog(sTablename, sQuery)
     sForm     += '            </tr>\r\n';
     sForm     += '        </table>\r\n';
 
-    if (sTablename == "Drivers")
-    {
+    if (sTablename == "Drivers") {
+
         sForm += '        <table style="width:100%">\r\n';
         sForm += '            <tr>\r\n';
         sForm += '              <td>Mon</td><td><input type="checkbox" id="Drivers_Mon" style="width:95%"/></td>\r\n';

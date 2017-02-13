@@ -1,23 +1,20 @@
 
 var platform = require('./UsingMSJet4.js');
 
-function selectSql(query, startRecord, schemaLevel, fnDone)
-{
+function selectSql(query, startRecord, schemaLevel, fnDone) {
+
     var nStartRecord = parseInt(startRecord, 10);
     var nSchemaLevel = parseInt(schemaLevel, 10);
 
-    if (isNaN(nStartRecord))
-    {
+    if (isNaN(nStartRecord)) {
         nStartRecord = 0;
     }
 
-    if (isNaN(nSchemaLevel))
-    {
+    if (isNaN(nSchemaLevel)) {
         nSchemaLevel = 0;
     }
 
-    var oOutput = platform.selectSql(
-    {
+    var oOutput = platform.selectSql({
         'query'       : query,
         'startRecord' : nStartRecord,
         'schemaLevel' : nSchemaLevel
@@ -26,46 +23,41 @@ function selectSql(query, startRecord, schemaLevel, fnDone)
 	fnDone(oOutput);
 }
 
-function getIndices(fnDone)
-{
+function getIndices(fnDone) {
     var oOutput = platform.getIndices();
 	fnDone(oOutput);
 }
 
-function updateDatabase(arrPostedData, fnDone)
-{
-	if (!Array.isArray(arrPostedData))
-	{
+function updateDatabase(arrPostedData, fnDone) {
+
+	if (!Array.isArray(arrPostedData)) {
 		var oTheError = {'Error': 'UpdateDatabase expected an array'};
 		fnDone(oTheError);
-	}
-	else
-	{
+	} else {
 		var oOutput = platform.updateDatabase(arrPostedData);
 		fnDone(oOutput);
 	}
 }
 
-function report_sla(arrSpans, fnDone)
-{
+function report_sla(arrSpans, fnDone) {
+
     var oSlaReport = require('./SlaReport.js');
     oSlaReport.generateReport(arrSpans, exports, fnDone);
 }
 
-function report_DriverActivity(dateFrom, dateTo, bSummaryOnly, fnDone)
-{
+function report_DriverActivity(dateFrom, dateTo, bSummaryOnly, fnDone) {
+
     var oDriverActivityReport = require('./DriverActivityReport.js');
     oDriverActivityReport.generateReport(dateFrom, dateTo, bSummaryOnly, exports, fnDone);
 }
 
-function report_DestinationSummary(dateFrom, dateTo, fnDone)
-{
+function report_DestinationSummary(dateFrom, dateTo, fnDone) {
+
     var oDestinationSummaryReport = require('./DestinationSummaryReport.js');
     oDestinationSummaryReport.generateReport(dateFrom, dateTo, exports, fnDone);
 }
 
-function report_CancellationList(dateFrom, dateTo, fnDone)
-{
+function report_CancellationList(dateFrom, dateTo, fnDone) {
     var oCancellationListReport = require('./CancellationListReport.js');
     oCancellationListReport.generateReport(dateFrom, dateTo, exports, fnDone);
 }

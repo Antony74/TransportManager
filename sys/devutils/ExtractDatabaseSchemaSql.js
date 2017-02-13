@@ -9,8 +9,8 @@ var sFilenameClone = __dirname + "/../../TransportManager.mdb";
 
 var bExists = fs.existsSync(sFilenameExisting);
 
-if (bExists)
-{
+if (bExists) {
+
     var oIndices = dface.getIndices(sFilenameExisting);
 
     var sSql = getTransportManagerSchema(sFilenameExisting, oIndices);
@@ -20,40 +20,38 @@ if (bExists)
     // If the main database is present, get its schema too so we can check they're the same
     bExists = fs.existsSync(sFilenameClone);
 
-    if (bExists)
-    {
+    if (bExists) {
+
         sSql = getTransportManagerSchema(sFilenameClone, oIndices);
         fs.writeFile(sFilenameSql + "2", sSql);
     }
-}
-else
-{
+
+} else {
     console.log("File " + sFilenameExisting + " was not found");
 }
 
-function getTransportManagerSchema(sFilename, oIndices)
-{
+function getTransportManagerSchema(sFilename, oIndices) {
+
     var sSql = "";
 
-    for (var sTable in schema.getTables())
-    {
+    for (var sTable in schema.getTables()) {
         sSql += getTable(sFilename, sTable, oIndices);
     }
 
     return sSql;
 }
 
-function getTable(sDatabaseFilename, sTablename, oIndices)
-{
+function getTable(sDatabaseFilename, sTablename, oIndices) {
+
     var sSql = "";
 
     var sPrimaryKey = "";
 
-    for (var nRecord in oIndices.records)
-    {
+    for (var nRecord in oIndices.records) {
+
         var oRecord = oIndices.records[nRecord];
-        if (oRecord.TABLE_NAME == sTablename && oRecord.INDEX_NAME == "PrimaryKey")
-        {
+
+        if (oRecord.TABLE_NAME == sTablename && oRecord.INDEX_NAME == "PrimaryKey") {
             sPrimaryKey = oRecord.COLUMN_NAME;
         }
     }
@@ -72,24 +70,22 @@ function getTable(sDatabaseFilename, sTablename, oIndices)
 
     var arrFields = [];
 
-    for (var nField = 0; nField < oResult.fields.length; ++nField)
-    {
+    for (var nField = 0; nField < oResult.fields.length; ++nField) {
+
         var fld = oResult.fields[nField];
         var sFieldname = fld.name;
         var typeInfo = fld.Type;
 
-        if (typeInfo == "TEXT")
-        {
+        if (typeInfo == "TEXT") {
             typeInfo = "TEXT(" + fld.DefinedSize + ")";
         }
 
-        if (sPrimaryKey == sFieldname)
-        {
+        if (sPrimaryKey == sFieldname) {
+
             typeInfo  = "AUTOINCREMENT(1,1) NOT NULL,\r\n";
             typeInfo += "    CONSTRAINT PrimaryKey PRIMARY KEY(" + sFieldname + ")";
-        }
-        else if (fld.ISAUTOINCREMENT == true)
-        {
+
+        } else if (fld.ISAUTOINCREMENT == true) {
             typeInfo = "AUTOINCREMENT(1,1) NOT NULL";
         }
 
@@ -101,11 +97,12 @@ function getTable(sDatabaseFilename, sTablename, oIndices)
 
     var arrIndices = [];
 
-    for (var nRecord in oIndices.records)
-    {
+    for (var nRecord in oIndices.records) {
+
         var oRecord = oIndices.records[nRecord];
-        if (oRecord.TABLE_NAME == sTablename && oRecord.INDEX_NAME != "PrimaryKey")
-        {
+
+        if (oRecord.TABLE_NAME == sTablename && oRecord.INDEX_NAME != "PrimaryKey") {
+
             var sIndexName = oRecord.INDEX_NAME;
             var sColumnName = oRecord.COLUMN_NAME;
             var nNulls = oRecord.NULLS;
@@ -113,21 +110,18 @@ function getTable(sDatabaseFilename, sTablename, oIndices)
             
             var sIndex = "";
 
-            if (nUnique)
-            {
+            if (nUnique) {
                 sIndex += "CREATE UNIQUE INDEX ";
-            }
-            else
-            {
+            } else {
                 sIndex += "CREATE INDEX ";
             }
 
             sIndex += sIndexName + " ON " + sTablename + "(" + sColumnName + ")";
 
-            if (!nNulls)
-            {
+            if (!nNulls) {
                 sIndex += " WITH DISALLOW NULL";
             }
+
             sIndex += ";";
             
             arrIndices.push(sIndex);
@@ -136,8 +130,7 @@ function getTable(sDatabaseFilename, sTablename, oIndices)
     
     var sIndices = arrIndices.join("\r\n");
 
-    if (sIndices.length)
-    {
+    if (sIndices.length) {
         sSql += "\r\n\r\n";
         sSql += sIndices;
     }

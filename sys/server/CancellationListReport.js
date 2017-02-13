@@ -1,6 +1,6 @@
 
-function generateReport(dateFrom, dateTo, coreApi, fnDone)
-{
+function generateReport(dateFrom, dateTo, coreApi, fnDone) {
+
     var utils = require('./ReportingUtils.js');
 
     var sPeriodStart = utils.formatdate(dateFrom);
@@ -11,8 +11,7 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
     var sSql = 'SELECT JobID, Notes FROM jobs'
              + ' WHERE status="Cancelled" AND ' + sPeriodSubQuery + ' ORDER BY JobEntryDateTime';
 
-    utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult)
-    {
+    utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
 
         var sHtml = '<!DOCTYPE html>                             \r\n'
                   + '<html>                                      \r\n'
@@ -45,8 +44,8 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
                   + '        </TR>                               \r\n';
 
 
-        for (var nRow = 0; nRow < oResult['records'].length; ++nRow)
-        {
+        for (var nRow = 0; nRow < oResult['records'].length; ++nRow) {
+
             var sJobID = oResult['records'][nRow]['JobID'];
             var sNotes = oResult['records'][nRow]['Notes'];
 
@@ -69,8 +68,7 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone)
     //
     // fnFailed
     //
-    function fnFailed(sMsg)
-    {
+    function fnFailed(sMsg) {
         fnDone({Error:sMsg});
     }
 }
