@@ -159,7 +159,20 @@ function generateReport(arrSpans, coreApi, fnDone) {
                 utils.simpleSelectSql(sSql + sSubquery + ')', coreApi, fnFailed, function(oResult) {
 
                     function getFullName(oRecord) {
-                        return oRecord['Title'] + ' ' + oRecord['Firstname'] + ' ' + oRecord['Initial'] + ' ' + oRecord['Surname'];
+                        var arr = [];
+                        
+                        function push(sFieldname) {
+                            if (oRecord[sFieldname]) {
+                                arr.push(oRecord[sFieldname]);
+                            }
+                        }
+
+                        push('Title');
+                        push('Firstname');
+                        push('Initial');
+                        push('Surname');
+
+                        return arr.join(' ');
                     }
 
                     for (var nRecord = 0; nRecord < oResult.records.length; ++nRecord) {

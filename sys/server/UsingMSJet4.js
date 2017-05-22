@@ -2,7 +2,10 @@
 var fs = require('fs');
 var dface = require('dface');
 
+var ADODB = require('node-adodb');
+
 var sDatabaseFilename = __dirname + '/../../TransportManager.mdb';
+var sConnectionString = 'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=' + sDatabaseFilename + ';';
 
 function copyFile(source, target, doneCopying) {
 
@@ -126,8 +129,23 @@ function ensureDatabaseIsUpgraded(doneEnsuring) {
     doneEnsuring(true);
 }
 
-function selectSql(obj) {
+function selectSql(obj, fnDone) {
+/*
+    var conn = ADODB.open(sConnectionString);
+    console.log(JSON.stringify(conn.__proto__, null, 4));
 
+	var query = conn.query(obj.query);
+
+	query.on('done', function(data) {
+
+		fs.writeFile(__dirname + '/newThing.json', JSON.stringify(data, null, 4));
+	});
+
+	query.on('fail', function(data) {
+
+		console.log(data);
+	});
+*/
     obj.databaseFilename = sDatabaseFilename;
     obj.numberOfRecordsToGet = 2000;
 
@@ -138,7 +156,8 @@ function selectSql(obj) {
         console.log('Error getting data from database: ' + result.error);
     }
 
-    return result;
+//    fs.writeFile(__dirname + '/oldThing.json', JSON.stringify(result, null, 4));
+    fnDone(result);
 }
 
 function getIndices() {

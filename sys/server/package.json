@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "node-static": "0.7.7",
-    "node-adodb":  "2.0.3"
+    "node-adodb":  "3.0.3"
   },
   "version": "0.1.0",
   "readme": "The scripts in this folder have a few dependancies not included in the repository.  This installs them.",

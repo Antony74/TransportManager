@@ -18,9 +18,8 @@ function selectSql(query, startRecord, schemaLevel, fnDone) {
         'query'       : query,
         'startRecord' : nStartRecord,
         'schemaLevel' : nSchemaLevel
-    });
-            
-	fnDone(oOutput);
+    }, fnDone);
+           
 }
 
 function getIndices(fnDone) {
