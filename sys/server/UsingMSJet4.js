@@ -199,7 +199,7 @@ function selectSql(obj, fnDone) {
         console.log('Error getting data from database: ' + message);
 
         fnDone({
-            error: message
+            Error: message
         });
 	});
 }
