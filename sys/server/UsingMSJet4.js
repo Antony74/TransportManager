@@ -174,6 +174,9 @@ function selectSql(obj, fnDone) {
             case 'adLongVarWChar':
                 ourField.Type = 'MEMO';
                 break;
+            case 'adDate':
+                ourField.Type = 'DATE';
+                break;
             }
 
             fields.push(ourField);
