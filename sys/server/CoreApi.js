@@ -14,7 +14,7 @@ function selectSql(query, startRecord, schemaLevel, fnDone) {
         nSchemaLevel = 0;
     }
 
-    var oOutput = platform.selectSql({
+    platform.selectSql({
         'query'       : query,
         'startRecord' : nStartRecord,
         'schemaLevel' : nSchemaLevel

@@ -130,34 +130,78 @@ function ensureDatabaseIsUpgraded(doneEnsuring) {
 }
 
 function selectSql(obj, fnDone) {
-/*
+
     var conn = ADODB.open(sConnectionString);
-    console.log(JSON.stringify(conn.__proto__, null, 4));
 
-	var query = conn.query(obj.query);
+	var query = conn.query(obj.query, {fields:true});
 
-	query.on('done', function(data) {
+	query.on('done', function(records, message, extras) {
 
-		fs.writeFile(__dirname + '/newThing.json', JSON.stringify(data, null, 4));
+        var fields = [];
+        var nTotalWidth = 0;
+
+        for (var sFieldname in extras.fields) {
+
+            var adoField = extras.fields[sFieldname];
+        
+            var ourField = {
+                'name': sFieldname,
+                'width': adoField.DefinedSize,
+                'Type': adoField.Type,
+                'DefinedSize': adoField.DefinedSize,
+                'ISAUTOINCREMENT': adoField.Properties.ISAUTOINCREMENT ? adoField.Properties.ISAUTOINCREMENT.Value : false,
+                'Tablename': adoField.Properties.BASETABLENAME ? adoField.Properties.BASETABLENAME.Value : ''
+            };
+
+			if (ourField.width < 5) {
+				ourField.width = 5;
+			} else if (ourField.width > 25) {
+				ourField.width = 25;
+			}
+
+            nTotalWidth += ourField.width;
+
+            switch(adoField.Type) {
+            case 'adInteger':
+                ourField.Type = 'INTEGER';
+                break;
+            case 'adVarWChar':
+                ourField.Type = 'TEXT';
+                break;
+            case 'adBoolean':
+                ourField.Type = 'YESNO';
+                break;
+            case 'adLongVarWChar':
+                ourField.Type = 'MEMO';
+                break;
+            }
+
+            fields.push(ourField);
+        }
+
+        for (var n = 0; n < fields.length; ++n) {
+            fields[n].width = '' + Math.ceil(100*fields[n].width/nTotalWidth) + '%';
+        }
+
+        var result = {
+            'query': obj.query,
+            'startRecord': 0,
+            'more': false,
+            'fields': fields,
+            'records': records
+        };
+
+        fnDone(result);
 	});
 
-	query.on('fail', function(data) {
+	query.on('fail', function(message) {
 
-		console.log(data);
+        console.log('Error getting data from database: ' + message);
+
+        fnDone({
+            error: message
+        });
 	});
-*/
-    obj.databaseFilename = sDatabaseFilename;
-    obj.numberOfRecordsToGet = 2000;
-
-    var result = dface.selectSql(obj);
-
-    if (typeof result.error == 'string') {
-
-        console.log('Error getting data from database: ' + result.error);
-    }
-
-//    fs.writeFile(__dirname + '/oldThing.json', JSON.stringify(result, null, 4));
-    fnDone(result);
 }
 
 function getIndices() {
@@ -167,6 +211,8 @@ function getIndices() {
 }
 
 function updateDatabase(obj) {
+
+    console.log(JSON.stringify(obj, null, 4));
 
     var result = dface.updateDatabase(sDatabaseFilename, obj);
 
