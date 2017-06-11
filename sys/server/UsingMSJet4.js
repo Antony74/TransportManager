@@ -133,16 +133,16 @@ function selectSql(obj, fnDone) {
 
     var conn = ADODB.open(sConnectionString);
 
-	var query = conn.query(obj.query, {fields:true});
+	var query = conn.query(obj.query, true);
 
-	query.on('done', function(records, message, extras) {
+	query.on('done', function(records, fieldInfo) {
 
         var fields = [];
         var nTotalWidth = 0;
 
-        for (var sFieldname in extras.fields) {
+        for (var sFieldname in fieldInfo) {
 
-            var adoField = extras.fields[sFieldname];
+            var adoField = fieldInfo[sFieldname];
         
             var ourField = {
                 'name': sFieldname,
@@ -162,19 +162,19 @@ function selectSql(obj, fnDone) {
             nTotalWidth += ourField.width;
 
             switch(adoField.Type) {
-            case 'adInteger':
+            case 3:   // adInteger
                 ourField.Type = 'INTEGER';
                 break;
-            case 'adVarWChar':
+            case 202: // adVarWChar
                 ourField.Type = 'TEXT';
                 break;
-            case 'adBoolean':
+            case 11:  // adBoolean
                 ourField.Type = 'YESNO';
                 break;
-            case 'adLongVarWChar':
+            case 203: // adLongVarWChar
                 ourField.Type = 'MEMO';
                 break;
-            case 'adDate':
+            case 7:   // adDate
                 ourField.Type = 'DATE';
                 break;
             }
@@ -193,6 +193,8 @@ function selectSql(obj, fnDone) {
             'fields': fields,
             'records': records
         };
+
+//        fs.writeFile('c:/temp/compare/thing.json', JSON.stringify(result, null, 4), function(){});
 
         fnDone(result);
 	});
