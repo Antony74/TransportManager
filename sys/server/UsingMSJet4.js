@@ -61,7 +61,22 @@ function runSQL(sFilenameSql) {
     }
 
     // Run them
-    dface.runSql(sDatabaseFilename, arrSql2);
+
+    var conn = ADODB.open(sConnectionString);
+
+    function onFail(msg) {
+        console.log(msg);
+    }
+
+    function onDone() {
+        if (arrSql2.length) {
+            var query = arrSql2.shift();
+
+            conn.execute(query).on('done', onDone).on('fail', onFail);
+        }
+    }
+
+    onDone();
 }
 
 function ensureDatabaseIsReady(doneEnsuring) {
