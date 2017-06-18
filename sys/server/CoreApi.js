@@ -23,8 +23,7 @@ function selectSql(query, startRecord, schemaLevel, fnDone) {
 }
 
 function getIndices(fnDone) {
-    var oOutput = platform.getIndices();
-	fnDone(oOutput);
+    platform.getIndices(fnDone);
 }
 
 function updateDatabase(arrPostedData, fnDone) {

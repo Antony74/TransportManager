@@ -101,47 +101,50 @@ function ensureDatabaseIsReady(doneEnsuring) {
 
 function ensureDatabaseIsUpgraded(doneEnsuring) {
 
-    var oIndices = dface.getIndices(sDatabaseFilename);
+    getIndices(function(oIndices) {
 
-    if (typeof oIndices.records == 'undefined') {
+//        fs.writeFile('c:/temp/compare/incides.json', JSON.stringify(oIndices, null, 4), function(){});
 
-        console.log('Error getting information from database: ' + oIndices.Error);
-        doneEnsuring(false);
-        return;
-    }
+        if (typeof oIndices.records == 'undefined') {
 
-    var nUpgradeLevel = 0;
-
-    for (var nRecord in oIndices.records) {
-
-        var oRecord = oIndices.records[nRecord];
-    
-        if (oRecord.TABLE_NAME == 'Clients') {
-
-            nUpgradeLevel = Math.max(1, nUpgradeLevel);
-
-        } else if (oRecord.TABLE_NAME == 'ClientsEx') {
-
-            nUpgradeLevel = Math.max(2, nUpgradeLevel);
-
+            console.log('Error getting information from database: ' + oIndices.Error);
+            doneEnsuring(false);
+            return;
         }
-    }
 
-    if (nUpgradeLevel > 0 && nUpgradeLevel < 1) {
-        console.log('Upgrading database');
-    }
+        var nUpgradeLevel = 0;
 
-    switch(nUpgradeLevel) {
-    case 0:
-        runSQL(__dirname + '../../TransportManager.sql');
-        // Drop through!!1!
-    case 1:
-        runSQL(__dirname + '../../TransportManagerUpgrade1.sql');
-        // Drop through!!1!
-    }
+        for (var nRecord in oIndices.records) {
 
-    console.log('Database ready');
-    doneEnsuring(true);
+            var oRecord = oIndices.records[nRecord];
+        
+            if (oRecord.TABLE_NAME == 'Clients') {
+
+                nUpgradeLevel = Math.max(1, nUpgradeLevel);
+
+            } else if (oRecord.TABLE_NAME == 'ClientsEx') {
+
+                nUpgradeLevel = Math.max(2, nUpgradeLevel);
+
+            }
+        }
+
+        if (nUpgradeLevel > 0 && nUpgradeLevel < 1) {
+            console.log('Upgrading database');
+        }
+
+        switch(nUpgradeLevel) {
+        case 0:
+            runSQL(__dirname + '../../TransportManager.sql');
+            // Drop through!!1!
+        case 1:
+            runSQL(__dirname + '../../TransportManagerUpgrade1.sql');
+            // Drop through!!1!
+        }
+
+        console.log('Database ready');
+        doneEnsuring(true);
+    });
 }
 
 function selectSql(obj, fnDone) {
@@ -224,10 +227,13 @@ function selectSql(obj, fnDone) {
 	});
 }
 
-function getIndices() {
+function getIndices(fnDone) {
+
+//    var conn = ADODB.open(sConnectionString);
+//    conn.openSchema(12); // ADODB::adSchemaIndexes
 
     var result = dface.getIndices(sDatabaseFilename);
-    return result;
+    fnDone(result);
 }
 
 function updateDatabase(obj) {
