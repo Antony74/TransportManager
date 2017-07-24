@@ -17,13 +17,11 @@
   },
   "license": "MIT",
   "dependencies": {
+    "eslint": "^4.3.0",
     "faker": "2.0.1",
-    "eslint": "1.10.3",
     "true": "0.0.2"
   },
   "scripts": {
-    "lint1": "eslint ../server/*.js || node node_modules/true/index.js",
-    "lint2": "eslint ../htdocs/*.js || node node_modules/true/index.js",
-    "lint3": "eslint *.js           || node node_modules/true/index.js"
+    "lint": "eslint .. || node node_modules/true/index.js"
   }
 }

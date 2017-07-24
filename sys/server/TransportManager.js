@@ -23,14 +23,13 @@ if (typeof process == 'undefined' || typeof process.versions == 'undefined' || t
 
 var ec = require('./ErrorCodes.js');
 
-if (process.arch != 'ia32' || process.platform != 'win32') {
+if (process.platform != 'win32') {
 
     console.log("");
-    console.log("Sorry, Transport Manager can currently only be run on Windows and using");
-    console.log("a 32-bit build of Node.js");
+    console.log("Sorry, Transport Manager can currently only be run on Windows");
     console.log("");
-    console.log("Expected: process.arch='ia32', process.platform='win32'");
-    console.log("Found:    process.arch='" + process.arch + "', process.platform='" + process.platform + "'");
+    console.log("Expected: process.platform='win32'");
+    console.log("Found:    process.platform='" + process.platform + "'");
     
     ec.setExitCode(ec.PLATFORM_ISSUE);
     

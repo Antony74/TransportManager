@@ -255,7 +255,6 @@ function isDateField(sTablename, sFieldname) { // Consider writing this properly
 function updateDatabase(obj, fnDone) {
 
     getIndices(function(indices) {
-        console.log(JSON.stringify(obj, null, 4));
 
         var bQueryExecuting = false;
         var sError = 'Unknown failure';
@@ -305,7 +304,6 @@ function updateDatabase(obj, fnDone) {
                         var sQuery = 'UPDATE ' + sTablename + ' SET ';
                         sQuery += assignments.join(', ');
                         sQuery += ' WHERE ' + pkDetails;
-                        console.log(sQuery);
 
                         var conn = ADODB.open(sConnectionString);
                         conn.execute(sQuery).on('done', function() {

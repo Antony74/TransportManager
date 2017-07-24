@@ -18,37 +18,37 @@
     "extends": "eslint:recommended",
     "rules": {
         "linebreak-style": [
-            2, // "error",
+            "error",
             "windows"
         ],
         "quotes": [
-            0, // was "error",
+            "error",
             "single"
         ],
         "semi": [
-            2, // "error",
+            "error",
             "always"
         ],
         "no-console": [
-            0 // "off"
+            "off"
         ],
         "no-fallthrough": [
-            0 // was "error"
-            //			{ "commentPattern": "Drop thro" }
+            "error",
+            { "commentPattern": "Drop thro" }
         ],
         "no-func-assign": [
-            0 // "off"
+            "off"
         ],
         "no-redeclare": [
-            0 // "off"
+            "off"
         ],
         "brace-style": [
-            2, // "error"
+            "error",
             "1tbs"
+        ],
+        "no-tabs": [
+            "error"
         ]
-//        "no-tabs": [
-//            2  // "error"
-//        ]
     }
 }
 
