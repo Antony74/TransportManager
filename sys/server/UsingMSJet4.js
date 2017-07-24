@@ -229,11 +229,15 @@ function selectSql(obj, fnDone) {
 
 function getIndices(fnDone) {
 
-//    var conn = ADODB.open(sConnectionString);
-//    conn.openSchema(12); // ADODB::adSchemaIndexes
+    var conn = ADODB.open(sConnectionString);
+    conn.openSchema(12) // ADODB::adSchemaIndexes
+        .on('done', function(data) {
+        fnDone({
+            more: false,
+            records: data
+        });
+    });
 
-    var result = dface.getIndices(sDatabaseFilename);
-    fnDone(result);
 }
 
 function updateDatabase(obj) {
