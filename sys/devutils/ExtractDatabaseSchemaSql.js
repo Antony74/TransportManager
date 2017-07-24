@@ -3,9 +3,9 @@ var fs = require('fs');
 var schema = require('../htdocs/Schema.js');
 var dface =  require('../server/node_modules/dface');
 
-var sFilenameExisting = __dirname + "/TransportManager.mdb";
-var sFilenameSql = __dirname + "/../TransportManager.sql";
-var sFilenameClone = __dirname + "/../../TransportManager.mdb";
+var sFilenameExisting = __dirname + '/TransportManager.mdb';
+var sFilenameSql = __dirname + '/../TransportManager.sql';
+var sFilenameClone = __dirname + '/../../TransportManager.mdb';
 
 var bExists = fs.existsSync(sFilenameExisting);
 
@@ -23,16 +23,16 @@ if (bExists) {
     if (bExists) {
 
         sSql = getTransportManagerSchema(sFilenameClone, oIndices);
-        fs.writeFile(sFilenameSql + "2", sSql);
+        fs.writeFile(sFilenameSql + '2', sSql);
     }
 
 } else {
-    console.log("File " + sFilenameExisting + " was not found");
+    console.log('File ' + sFilenameExisting + ' was not found');
 }
 
 function getTransportManagerSchema(sFilename, oIndices) {
 
-    var sSql = "";
+    var sSql = '';
 
     for (var sTable in schema.getTables()) {
         sSql += getTable(sFilename, sTable, oIndices);
@@ -43,15 +43,15 @@ function getTransportManagerSchema(sFilename, oIndices) {
 
 function getTable(sDatabaseFilename, sTablename, oIndices) {
 
-    var sSql = "";
+    var sSql = '';
 
-    var sPrimaryKey = "";
+    var sPrimaryKey = '';
 
     for (var nRecord in oIndices.records) {
 
         var oRecord = oIndices.records[nRecord];
 
-        if (oRecord.TABLE_NAME == sTablename && oRecord.INDEX_NAME == "PrimaryKey") {
+        if (oRecord.TABLE_NAME == sTablename && oRecord.INDEX_NAME == 'PrimaryKey') {
             sPrimaryKey = oRecord.COLUMN_NAME;
         }
     }
@@ -65,8 +65,8 @@ function getTable(sDatabaseFilename, sTablename, oIndices) {
         'schemaLevel'           : 2
     });
 
-    sSql += "\r\n";
-    sSql += "CREATE TABLE " + sTablename + "(\r\n";
+    sSql += '\r\n';
+    sSql += 'CREATE TABLE ' + sTablename + '(\r\n';
 
     var arrFields = [];
 
@@ -76,24 +76,24 @@ function getTable(sDatabaseFilename, sTablename, oIndices) {
         var sFieldname = fld.name;
         var typeInfo = fld.Type;
 
-        if (typeInfo == "TEXT") {
-            typeInfo = "TEXT(" + fld.DefinedSize + ")";
+        if (typeInfo == 'TEXT') {
+            typeInfo = 'TEXT(' + fld.DefinedSize + ')';
         }
 
         if (sPrimaryKey == sFieldname) {
 
-            typeInfo  = "AUTOINCREMENT(1,1) NOT NULL,\r\n";
-            typeInfo += "    CONSTRAINT PrimaryKey PRIMARY KEY(" + sFieldname + ")";
+            typeInfo  = 'AUTOINCREMENT(1,1) NOT NULL,\r\n';
+            typeInfo += '    CONSTRAINT PrimaryKey PRIMARY KEY(' + sFieldname + ')';
 
         } else if (fld.ISAUTOINCREMENT == true) {
-            typeInfo = "AUTOINCREMENT(1,1) NOT NULL";
+            typeInfo = 'AUTOINCREMENT(1,1) NOT NULL';
         }
 
-        arrFields.push("    " + sFieldname + " " + typeInfo);
+        arrFields.push('    ' + sFieldname + ' ' + typeInfo);
     }
 
-    sSql += arrFields.join(",\r\n");
-    sSql += ");";
+    sSql += arrFields.join(',\r\n');
+    sSql += ');';
 
     var arrIndices = [];
 
@@ -101,41 +101,41 @@ function getTable(sDatabaseFilename, sTablename, oIndices) {
 
         var oRecord = oIndices.records[nRecord];
 
-        if (oRecord.TABLE_NAME == sTablename && oRecord.INDEX_NAME != "PrimaryKey") {
+        if (oRecord.TABLE_NAME == sTablename && oRecord.INDEX_NAME != 'PrimaryKey') {
 
             var sIndexName = oRecord.INDEX_NAME;
             var sColumnName = oRecord.COLUMN_NAME;
             var nNulls = oRecord.NULLS;
             var nUnique = oRecord.UNIQUE;
             
-            var sIndex = "";
+            var sIndex = '';
 
             if (nUnique) {
-                sIndex += "CREATE UNIQUE INDEX ";
+                sIndex += 'CREATE UNIQUE INDEX ';
             } else {
-                sIndex += "CREATE INDEX ";
+                sIndex += 'CREATE INDEX ';
             }
 
-            sIndex += sIndexName + " ON " + sTablename + "(" + sColumnName + ")";
+            sIndex += sIndexName + ' ON ' + sTablename + '(' + sColumnName + ')';
 
             if (!nNulls) {
-                sIndex += " WITH DISALLOW NULL";
+                sIndex += ' WITH DISALLOW NULL';
             }
 
-            sIndex += ";";
+            sIndex += ';';
             
             arrIndices.push(sIndex);
         }
     }
     
-    var sIndices = arrIndices.join("\r\n");
+    var sIndices = arrIndices.join('\r\n');
 
     if (sIndices.length) {
-        sSql += "\r\n\r\n";
+        sSql += '\r\n\r\n';
         sSql += sIndices;
     }
 
-    sSql += "\r\n\r\n";
+    sSql += '\r\n\r\n';
 
     return sSql;
 }

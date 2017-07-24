@@ -33,8 +33,8 @@ function runSQL(sFilenameSql) {
     var sSql = fs.readFileSync(sFilenameSql);
 
     // Strip line comments
-    var arrLines = String(sSql).split("\n");
-    sSql = "";
+    var arrLines = String(sSql).split('\n');
+    sSql = '';
 
     for (var n = 0; n < arrLines.length; ++n) {
 
@@ -150,9 +150,9 @@ function selectSql(obj, fnDone) {
 
     var conn = ADODB.open(sConnectionString);
 
-	var query = conn.query(obj.query, true);
+    var query = conn.query(obj.query, true);
 
-	query.on('done', function(records, fieldInfo) {
+    query.on('done', function(records, fieldInfo) {
 
         var fields = [];
         var nTotalWidth = 0;
@@ -170,11 +170,11 @@ function selectSql(obj, fnDone) {
                 'Tablename': adoField.Properties.BASETABLENAME ? adoField.Properties.BASETABLENAME.Value : ''
             };
 
-			if (ourField.width < 5) {
-				ourField.width = 5;
-			} else if (ourField.width > 25) {
-				ourField.width = 25;
-			}
+            if (ourField.width < 5) {
+                ourField.width = 5;
+            } else if (ourField.width > 25) {
+                ourField.width = 25;
+            }
 
             nTotalWidth += ourField.width;
 
@@ -214,16 +214,16 @@ function selectSql(obj, fnDone) {
 //        fs.writeFile('c:/temp/compare/thing.json', JSON.stringify(result, null, 4), function(){});
 
         fnDone(result);
-	});
+    });
 
-	query.on('fail', function(message) {
+    query.on('fail', function(message) {
 
         console.log('Error getting data from database: ' + message);
 
         fnDone({
             Error: message
         });
-	});
+    });
 }
 
 function getIndices(fnDone) {

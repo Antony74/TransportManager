@@ -229,7 +229,7 @@ getDialogHandler = function(doneFn) {
                         }
                     }
                 }
-			);
+            );
         }
 
         $('#dialogs div').each(function() {
@@ -241,43 +241,43 @@ getDialogHandler = function(doneFn) {
                 resizable     : false,
                 width         : nDialogWidth,
                 buttons       : [
-					{
-						text  : 'OK',
-						id    : 'dialogOK',
-						icons : {primary: 'ui-icon-check'},
-						width : nButtonWidth,
-						click : function() {
+                    {
+                        text  : 'OK',
+                        id    : 'dialogOK',
+                        icons : {primary: 'ui-icon-check'},
+                        width : nButtonWidth,
+                        click : function() {
 
-							if (bDialogButtonsEnabled) {
-								commitChanges(true);
-							}
-						}
-					},
-					{
-						text  : 'Cancel',
-						id    : 'dialogCancel',
-						width : nButtonWidth,
-						icons : {primary: 'ui-icon-closethick'},
-						click : function() {
+                            if (bDialogButtonsEnabled) {
+                                commitChanges(true);
+                            }
+                        }
+                    },
+                    {
+                        text  : 'Cancel',
+                        id    : 'dialogCancel',
+                        width : nButtonWidth,
+                        icons : {primary: 'ui-icon-closethick'},
+                        click : function() {
 
-							if (bDialogButtonsEnabled) {
-								$('#dlg' + sDialogName).dialog('close');
-								fnDialogClosed(bDialogChanged);
-							}
-						}
-					},
-					{
-						text  : 'Apply',
-						id    : 'dialogApply',
-						icons : {primary: 'ui-icon-check'},
-						width : nButtonWidth,
-						click : function() {
+                            if (bDialogButtonsEnabled) {
+                                $('#dlg' + sDialogName).dialog('close');
+                                fnDialogClosed(bDialogChanged);
+                            }
+                        }
+                    },
+                    {
+                        text  : 'Apply',
+                        id    : 'dialogApply',
+                        icons : {primary: 'ui-icon-check'},
+                        width : nButtonWidth,
+                        click : function() {
 
-							if (bDialogButtonsEnabled) {
-								commitChanges(false);
-							}
-						}
-					}
+                            if (bDialogButtonsEnabled) {
+                                commitChanges(false);
+                            }
+                        }
+                    }
                 ]
 
             }).on('keydown', function(event) {
@@ -312,7 +312,7 @@ getDialogHandler = function(doneFn) {
 
                 $('.dialogInput').val(null); // Clear any previous input so we can start with an empty dialog
 
-                $('#dlg' + sDialogName).dialog("open");
+                $('#dlg' + sDialogName).dialog('open');
 
                 getCoreApiProxy().selectSql(sQuery, 0, 2, function(_oData) {
 

@@ -441,10 +441,10 @@ function generateReport(arrSpans, coreApi, fnDone) {
 
         sHtml += '        </tr>\r\n';
 
-        sHtml += reportSubHeading("Client gender", nColCount);
+        sHtml += reportSubHeading('Client gender', nColCount);
         sHtml += reportHtmlRow(oJsonReport.clientGender, bShowTotals);
 
-        sHtml += reportSubHeading("Client age", nColCount);
+        sHtml += reportSubHeading('Client age', nColCount);
         sHtml += reportHtmlRow(oJsonReport.clientAge, bShowTotals);
 
         sHtml += reportSubHeading('Jobs in period', nColCount);
@@ -452,16 +452,16 @@ function generateReport(arrSpans, coreApi, fnDone) {
 
         sHtml += reportSubHeading('Now considering only "Closed" jobs', nColCount);
 
-        sHtml += reportSubHeading("Job is one way?", nColCount);
+        sHtml += reportSubHeading('Job is one way?', nColCount);
         sHtml += reportHtmlRow(oJsonReport.isOneWay, bShowTotals);
 
-        sHtml += reportSubHeading("Job involves a wheelchair?", nColCount);
+        sHtml += reportSubHeading('Job involves a wheelchair?', nColCount);
         sHtml += reportHtmlRow(oJsonReport.involvesWheelchair, bShowTotals);
 
-        sHtml += reportSubHeading("Type of destination", nColCount);
+        sHtml += reportSubHeading('Type of destination', nColCount);
         sHtml += reportHtmlRow(oJsonReport.typeOfDestination, bShowTotals);
 
-        sHtml += reportSubHeading("Purpose of journey", nColCount);
+        sHtml += reportSubHeading('Purpose of journey', nColCount);
         sHtml += reportHtmlRow(oJsonReport.purposeOfJourney, bShowTotals);
 
         //

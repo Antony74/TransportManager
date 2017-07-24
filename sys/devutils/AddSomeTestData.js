@@ -72,18 +72,18 @@ function generateTestClientFields() {
 
     var retval =
     {
-        Title        : "",
+        Title        : '',
         Firstname    : faker.name.firstName(),
         Initial      : faker.name.firstName().substr(0,1),
         Surname      : faker.name.lastName(),
         AddressLine1 : faker.address.streetAddress(),
-        AddressLine2 : "",
-        Town         : "Neverville",
-        Postcode     : "",
+        AddressLine2 : '',
+        Town         : 'Neverville',
+        Postcode     : '',
         HomeNumber   : faker.phone.phoneNumber().substr(0,13),
-        MobileNumber : "",
-        EmailAddress : "",
-        Notes        : "",
+        MobileNumber : '',
+        EmailAddress : '',
+        Notes        : '',
         IsActive     : true
     };
 
@@ -94,17 +94,17 @@ function generateTestDriverFields() {
 
     var retval =
     {
-        Title        : "",
+        Title        : '',
         Firstname    : faker.name.firstName(),
         Surname      : faker.name.lastName(),
         AddressLine1 : faker.address.streetAddress(),
-        AddressLine2 : "",
-        Town         : "Neverville",
-        Postcode     : "",
+        AddressLine2 : '',
+        Town         : 'Neverville',
+        Postcode     : '',
         HomeNumber   : faker.phone.phoneNumber().substr(0,13),
-        MobileNumber : "",
-        EmailAddress : "",
-        Notes        : "",
+        MobileNumber : '',
+        EmailAddress : '',
+        Notes        : '',
         IsActive     : true,
         IsWheelchair : true,
         DateofBirth  : (new Date(1974, 12 - 1, 27)).getTime(),

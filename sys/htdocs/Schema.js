@@ -11,22 +11,22 @@ function getTables() {
 
     var tables = {
 
-        "Clients" : {
-			query: 'SELECT Clients.ClientID as ClientID, ClientsEx.ClientID, Title, Firstname, Initial, Surname, AddressLine1, AddressLine2, Town, Postcode, '
-			+      'HomeNumber, MobileNumber, EmailAddress, IsWheelchair, Notes, IsActive, DateofBirth, Gender '
-			+      'FROM (Clients LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)',
-			DateOnlyFields: {DateofBirth: true},
-			ChoiceOnlyFields: {Gender: ['M', 'F', 'X']}
+        'Clients' : {
+            query: 'SELECT Clients.ClientID as ClientID, ClientsEx.ClientID, Title, Firstname, Initial, Surname, AddressLine1, AddressLine2, Town, Postcode, '
+            +      'HomeNumber, MobileNumber, EmailAddress, IsWheelchair, Notes, IsActive, DateofBirth, Gender '
+            +      'FROM (Clients LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)',
+            DateOnlyFields: {DateofBirth: true},
+            ChoiceOnlyFields: {Gender: ['M', 'F', 'X']}
         },
-        "Destinations" : {},
-        "DestinationType" : {},
-        "DriverExclusionList" : {},
-        "Drivers" : {
+        'Destinations' : {},
+        'DestinationType' : {},
+        'DriverExclusionList' : {},
+        'Drivers' : {
             DateOnlyFields: {DateofBirth: true}
         },
-        "DriverVacation" : {},
-        "JobLog" : {},
-        "Jobs" : {}
+        'DriverVacation' : {},
+        'JobLog' : {},
+        'Jobs' : {}
     };
         
     for (var sTablename in tables) {

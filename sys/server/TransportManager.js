@@ -6,18 +6,18 @@ if (typeof process == 'undefined' || typeof process.versions == 'undefined' || t
     usage +=    'JavaScript engine?';
 
     if (typeof console != 'undefined') {
-		(function() {
-			console.log(usage);
-		})();
+        (function() {
+            console.log(usage);
+        })();
     } else if (typeof alert   != 'undefined') {
-		(function() {
-			alert(usage);
-		})();
+        (function() {
+            alert(usage);
+        })();
     } else if (typeof WScript != 'undefined') {
-		(function() {
-			WScript.Echo(usage);
-		})();
-	}
+        (function() {
+            WScript.Echo(usage);
+        })();
+    }
 
 } else (function() {
 
@@ -25,11 +25,11 @@ var ec = require('./ErrorCodes.js');
 
 if (process.platform != 'win32') {
 
-    console.log("");
-    console.log("Sorry, Transport Manager can currently only be run on Windows");
-    console.log("");
-    console.log("Expected: process.platform='win32'");
-    console.log("Found:    process.platform='" + process.platform + "'");
+    console.log('');
+    console.log('Sorry, Transport Manager can currently only be run on Windows');
+    console.log('');
+    console.log('Expected: process.platform="win32"');
+    console.log('Found:    process.platform="' + process.platform + '"');
     
     ec.setExitCode(ec.PLATFORM_ISSUE);
     
@@ -58,10 +58,10 @@ platform.ensureShortcutExists();
 var coreApi = require('./CoreApi');
 
 var proxy = proxyGenerator.generateProxyApiSourceCode(
-									coreApi,
-									'getCoreApiProxy',
-									sServerUrl,
-									proxyGenerator.findCallback_LastArgument);
+                                    coreApi,
+                                    'getCoreApiProxy',
+                                    sServerUrl,
+                                    proxyGenerator.findCallback_LastArgument);
 
 var sProxyApiSourceCode = proxy.sSourceCode;
 
@@ -73,11 +73,11 @@ function handleRequest(request, response) {
 
     var parsedUrl = url.parse(request.url, true);
 
-	if (proxy.fnAcceptUrl(parsedUrl)) {
+    if (proxy.fnAcceptUrl(parsedUrl)) {
 
-		proxy.fnHandleRequest(request, response);
+        proxy.fnHandleRequest(request, response);
 
-	} else if (parsedUrl.pathname == '/quitTransportManager') {
+    } else if (parsedUrl.pathname == '/quitTransportManager') {
 
         process.stdout.write('Quitting\r\n');
         response.end('OK');
@@ -133,8 +133,8 @@ server.on('error', function(e) {
 
  // Write the proxy API out to a file where the browser can request it
 fs.writeFile(__dirname + '/../htdocs/proxyApi.js', sProxyApiSourceCode, null, function() {
-	// All done, we're ready to start the server
-	server.listen(port, 'localhost');
+    // All done, we're ready to start the server
+    server.listen(port, 'localhost');
 });
 
 })();

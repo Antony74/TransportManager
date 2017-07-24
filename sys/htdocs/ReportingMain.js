@@ -4,21 +4,21 @@ $(document).ready(function() {
     $('#generateSlaReport').html('Generate Report').prop('disabled', false);
 
     initialiseDateTimePickers({
-			timepicker : false,
-			format     : 'd/m/Y',
-			onShow: function(date, input) {
-				onShowDate(input.context.id);
-			}
-		},
-		'.reportdatetimepicker',
-		'.reportdatetimepickerbutton');
+            timepicker : false,
+            format     : 'd/m/Y',
+            onShow: function(date, input) {
+                onShowDate(input.context.id);
+            }
+        },
+        '.reportdatetimepicker',
+        '.reportdatetimepickerbutton');
 
     // Try to provide sensible default dates.  Most likely we will want to generate a
     // report for the quarter which has just finished.  
 
     var baseDate = new Date();
-	baseDate = addMonths(1, baseDate); //Annoyingly DVC has to report upon non-standard quarters.
-	var startOfPreviousQuarter = getStartOfPreviousQuarter(baseDate);
+    baseDate = addMonths(1, baseDate); //Annoyingly DVC has to report upon non-standard quarters.
+    var startOfPreviousQuarter = getStartOfPreviousQuarter(baseDate);
     startOfPreviousQuarter = addMonths(-1, startOfPreviousQuarter); //Annoyingly DVC has to report upon non-standard quarters.
 
     var endOfPreviousQuarter = addMonths(3, startOfPreviousQuarter);
@@ -232,23 +232,23 @@ function validateDateSpan(sFromID, sToID) {
 
     if (dateFrom == null && dateTo == null) {
 
-        return {bValid: null, sMessage: "No dates specified", dateFrom: dateFrom, dateTo: dateTo};
+        return {bValid: null, sMessage: 'No dates specified', dateFrom: dateFrom, dateTo: dateTo};
 
     } else if (dateFrom == null) {
 
-        return {bValid: false, sMessage: "No 'from' date specified", dateFrom: dateFrom, dateTo: dateTo};
+        return {bValid: false, sMessage: 'No "from" date specified', dateFrom: dateFrom, dateTo: dateTo};
 
     } else if (dateTo == null) {
 
-        return {bValid: false, sMessage: "No 'to' date specified", dateFrom: dateFrom, dateTo: dateTo};
+        return {bValid: false, sMessage: 'No "to" date specified', dateFrom: dateFrom, dateTo: dateTo};
 
     } else if (dateFrom > dateTo) {
 
-        return {bValid: false, sMessage: "'From' date occurs after 'to' date", dateFrom: dateFrom, dateTo: dateTo};
+        return {bValid: false, sMessage: '"From" date occurs after "to" date', dateFrom: dateFrom, dateTo: dateTo};
 
     } else {
 
-        return {bValid: true, sMessage: "", dateFrom: dateFrom, dateTo: dateTo};
+        return {bValid: true, sMessage: '', dateFrom: dateFrom, dateTo: dateTo};
 
     }
 }
@@ -367,6 +367,6 @@ function getStartOfPreviousQuarter(baseDate) {
         break;
     }
 
-	return startOfPreviousQuarter;
+    return startOfPreviousQuarter;
 }
 

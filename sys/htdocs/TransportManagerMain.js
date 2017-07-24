@@ -59,14 +59,14 @@ function allReady() {
         displayRecords(currentFilter, false);
         
         if (currentSortAscending) {
-            $('#mainDataTable th:nth-child(' + (nIndex+1) + ')').html(sFieldname + "&nbsp;&#x25BC;");
+            $('#mainDataTable th:nth-child(' + (nIndex+1) + ')').html(sFieldname + '&nbsp;&#x25BC;');
         } else {
-            $('#mainDataTable th:nth-child(' + (nIndex+1) + ')').html(sFieldname + "&nbsp;&#x25B2;");
+            $('#mainDataTable th:nth-child(' + (nIndex+1) + ')').html(sFieldname + '&nbsp;&#x25B2;');
         }
     }
 
     function onTableCellClick() {
-        var dlg = $("#dlg" +currentTable);
+        var dlg = $('#dlg' +currentTable);
         if (dlg.length) {
             var nRow = $(this).parent().index() - 1;
 
@@ -245,7 +245,7 @@ function allReady() {
 
             if (root['more']) {
 
-				getCoreApiProxy().selectSql(root['query'], arrRecords.length + root['startRecord'], 0, gotJSON);
+                getCoreApiProxy().selectSql(root['query'], arrRecords.length + root['startRecord'], 0, gotJSON);
 
             } else {
                 currentData['more'] = false;
@@ -278,7 +278,7 @@ function allReady() {
         sTableHeader = '';
 
         setDataTableStatus('Loading', 'A');
-		getCoreApiProxy().selectSql(currentQuery, 0, 2, gotJSON);
+        getCoreApiProxy().selectSql(currentQuery, 0, 2, gotJSON);
     }
 
     function beginPopulateJobs() {

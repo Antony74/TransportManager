@@ -43,17 +43,17 @@ out.end();
 function generateHeader() {
     var ts = new Date();    
 
-	function pad(nValue) {
-		return ('00' + nValue).slice(-2);
-	}
+    function pad(nValue) {
+        return ('00' + nValue).slice(-2);
+    }
 
     var s = '<!doctype html>\r\n';
     s    += '<html lang="en">\r\n';
     s    += '<head>\r\n\r\n';
 
-    s    += "    <!-- THIS IS AN AUTO-GENERATED FILE (created by " + __filename.split('\\').pop() + ", "
-                                                                   + ts.getFullYear() + "/" + pad(ts.getMonth()+1) + "/" + pad(ts.getDate())
-                                                                   + " " + pad(ts.getHours()) + ":" + pad(ts.getMinutes()) + ") -->\n\n";
+    s    += '    <!-- THIS IS AN AUTO-GENERATED FILE (created by ' + __filename.split('\\').pop() + ', '
+                                                                   + ts.getFullYear() + '/' + pad(ts.getMonth()+1) + '/' + pad(ts.getDate())
+                                                                   + ' ' + pad(ts.getHours()) + ':' + pad(ts.getMinutes()) + ') -->\n\n';
 
     s    += '    <title>Transport Manager Dialogs</title>\r\n';
     s    += '    <link rel="stylesheet" href="../ui-lightness/jquery-ui-1.10.3.custom.css">\r\n';
@@ -89,6 +89,7 @@ function generateButton(sTablename) {
 //
 // generateButtonScript
 //
+/* eslint-disable quotes */
 function generateButtonScript(sTablename) {
 
     var s = "    $('#dlg" + sTablename + "').dialog({modal: true, autoOpen: false, width: 800});\r\n";
@@ -98,6 +99,7 @@ function generateButtonScript(sTablename) {
     s    += "    });\r\n";
     return s;
 }
+/* eslint-enable quotes */
 
 //
 // generateDialog
@@ -232,7 +234,7 @@ function generateDialog(sTablename, sQuery) {
     sForm     += '            </tr>\r\n';
     sForm     += '        </table>\r\n';
 
-    if (sTablename == "Drivers") {
+    if (sTablename == 'Drivers') {
 
         sForm += '        <table style="width:100%">\r\n';
         sForm += '            <tr>\r\n';

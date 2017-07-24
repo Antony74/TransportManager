@@ -16,11 +16,11 @@ initialiseDateTimePickers = function(oExtraOptions, sPickerQuery, sPickerButtonQ
         formatDate : 'd/m/Y',
         yearStart  : 1900,
         onShow     : function () {
-			sOpenPickerButton = sCurrentPickerButton;
-		},
+            sOpenPickerButton = sCurrentPickerButton;
+        },
         onClose    : function () {
-			return (sOpenPickerButton != sCurrentPickerButton);
-		}
+            return (sOpenPickerButton != sCurrentPickerButton);
+        }
     };
 
     // Add oExtraOptions to oOptions replacing any existing options, except where we have two function - it's nice that we can call both! :-)

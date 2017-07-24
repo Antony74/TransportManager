@@ -8,23 +8,23 @@ if (typeof phantom == 'undefined') {
     usage +=    'npm install -g phantomjs\r\n';
 
     if (typeof alert   != 'undefined') {
-		(function() {
-			alert(usage);
-		})();
-	} else if (typeof console != 'undefined') {
-		(function() {
-			console.log(usage);
-		})();
-	} else if (typeof WScript != 'undefined') {
-		(function() {
-			WScript.Echo(usage);
-		})();
-	}
+        (function() {
+            alert(usage);
+        })();
+    } else if (typeof console != 'undefined') {
+        (function() {
+            console.log(usage);
+        })();
+    } else if (typeof WScript != 'undefined') {
+        (function() {
+            WScript.Echo(usage);
+        })();
+    }
 
 } else (function() {
 
     var fs = require('fs');
-    var iconDir = "GenerateIcons/";
+    var iconDir = 'GenerateIcons/';
     var myList = fs.list(iconDir);
 
     var arrIcons = [];
@@ -38,9 +38,9 @@ if (typeof phantom == 'undefined') {
         if (fs.isDirectory(dirItemPath)
         &&  dirItem != '.'
         &&  dirItem != '..'
-        &&  dirItem != "libraries" // These folders can appear due to a quirk of the Processing IDE
-        &&  dirItem != "modes"
-        &&  dirItem != "tools") {
+        &&  dirItem != 'libraries' // These folders can appear due to a quirk of the Processing IDE
+        &&  dirItem != 'modes'
+        &&  dirItem != 'tools') {
 
             arrIcons.push(dirItem);
             

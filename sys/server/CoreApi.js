@@ -28,12 +28,12 @@ function getIndices(fnDone) {
 
 function updateDatabase(arrPostedData, fnDone) {
 
-	if (!Array.isArray(arrPostedData)) {
-		var oTheError = {'Error': 'UpdateDatabase expected an array'};
-		fnDone(oTheError);
-	} else {
-		platform.updateDatabase(arrPostedData, fnDone);
-	}
+    if (!Array.isArray(arrPostedData)) {
+        var oTheError = {'Error': 'UpdateDatabase expected an array'};
+        fnDone(oTheError);
+    } else {
+        platform.updateDatabase(arrPostedData, fnDone);
+    }
 }
 
 function report_sla(arrSpans, fnDone) {
