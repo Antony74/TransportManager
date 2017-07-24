@@ -32,8 +32,7 @@ function updateDatabase(arrPostedData, fnDone) {
 		var oTheError = {'Error': 'UpdateDatabase expected an array'};
 		fnDone(oTheError);
 	} else {
-		var oOutput = platform.updateDatabase(arrPostedData);
-		fnDone(oOutput);
+		platform.updateDatabase(arrPostedData, fnDone);
 	}
 }
 

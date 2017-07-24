@@ -232,25 +232,89 @@ function getIndices(fnDone) {
     var conn = ADODB.open(sConnectionString);
     conn.openSchema(12) // ADODB::adSchemaIndexes
         .on('done', function(data) {
-        fnDone({
-            more: false,
-            records: data
-        });
+
+        getIndices = function(fnDone) {
+            fnDone({
+                more: false,
+                records: data
+            });
+        };
+
+        getIndices(fnDone);
     });
 
 }
 
-function updateDatabase(obj) {
+function updateDatabase(obj, fnDone) {
 
-    console.log(JSON.stringify(obj, null, 4));
+    getIndices(function(indices) {
+        console.log(JSON.stringify(obj, null, 4));
 
-    var result = dface.updateDatabase(sDatabaseFilename, obj);
+        var bQueryExecuting = false;
+        var sError = 'Unknown failure';
 
-    if (typeof result.Error == 'string') {
-        console.log('Error updating database: ' + result.Error);
-    }
+        if (obj.length !== 1) {
+            sError = 'updateDatabase currently only support batches of one';
+        } else {
 
-    return result;
+            for (var nOp = 0; nOp < obj[0].operations.length; ++nOp) {
+                var op = obj[0].operations[nOp];
+                var sTablename = obj[0].table;
+                var sIdField = '';
+
+                indices.records.forEach(function(item) {
+                    if (item.TABLE_NAME === sTablename && item.PRIMARY_KEY === true) {
+                        sIdField = item.COLUMN_NAME;
+                    }
+                });
+               
+                if (op.operationName === 'edit') {
+                    var assignments = [];
+                    var pkDetails = '';
+                    Object.keys(op.newRecord).forEach(function(sFieldname) {
+                        var value =  op.newRecord[sFieldname];
+                        if (typeof(value) !== 'number') {
+                            value = JSON.stringify(value);
+                        }
+
+                        var assignment = sFieldname + ' = ' + value;
+                        if (sFieldname === sIdField) {
+                            pkDetails = assignment;
+                        } else if (sFieldname !== 'DateofBirth') {
+                            assignments.push(assignment);
+                        }
+                    });
+
+                    if (pkDetails.length) {
+                        var sQuery = 'UPDATE ' + sTablename + ' SET ';
+                        sQuery += assignments.join(', ');
+                        sQuery += ' WHERE ' + pkDetails;
+                        console.log(sQuery);
+
+                        var conn = ADODB.open(sConnectionString);
+                        conn.execute(sQuery).on('done', function() {
+                            fnDone({});
+                        }).on('fail', function(message) {
+                            fnDone({Error: message});
+                        });
+
+                        bQueryExecuting = true;
+
+                    } else {
+                        sError = 'PK not found for table ' + sTablename;
+                    }
+                } else {
+                    sError = 'updateDatabase: unsupported opertation ' + op.operationName;
+                }
+            }
+        }
+
+        if (bQueryExecuting === false) {
+            fnDone({Error: sError});
+        }
+
+    });
+
 }
 
 //
