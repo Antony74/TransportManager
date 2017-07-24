@@ -1,6 +1,5 @@
 
 var fs = require('fs');
-var dface = require('dface');
 
 var ADODB = require('node-adodb');
 
@@ -245,6 +244,14 @@ function getIndices(fnDone) {
 
 }
 
+function isDateField(sTablename, sFieldname) { // Consider writing this properly
+    if (sFieldname === 'DateofBirth') {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function updateDatabase(obj, fnDone) {
 
     getIndices(function(indices) {
@@ -277,10 +284,19 @@ function updateDatabase(obj, fnDone) {
                             value = JSON.stringify(value);
                         }
 
+                        if (isDateField(sTablename, sFieldname)) {
+                            var date = new Date(value);
+                            value  = '#';
+                            value += date.getFullYear() + '/' + (date.getMonth()+1) + '/' + date.getDate();
+                            value += ' ';
+                            value += date.getHours() + ':' + date.getMinutes();
+                            value += '#';
+                        }
+
                         var assignment = sFieldname + ' = ' + value;
                         if (sFieldname === sIdField) {
                             pkDetails = assignment;
-                        } else if (sFieldname !== 'DateofBirth') {
+                        } else {
                             assignments.push(assignment);
                         }
                     });
