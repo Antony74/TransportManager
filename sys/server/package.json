@@ -12,8 +12,12 @@
   },
   "license": "MIT",
   "dependencies": {
-    "node-static": "0.7.7",
-    "node-adodb": "git://github.com/Antony74/node-adodb"
+    "electron": "^1.6.11",
+    "node-adodb": "git://github.com/Antony74/node-adodb",
+    "node-static": "0.7.7"
+  },
+  "scripts": {
+    "start": "electron TransportManagerInWindowsSysTray.js"
   },
   "version": "0.1.0",
   "readme": "The scripts in this folder have a few dependancies not included in the repository.  This installs them.",

@@ -347,7 +347,8 @@ function ensureShortcutExists() {
     var sBatchFile =  __dirname + '/TransportManager.bat';
     var sScript = '';
     sScript += '@echo off\r\n';
-    sScript += '"' + process.execPath + '" "' + __dirname + '\\TransportManagerInWindowsSysTray.js"\r\n';
+    sScript += 'cd ' + __dirname + '\r\n';
+    sScript += 'npm start\r\n';
     fs.writeFile(sBatchFile, sScript);
 
     var sShortcutFile = __dirname + '/../../Tr-Man- Reports.url';
