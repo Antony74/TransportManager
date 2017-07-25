@@ -344,12 +344,15 @@ function ensureShortcutExists() {
     // a parameter so we go via a batch file.  Unfortunately this is the best I can
     // do right now.
 
+    var sVBSFile =  __dirname + '/TransportManager.vbs';
+    var sVBScript = 'Set shell = CreateObject("Wscript.Shell")\n';
+    sVBScript    += 'shell.CurrentDirectory = "' + __dirname + '"\n';
+    sVBScript    += 'shell.Run "npm start", 0' + '\n';
+    fs.writeFile(sVBSFile, sVBScript);
+
     var sBatchFile =  __dirname + '/TransportManager.bat';
-    var sScript = '';
-    sScript += '@echo off\r\n';
-    sScript += 'cd ' + __dirname + '\r\n';
-    sScript += 'npm start\r\n';
-    fs.writeFile(sBatchFile, sScript);
+    var sBatchScript = 'start cscript ' + __dirname + '/TransportManager.vbs';
+    fs.writeFile(sBatchFile, sBatchScript);
 
     var sShortcutFile = __dirname + '/../../Tr-Man- Reports.url';
     fs.writeFile(sShortcutFile, '[InternetShortcut]\r\n'
