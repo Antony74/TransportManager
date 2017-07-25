@@ -48,6 +48,10 @@
         ],
         "no-tabs": [
             "error"
+        ],
+        "no-empty": [
+            "error",
+            { "allowEmptyCatch": true }
         ]
     }
 }

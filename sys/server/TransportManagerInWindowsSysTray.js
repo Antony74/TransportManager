@@ -22,24 +22,81 @@ if (typeof process == 'undefined' || typeof process.versions == 'undefined' || t
 
     var spawn = require('child_process').spawn;
     var http = require('http');
+    var path = require('path');
+    var url = require('url');
     var electron = require('electron');
     var app = electron.app;
     var Menu = electron.Menu;
     var Tray = electron.Tray;
-
-    console.log(process.execPath);
+    var BrowserWindow = electron.BrowserWindow;
 
     var transportManager = spawn('cmd.exe', ['/c', 'node', 'TransportManager.js']);
 
-    transportManager.stdout.pipe(process.stdout);
-    transportManager.stderr.pipe(process.stderr);
-
-    transportManager.on('close', function() {
-        process.exit();
-    });
+    // Keep a global reference of the window object, if you don't, the window will
+    // be closed automatically when the JavaScript object is garbage collected.
+    var logWindow = null; // eslint-disable-line no-unused-vars
 
     app.on('ready', function() {
-        var tray = new Tray('../htdocs/icons/car.ico');
+
+        var sIconPath = '../htdocs/icons/car.ico';
+
+        //
+        // Create server log window
+        //
+
+        logWindow = new BrowserWindow({
+            width: 500,
+            height: 300,
+            frame: true,
+            closable: false,
+            icon: sIconPath,
+            show: false,
+            title: 'Server log'
+        });
+
+        logWindow.setMenu(null);
+
+        logWindow.on('minimize', function() {
+            logWindow.hide();
+        });
+
+        logWindow.loadURL(url.format({
+            pathname: path.join(__dirname, 'ServerLog.html'),
+            protocol: 'file:',
+            slashes: true
+        }));
+
+//        logWindow.toggleDevTools();
+
+        transportManager.stdout.setEncoding('utf8');
+        transportManager.stderr.setEncoding('utf8');
+        exports.stdout = transportManager.stdout;
+        exports.stderr = transportManager.stderr;
+
+        //
+        // close
+        //
+        function close() {
+            try {
+                transportManager.kill();
+            } catch(e) {
+            }
+
+            try {
+                logWindow.close();
+            } catch(e) {
+            }
+    
+            process.exit();
+        }
+
+        transportManager.on('close', close);
+
+        //
+        // Create tray icon and context menu
+        //
+
+        var tray = new Tray(sIconPath);
         var contextMenu = Menu.buildFromTemplate([
             {
                 label: 'Transport Manager',
@@ -48,7 +105,10 @@ if (typeof process == 'undefined' || typeof process.versions == 'undefined' || t
                 }
             },
             {
-                label: 'Server log'
+                label: 'Server log',
+                click: function() {
+                    logWindow.show();
+                }
             },
             {
                 label: 'Exit',
@@ -59,16 +119,12 @@ if (typeof process == 'undefined' || typeof process.versions == 'undefined' || t
                     request.on('error', function(e) {
 
                         console.log('problem with request: ' + e.message);
-                        transportManager.kill();
-                        process.exit();
+                        close();
                     });
                 
                     request.end();
 
-                    setInterval(function() {
-                        transportManager.kill();
-                        process.exit();
-                    }, 5000);
+                    setInterval(close, 5000);
                 }
             }
         ]);

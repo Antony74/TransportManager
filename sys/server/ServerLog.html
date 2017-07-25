@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <script>
+
+        function onLoad() {
+            var {ipcRenderer, remote} = require('electron');  
+            var main = remote.require("./TransportManagerInWindowsSysTray.js");
+
+            var pre = document.createElement('pre');
+            document.body.appendChild(pre);
+
+            function onData(data) {
+                pre.appendChild(document.createTextNode(data));
+            }
+
+            main.stdout.on('data', onData);
+            main.stderr.on('data', onData);
+        }
+    </script>
+    <body onLoad='onLoad()'>
+    </body>
+</html>
