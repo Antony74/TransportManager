@@ -1,12 +1,12 @@
 
 var fs = require('fs');
-
+var ec = require('./ErrorCodes.js');
 var ADODB = require('node-adodb');
 
-var sDatabaseFilename = __dirname + '/../../TransportManager.mdb';
+var sDatabaseFilename = 'C:/TransManager/DVCData.mdb';
 var sConnectionString = 'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=' + sDatabaseFilename + ';';
 
-function copyFile(source, target, doneCopying) {
+function copyFile(source, target, doneCopying) { // eslint-disable-line no-unused-vars
 
     var streamIn = fs.createReadStream(source);
     streamIn.on('error', function(err) {
@@ -25,7 +25,7 @@ function copyFile(source, target, doneCopying) {
     streamIn.pipe(streamOut);
 }
 
-function runSQL(sFilenameSql) {
+function runSQL(sFilenameSql) { // eslint-disable-line no-unused-vars
 
     console.log('Running ' + sFilenameSql);
 
@@ -80,29 +80,23 @@ function runSQL(sFilenameSql) {
 
 function ensureDatabaseIsReady(doneEnsuring) {
 
-    var sFilenameEmpty = __dirname + '/Blank2002Database.mdb';
-
     fs.exists(sDatabaseFilename, function(bExists) {
 
         if (bExists) {
-            ensureDatabaseIsUpgraded(doneEnsuring);
+            console.log('Database ready');
         } else {
 
-            console.log('Database not found... creating empty database');
-
-            // Copy empty database
-            copyFile(sFilenameEmpty, sDatabaseFilename, function() {
-                ensureDatabaseIsUpgraded(doneEnsuring);
-            });
+            console.log(ec.errorText[ec.DATABASE_NOT_FOUND]);
+            process.exit(ec.DATABASE_NOT_FOUND);
         }
+
+        doneEnsuring(bExists);
     });
 }
 
-function ensureDatabaseIsUpgraded(doneEnsuring) {
+function ensureDatabaseIsUpgraded(doneEnsuring) { // eslint-disable-line no-unused-vars
 
     getIndices(function(oIndices) {
-
-//        fs.writeFile('c:/temp/compare/incides.json', JSON.stringify(oIndices, null, 4), function(){});
 
         if (typeof oIndices.records == 'undefined') {
 
@@ -111,38 +105,12 @@ function ensureDatabaseIsUpgraded(doneEnsuring) {
             return;
         }
 
-        var nUpgradeLevel = 0;
-
         for (var nRecord in oIndices.records) {
 
             var oRecord = oIndices.records[nRecord];
-        
-            if (oRecord.TABLE_NAME == 'Clients') {
 
-                nUpgradeLevel = Math.max(1, nUpgradeLevel);
-
-            } else if (oRecord.TABLE_NAME == 'ClientsEx') {
-
-                nUpgradeLevel = Math.max(2, nUpgradeLevel);
-
-            }
+            console.log(oRecord.TABLE_NAME);
         }
-
-        if (nUpgradeLevel > 0 && nUpgradeLevel < 1) {
-            console.log('Upgrading database');
-        }
-
-        switch(nUpgradeLevel) {
-        case 0:
-            runSQL(__dirname + '../../TransportManager.sql');
-            // Drop through!!1!
-        case 1:
-            runSQL(__dirname + '../../TransportManagerUpgrade1.sql');
-            // Drop through!!1!
-        }
-
-        console.log('Database ready');
-        doneEnsuring(true);
     });
 }
 
@@ -211,8 +179,6 @@ function selectSql(obj, fnDone) {
             'records': records
         };
 
-//        fs.writeFile('c:/temp/compare/thing.json', JSON.stringify(result, null, 4), function(){});
-
         fnDone(result);
     });
 
@@ -240,6 +206,8 @@ function getIndices(fnDone) {
         };
 
         getIndices(fnDone);
+    }).on('fail', function(message) {
+        console.log(message);
     });
 
 }
