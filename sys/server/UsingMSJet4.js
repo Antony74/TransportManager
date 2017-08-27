@@ -3,7 +3,7 @@ var fs = require('fs');
 var ec = require('./ErrorCodes.js');
 var ADODB = require('node-adodb');
 
-var sDatabaseFilename = 'C:/TransManager/DVCData.mdb';
+var sDatabaseFilename = 'C:/TransManager/TransManager.mdb';
 var sConnectionString = 'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=' + sDatabaseFilename + ';';
 
 function copyFile(source, target, doneCopying) { // eslint-disable-line no-unused-vars
@@ -115,6 +115,8 @@ function ensureDatabaseIsUpgraded(doneEnsuring) { // eslint-disable-line no-unus
 }
 
 function selectSql(obj, fnDone) {
+
+    console.log(obj.query);
 
     var conn = ADODB.open(sConnectionString);
 

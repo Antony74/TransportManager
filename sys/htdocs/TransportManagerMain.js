@@ -16,8 +16,8 @@ function allReady() {
     var currentFilter = null;
     var currentSort = -1;
     var currentSortAscending = true;
-    var currentTable = 'Clients';
-    var currentQuery = 'select * from Clients order by ClientID';
+    var currentTable = 'Client';
+    var currentQuery = 'select * from Client order by ClientID';
     var sTableHeader = '';
 
     $('#radio').buttonset();
@@ -187,10 +187,19 @@ function allReady() {
 
                     if (fld['Type'] == 'DATE') {
 
-                        converter['toHtmlValue'] = function(value) {
-                            var dateValue = new Date(value);
-                            return getDDMMYYYY(dateValue) + '&nbsp;' + getHHMM(dateValue);
-                        };
+                        var bDateOnly = getTables()['Client'].DateOnlyFields[fld['name']] ? true : false;
+
+                        if (bDateOnly) {
+                            converter['toHtmlValue'] = function(value) {
+                                var dateValue = new Date(value);
+                                return getDDMMYYYY(dateValue);
+                            };
+                        } else {
+                            converter['toHtmlValue'] = function(value) {
+                                var dateValue = new Date(value);
+                                return getDDMMYYYY(dateValue) + '&nbsp;' + getHHMM(dateValue);
+                            };
+                        }
 
                         converter['toDialogValue'] = function(value) {
                             var dateValue = new Date(value);
@@ -226,7 +235,7 @@ function allReady() {
                                 if (value === null || value === '') {
                                     return '&nbsp;';
                                 } else {
-                                    return this.toDialogValue(value);
+                                    return this.toDialogValue(value).toString().replace(' ', '&nbsp;');
                                 }
                             };
                         }
@@ -288,8 +297,8 @@ function allReady() {
     }
 
     function beginPopulateClients() {
-        currentTable = 'Clients';
-        currentQuery = 'select * from Clients order by ClientID';
+        currentTable = 'Client';
+        currentQuery = 'select * from Client order by ClientID';
         beginPopulateTable();
     }
 
