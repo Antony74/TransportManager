@@ -11,21 +11,22 @@ function getTables() {
 
     var tables = {
 
-        'Client' : {
-            query: 'SELECT Clients.ClientID as ClientID, ClientsEx.ClientID, Title, Firstname, Initial, Surname, AddressLine1, AddressLine2, Town, Postcode, '
-            +      'HomeNumber, MobileNumber, EmailAddress, IsWheelchair, Notes, IsActive, DateofBirth, Gender '
-            +      'FROM (Clients LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)',
+        'Clients' : {
+            query: 'SELECT ClientID, Title.Description as Title, Forename, Middlename, Surname, '
+            +      'AddressLine1, AddressLine2, Town, Postcode, '
+            +      'HomePhone, MobilePhone, EMail, isWheelchair, isActive, DateOfBirth '
+            +      'FROM (Client LEFT OUTER JOIN Title ON Client.TitleID = Title.ID)',
             DateOnlyFields: {DateOfBirth: true},
             ChoiceOnlyFields: {Gender: ['M', 'F', 'X']}
         },
-        'Destinations' : {},
+        'Destinations' : {
+            query: 'SELECT * FROM Destination'
+        },
         'DestinationType' : {},
-        'DriverExclusionList' : {},
-        'Driver' : {
+        'Drivers' : {
+            query: 'SELECT * FROM Driver',
             DateOnlyFields: {DateOfBirth: true}
         },
-        'DriverVacation' : {},
-        'JobLog' : {},
         'Jobs' : {}
     };
         

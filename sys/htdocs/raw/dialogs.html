@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 
-    <!-- THIS IS AN AUTO-GENERATED FILE (created by GenerateDialogs.js, 2015/11/08 18:25) -->
+    <!-- THIS IS AN AUTO-GENERATED FILE (created by GenerateDialogs.js, 2017/09/16 17:34) -->
 
     <title>Transport Manager Dialogs</title>
     <link rel="stylesheet" href="../ui-lightness/jquery-ui-1.10.3.custom.css">
@@ -19,10 +19,7 @@
     <button id="Clients">Clients</button>
     <button id="Destinations">Destinations</button>
     <button id="DestinationType">DestinationType</button>
-    <button id="DriverExclusionList">DriverExclusionList</button>
     <button id="Drivers">Drivers</button>
-    <button id="DriverVacation">DriverVacation</button>
-    <button id="JobLog">JobLog</button>
     <button id="Jobs">Jobs</button>
 </p>
 
@@ -44,25 +41,10 @@ $(document).ready(function()
     {
         $('#dlgDestinationType').dialog('open');
     });
-    $('#dlgDriverExclusionList').dialog({modal: true, autoOpen: false, width: 800});
-    $('#DriverExclusionList').click(function()
-    {
-        $('#dlgDriverExclusionList').dialog('open');
-    });
     $('#dlgDrivers').dialog({modal: true, autoOpen: false, width: 800});
     $('#Drivers').click(function()
     {
         $('#dlgDrivers').dialog('open');
-    });
-    $('#dlgDriverVacation').dialog({modal: true, autoOpen: false, width: 800});
-    $('#DriverVacation').click(function()
-    {
-        $('#dlgDriverVacation').dialog('open');
-    });
-    $('#dlgJobLog').dialog({modal: true, autoOpen: false, width: 800});
-    $('#JobLog').click(function()
-    {
-        $('#dlgJobLog').dialog('open');
     });
     $('#dlgJobs').dialog({modal: true, autoOpen: false, width: 800});
     $('#Jobs').click(function()
@@ -82,10 +64,10 @@ $(document).ready(function()
                 <td><input type="text" id="Clients_Title" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>Firstname</td>
-                <td><input type="text" id="Clients_Firstname" class="dialogInput" style="width:95%"/></td>
-                <td>Initial</td>
-                <td><input type="text" id="Clients_Initial" class="dialogInput" style="width:95%"/></td>
+                <td>Forename</td>
+                <td><input type="text" id="Clients_Forename" class="dialogInput" style="width:95%"/></td>
+                <td>Middlename</td>
+                <td><input type="text" id="Clients_Middlename" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
                 <td>Surname</td>
@@ -102,37 +84,24 @@ $(document).ready(function()
             <tr>
                 <td>Postcode</td>
                 <td><input type="text" id="Clients_Postcode" class="dialogInput" style="width:95%"/></td>
-                <td>HomeNumber</td>
-                <td><input type="text" id="Clients_HomeNumber" class="dialogInput" style="width:95%"/></td>
+                <td>HomePhone</td>
+                <td><input type="text" id="Clients_HomePhone" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>MobileNumber</td>
-                <td><input type="text" id="Clients_MobileNumber" class="dialogInput" style="width:95%"/></td>
-                <td>EmailAddress</td>
-                <td><input type="text" id="Clients_EmailAddress" class="dialogInput" style="width:95%"/></td>
+                <td>MobilePhone</td>
+                <td><input type="text" id="Clients_MobilePhone" class="dialogInput" style="width:95%"/></td>
+                <td>EMail</td>
+                <td><input type="text" id="Clients_EMail" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>IsWheelchair</td>
-                <td><input type="checkbox" style="text-align:left" id="Clients_IsWheelchair" class="dialogInput" style="width:95%"/></td>
-                <td>Notes</td>
-                <td><input type="text" id="Clients_Notes" class="dialogInput" style="width:95%"/></td>
+                <td>isWheelchair</td>
+                <td><input type="checkbox" style="text-align:left" id="Clients_isWheelchair" class="dialogInput" style="width:95%"/></td>
+                <td>isActive</td>
+                <td><input type="checkbox" style="text-align:left" id="Clients_isActive" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>IsActive</td>
-                <td><input type="checkbox" style="text-align:left" id="Clients_IsActive" class="dialogInput" style="width:95%"/></td>
-                <td>DateofBirth</td>
-                <td><input type="text" class="datepicker" style="width:85%" id="Clients_DateofBirth" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="Clients_DateofBirth_button" class="datepickerbutton" /></td>
-            </tr>
-            <tr>
-                <td>Gender</td>
-                <td>
-                    <select id="Clients_Gender">
-                        <option></option>
-                        <option>M</option>
-                        <option>F</option>
-                        <option>X</option>
-                    </select>
-                <td>
+                <td>DateOfBirth</td>
+                <td><input type="text" class="datepicker" style="width:85%" id="Clients_DateOfBirth" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="Clients_DateOfBirth_button" class="datepickerbutton" /></td>
                 <td colspan="2">&nbsp;</td>
             </tr>
         </table>
@@ -151,12 +120,12 @@ $(document).ready(function()
                 <td><input type="text" id="Destinations_DestinationID" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>TypeID</td>
-                <td><input type="text" id="Destinations_TypeID" class="dialogInput" style="width:95%"/></td>
+                <td>DestinationTypeID</td>
+                <td><input type="text" id="Destinations_DestinationTypeID" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>Name</td>
-                <td><input type="text" id="Destinations_Name" class="dialogInput" style="width:95%"/></td>
+                <td>DestName</td>
+                <td><input type="text" id="Destinations_DestName" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
                 <td>AddressLine1</td>
@@ -171,8 +140,20 @@ $(document).ready(function()
                 <td><input type="text" id="Destinations_Town" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>Postcode</td>
-                <td><input type="text" id="Destinations_Postcode" class="dialogInput" style="width:95%"/></td>
+                <td>PostCode</td>
+                <td><input type="text" id="Destinations_PostCode" class="dialogInput" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>EnteredAt</td>
+                <td><input type="text" class="datetimepicker" style="width:85%" id="Destinations_EnteredAt" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="Destinations_EnteredAt_button" class="datetimepickerbutton" /></td>
+            </tr>
+            <tr>
+                <td>EnteredBy</td>
+                <td><input type="text" id="Destinations_EnteredBy" class="dialogInput" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>NameOLD</td>
+                <td><input type="text" id="Destinations_NameOLD" class="dialogInput" style="width:95%"/></td>
             </tr>
         </table>
     </form>
@@ -186,35 +167,24 @@ $(document).ready(function()
     <form>
         <table style="width:100%">
             <tr>
-                <td>DestinationTypeID</td>
-                <td><input type="text" id="DestinationType_DestinationTypeID" class="dialogInput" style="width:95%"/></td>
+                <td>ID</td>
+                <td><input type="text" id="DestinationType_ID" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>DestinationLevel1</td>
-                <td><input type="text" id="DestinationType_DestinationLevel1" class="dialogInput" style="width:95%"/></td>
+                <td>Description</td>
+                <td><input type="text" id="DestinationType_Description" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>DestinationLevel2</td>
-                <td><input type="text" id="DestinationType_DestinationLevel2" class="dialogInput" style="width:95%"/></td>
-            </tr>
-        </table>
-    </form>
-    <table class="dialogStatus">
-        <tr>
-            <td class="dialogStatusAmber">Status: Initialising</td>
-        </tr>
-    </table>
-</div>
-<div id="dlgDriverExclusionList" title="Driver Exclusion List" class="dialogTemplate">
-    <form>
-        <table style="width:100%">
-            <tr>
-                <td>DriverID</td>
-                <td><input type="text" id="DriverExclusionList_DriverID" class="dialogInput" style="width:95%"/></td>
+                <td>CategoryID</td>
+                <td><input type="text" id="DestinationType_CategoryID" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>ClientID</td>
-                <td><input type="text" id="DriverExclusionList_ClientID" class="dialogInput" style="width:95%"/></td>
+                <td>EnteredAt</td>
+                <td><input type="text" class="datetimepicker" style="width:85%" id="DestinationType_EnteredAt" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="DestinationType_EnteredAt_button" class="datetimepickerbutton" /></td>
+            </tr>
+            <tr>
+                <td>EnteredBy</td>
+                <td><input type="text" id="DestinationType_EnteredBy" class="dialogInput" style="width:95%"/></td>
             </tr>
         </table>
     </form>
@@ -230,66 +200,54 @@ $(document).ready(function()
             <tr>
                 <td>DriverID</td>
                 <td><input type="text" id="Drivers_DriverID" class="dialogInput" style="width:95%"/></td>
-                <td>Title</td>
-                <td><input type="text" id="Drivers_Title" class="dialogInput" style="width:95%"/></td>
+                <td>TitleID</td>
+                <td><input type="text" id="Drivers_TitleID" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>Firstname</td>
-                <td><input type="text" id="Drivers_Firstname" class="dialogInput" style="width:95%"/></td>
+                <td>Forename</td>
+                <td><input type="text" id="Drivers_Forename" class="dialogInput" style="width:95%"/></td>
                 <td>Surname</td>
                 <td><input type="text" id="Drivers_Surname" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>DateofBirth</td>
-                <td><input type="text" class="datepicker" style="width:85%" id="Drivers_DateofBirth" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="Drivers_DateofBirth_button" class="datepickerbutton" /></td>
                 <td>AddressLine1</td>
                 <td><input type="text" id="Drivers_AddressLine1" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
                 <td>AddressLine2</td>
                 <td><input type="text" id="Drivers_AddressLine2" class="dialogInput" style="width:95%"/></td>
+            </tr>
+            <tr>
                 <td>Town</td>
                 <td><input type="text" id="Drivers_Town" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
                 <td>Postcode</td>
                 <td><input type="text" id="Drivers_Postcode" class="dialogInput" style="width:95%"/></td>
-                <td>HomeNumber</td>
-                <td><input type="text" id="Drivers_HomeNumber" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>MobileNumber</td>
-                <td><input type="text" id="Drivers_MobileNumber" class="dialogInput" style="width:95%"/></td>
-                <td>EmailAddress</td>
-                <td><input type="text" id="Drivers_EmailAddress" class="dialogInput" style="width:95%"/></td>
+                <td>MobilePhone</td>
+                <td><input type="text" id="Drivers_MobilePhone" class="dialogInput" style="width:95%"/></td>
+                <td>HomePhone</td>
+                <td><input type="text" id="Drivers_HomePhone" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>RegistrationNumber</td>
-                <td><input type="text" id="Drivers_RegistrationNumber" class="dialogInput" style="width:95%"/></td>
-                <td>LicenceNumber</td>
-                <td><input type="text" id="Drivers_LicenceNumber" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
-                <td>ExpiryDate</td>
-                <td><input type="text" class="datetimepicker" style="width:85%" id="Drivers_ExpiryDate" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="Drivers_ExpiryDate_button" class="datetimepickerbutton" /></td>
-                <td>CarBrand</td>
-                <td><input type="text" id="Drivers_CarBrand" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
-                <td>CarModel</td>
-                <td><input type="text" id="Drivers_CarModel" class="dialogInput" style="width:95%"/></td>
-                <td>IsWheelchair</td>
-                <td><input type="checkbox" style="text-align:left" id="Drivers_IsWheelchair" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
+                <td>Email</td>
+                <td><input type="text" id="Drivers_Email" class="dialogInput" style="width:95%"/></td>
                 <td>IsActive</td>
                 <td><input type="checkbox" style="text-align:left" id="Drivers_IsActive" class="dialogInput" style="width:95%"/></td>
-                <td>Notes</td>
-                <td><input type="text" id="Drivers_Notes" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>LDO</td>
-                <td><input type="checkbox" style="text-align:left" id="Drivers_LDO" class="dialogInput" style="width:95%"/></td>
+                <td>DateofBirth</td>
+                <td><input type="text" class="datetimepicker" style="width:85%" id="Drivers_DateofBirth" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="Drivers_DateofBirth_button" class="datetimepickerbutton" /></td>
+                <td>LicenceNo</td>
+                <td><input type="text" id="Drivers_LicenceNo" class="dialogInput" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>LicenceExpiry</td>
+                <td><input type="text" class="datetimepicker" style="width:85%" id="Drivers_LicenceExpiry" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="Drivers_LicenceExpiry_button" class="datetimepickerbutton" /></td>
+                <td>EnteredAt</td>
+                <td><input type="text" class="datetimepicker" style="width:85%" id="Drivers_EnteredAt" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="Drivers_EnteredAt_button" class="datetimepickerbutton" /></td>
+            </tr>
+            <tr>
+                <td>EnteredBy</td>
+                <td><input type="text" id="Drivers_EnteredBy" class="dialogInput" style="width:95%"/></td>
                 <td colspan="2">&nbsp;</td>
             </tr>
         </table>
@@ -311,135 +269,44 @@ $(document).ready(function()
         </tr>
     </table>
 </div>
-<div id="dlgDriverVacation" title="Driver Vacation" class="dialogTemplate">
-    <form>
-        <table style="width:100%">
-            <tr>
-                <td>VacationID</td>
-                <td><input type="text" id="DriverVacation_VacationID" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
-                <td>VacationEntryDateTime</td>
-                <td><input type="text" class="datetimepicker" style="width:85%" id="DriverVacation_VacationEntryDateTime" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="DriverVacation_VacationEntryDateTime_button" class="datetimepickerbutton" /></td>
-            </tr>
-            <tr>
-                <td>DriverID</td>
-                <td><input type="text" id="DriverVacation_DriverID" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
-                <td>VacationFrom</td>
-                <td><input type="text" class="datetimepicker" style="width:85%" id="DriverVacation_VacationFrom" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="DriverVacation_VacationFrom_button" class="datetimepickerbutton" /></td>
-            </tr>
-            <tr>
-                <td>VacationTo</td>
-                <td><input type="text" class="datetimepicker" style="width:85%" id="DriverVacation_VacationTo" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="DriverVacation_VacationTo_button" class="datetimepickerbutton" /></td>
-            </tr>
-        </table>
-    </form>
-    <table class="dialogStatus">
-        <tr>
-            <td class="dialogStatusAmber">Status: Initialising</td>
-        </tr>
-    </table>
-</div>
-<div id="dlgJobLog" title="Job Log" class="dialogTemplate">
-    <form>
-        <table style="width:100%">
-            <tr>
-                <td>JobID</td>
-                <td><input type="text" id="JobLog_JobID" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
-                <td>JobLogDateTime</td>
-                <td><input type="text" class="datetimepicker" style="width:85%" id="JobLog_JobLogDateTime" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="JobLog_JobLogDateTime_button" class="datetimepickerbutton" /></td>
-            </tr>
-            <tr>
-                <td>UserID</td>
-                <td><input type="text" id="JobLog_UserID" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
-                <td>ClientID</td>
-                <td><input type="text" id="JobLog_ClientID" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
-                <td>DestinationID</td>
-                <td><input type="text" id="JobLog_DestinationID" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
-                <td>DriverID</td>
-                <td><input type="text" id="JobLog_DriverID" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
-                <td>JobStatus</td>
-                <td><input type="text" id="JobLog_JobStatus" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
-                <td>JobNextStep</td>
-                <td><input type="text" id="JobLog_JobNextStep" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
-                <td>CallSource</td>
-                <td><input type="text" id="JobLog_CallSource" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
-                <td>CallNumber</td>
-                <td><input type="text" id="JobLog_CallNumber" class="dialogInput" style="width:95%"/></td>
-            </tr>
-            <tr>
-                <td>CallResolution</td>
-                <td><input type="text" id="JobLog_CallResolution" class="dialogInput" style="width:95%"/></td>
-            </tr>
-        </table>
-    </form>
-    <table class="dialogStatus">
-        <tr>
-            <td class="dialogStatusAmber">Status: Initialising</td>
-        </tr>
-    </table>
-</div>
 <div id="dlgJobs" title="Job" class="dialogTemplate">
     <form>
         <table style="width:100%">
             <tr>
                 <td>JobID</td>
                 <td><input type="text" id="Jobs_JobID" class="dialogInput" style="width:95%"/></td>
-                <td>JobEntryDateTime</td>
-                <td><input type="text" class="datetimepicker" style="width:85%" id="Jobs_JobEntryDateTime" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="Jobs_JobEntryDateTime_button" class="datetimepickerbutton" /></td>
             </tr>
             <tr>
                 <td>ClientID</td>
                 <td><input type="text" id="Jobs_ClientID" class="dialogInput" style="width:95%"/></td>
-                <td>DestinationID</td>
-                <td><input type="text" id="Jobs_DestinationID" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>LinkedJobID</td>
-                <td><input type="text" id="Jobs_LinkedJobID" class="dialogInput" style="width:95%"/></td>
-                <td>JobAppointmentDateTime</td>
-                <td><input type="text" class="datetimepicker" style="width:85%" id="Jobs_JobAppointmentDateTime" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="Jobs_JobAppointmentDateTime_button" class="datetimepickerbutton" /></td>
-            </tr>
-            <tr>
-                <td>JobIsDVOWheelchair</td>
-                <td><input type="checkbox" style="text-align:left" id="Jobs_JobIsDVOWheelchair" class="dialogInput" style="width:95%"/></td>
                 <td>Notes</td>
                 <td><input type="text" id="Jobs_Notes" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>Status</td>
-                <td><input type="text" id="Jobs_Status" class="dialogInput" style="width:95%"/></td>
-                <td>IsJobOneWay</td>
-                <td><input type="checkbox" style="text-align:left" id="Jobs_IsJobOneWay" class="dialogInput" style="width:95%"/></td>
+                <td>JobDate</td>
+                <td><input type="text" class="datetimepicker" style="width:85%" id="Jobs_JobDate" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="Jobs_JobDate_button" class="datetimepickerbutton" /></td>
             </tr>
             <tr>
-                <td>PickUpSite</td>
-                <td><input type="text" id="Jobs_PickUpSite" class="dialogInput" style="width:95%"/></td>
-                <td>DriverID</td>
-                <td><input type="text" id="Jobs_DriverID" class="dialogInput" style="width:95%"/></td>
+                <td>DVCWheelchairNeeded</td>
+                <td><input type="checkbox" style="text-align:left" id="Jobs_DVCWheelchairNeeded" class="dialogInput" style="width:95%"/></td>
             </tr>
             <tr>
-                <td>JobPickUpDateTime</td>
-                <td><input type="text" class="datetimepicker" style="width:85%" id="Jobs_JobPickUpDateTime" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="Jobs_JobPickUpDateTime_button" class="datetimepickerbutton" /></td>
-                <td colspan="2">&nbsp;</td>
+                <td>JobSourceID</td>
+                <td><input type="text" id="Jobs_JobSourceID" class="dialogInput" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>LinkedJobID</td>
+                <td><input type="text" id="Jobs_LinkedJobID" class="dialogInput" style="width:95%"/></td>
+            </tr>
+            <tr>
+                <td>EnteredAt</td>
+                <td><input type="text" class="datetimepicker" style="width:85%" id="Jobs_EnteredAt" class="dialogInput" style="width:95%"/>&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="Jobs_EnteredAt_button" class="datetimepickerbutton" /></td>
+            </tr>
+            <tr>
+                <td>EnteredBy</td>
+                <td><input type="text" id="Jobs_EnteredBy" class="dialogInput" style="width:95%"/></td>
             </tr>
         </table>
     </form>

@@ -53,7 +53,7 @@ getDialogHandler = function(doneFn) {
         $('.datepicker').change(makeLooseDatesStrict);
 
         var nDialogWidth = 800;
-        var nButtonWidth = 85;
+        var nButtonWidth = 100;
 
         var fnDialogClosed = null;
         var bDialogChanged = false;
@@ -297,7 +297,7 @@ getDialogHandler = function(doneFn) {
 
             doClientDialog: function(clientID) {
                 var sTablename = 'Clients';
-                var sDialogQuery = getTables()[sTablename]['query'] + ' WHERE Clients.ClientID = ' + clientID;
+                var sDialogQuery = getTables()[sTablename]['query'] + ' WHERE Client.ClientID = ' + clientID;
                 this.doDialog(sTablename, sDialogQuery, ['ClientsEx'], function() {} );
             },
 
@@ -344,8 +344,14 @@ getDialogHandler = function(doneFn) {
                                     newValue = getDDMMYYYY(dateValue);
                                 }
                             }
-
-                            input.val(newValue);
+                            
+                            if (newValue === true) {
+                                input.prop('checked', true);
+                            } else if (newValue === false) {
+                                input.prop('checked', false);
+                            } else {
+                                input.val(newValue);
+                            }
                         }
 
                         // Decide which fields to enable/disable

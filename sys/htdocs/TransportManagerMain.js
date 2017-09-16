@@ -66,7 +66,7 @@ function allReady() {
     }
 
     function onTableCellClick() {
-        var dlg = $('#dlg' +currentTable);
+        var dlg = $('#dlgClients');
         if (dlg.length) {
             var nRow = $(this).parent().index() - 1;
 
@@ -187,7 +187,7 @@ function allReady() {
 
                     if (fld['Type'] == 'DATE') {
 
-                        var bDateOnly = getTables()['Client'].DateOnlyFields[fld['name']] ? true : false;
+                        var bDateOnly = getTables()['Clients'].DateOnlyFields[fld['name']] ? true : false;
 
                         if (bDateOnly) {
                             converter['toHtmlValue'] = function(value) {
