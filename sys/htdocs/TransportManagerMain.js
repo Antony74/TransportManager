@@ -16,7 +16,6 @@ function allReady() {
     var currentFilter = null;
     var currentSort = -1;
     var currentSortAscending = true;
-    var currentTable = 'Client';
     var currentQuery = 'select * from Client order by ClientID';
     var sTableHeader = '';
 
@@ -268,7 +267,6 @@ function allReady() {
 
         $('#mainDataTable').empty();
 
-        currentTable = '';
         currentQuery = '';
         currentData = null;
         currentFilter = null;
@@ -291,25 +289,21 @@ function allReady() {
     }
 
     function beginPopulateJobs() {
-        currentTable = 'Clients';
         currentQuery = 'select * from Jobs order by JobID';
         beginPopulateTable();
     }
 
     function beginPopulateClients() {
-        currentTable = 'Client';
         currentQuery = 'select * from Client order by ClientID';
         beginPopulateTable();
     }
 
     function beginPopulateDrivers() {
-        currentTable = 'Drivers';
         currentQuery = 'select * from Drivers order by DriverID';
         beginPopulateTable();
     }
 
     function beginPopulateDestinations() {
-        currentTable = 'Destinations';
         currentQuery = 'select * from Destinations order by DestinationID';
         beginPopulateTable();
     }
