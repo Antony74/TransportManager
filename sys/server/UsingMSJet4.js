@@ -3,7 +3,7 @@ var fs = require('fs');
 var ec = require('./ErrorCodes.js');
 var ADODB = require('node-adodb');
 
-var sDatabaseFilename = 'C:/TransManager/TransManager.mdb';
+var sDatabaseFilename = __dirname + '/../../TransManager.mdb';
 var sConnectionString = 'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=' + sDatabaseFilename + ';';
 
 function copyFile(source, target, doneCopying) { // eslint-disable-line no-unused-vars
