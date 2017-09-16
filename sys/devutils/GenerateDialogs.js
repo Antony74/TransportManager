@@ -200,11 +200,11 @@ function generateDialog(sTablename, sQuery, fnDone) {
                     if (oDateOnlyFields != undefined && oDateOnlyFields[sFieldname] != undefined && oDateOnlyFields[sFieldname] == true) {
 
                         sInputAttributes = 'type="text" class="datepicker" style="width:85%"';
-                        sCalendarButton  = '&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="' + sTablename + '_' + sFieldname + '_button" class="datepickerbutton" />';
+//                        sCalendarButton  = '&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="' + sTablename + '_' + sFieldname + '_button" class="datepickerbutton" />';
 
                     } else {
                         sInputAttributes = 'type="text" class="datetimepicker" style="width:85%"';
-                        sCalendarButton  = '&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="' + sTablename + '_' + sFieldname + '_button" class="datetimepickerbutton" />';
+//                        sCalendarButton  = '&nbsp;<img src="./lib/ui-lightness/images/calendar.gif" id="' + sTablename + '_' + sFieldname + '_button" class="datetimepickerbutton" />';
                     }
 
                 } else if (sDbType == 'YESNO') {

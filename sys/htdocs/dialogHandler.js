@@ -120,6 +120,7 @@ getDialogHandler = function(doneFn) {
             }
         }
 
+        /*
         function commitChanges(bCloseDialog) {
 
             setStatus('Updating', 'A');
@@ -231,7 +232,7 @@ getDialogHandler = function(doneFn) {
                 }
             );
         }
-
+*/
         $('#dialogs div').each(function() {
 
             $(this).dialog( {
@@ -241,7 +242,7 @@ getDialogHandler = function(doneFn) {
                 resizable     : false,
                 width         : nDialogWidth,
                 buttons       : [
-                    {
+/*                    {
                         text  : 'OK',
                         id    : 'dialogOK',
                         icons : {primary: 'ui-icon-check'},
@@ -252,9 +253,9 @@ getDialogHandler = function(doneFn) {
                                 commitChanges(true);
                             }
                         }
-                    },
+                    },*/
                     {
-                        text  : 'Cancel',
+                        text  : 'Close',
                         id    : 'dialogCancel',
                         width : nButtonWidth,
                         icons : {primary: 'ui-icon-closethick'},
@@ -265,7 +266,7 @@ getDialogHandler = function(doneFn) {
                                 fnDialogClosed(bDialogChanged);
                             }
                         }
-                    },
+                    },/*
                     {
                         text  : 'Apply',
                         id    : 'dialogApply',
@@ -277,7 +278,7 @@ getDialogHandler = function(doneFn) {
                                 commitChanges(false);
                             }
                         }
-                    }
+                    }*/
                 ]
 
             }).on('keydown', function(event) {
@@ -366,7 +367,7 @@ getDialogHandler = function(doneFn) {
                             for (var nTable in arrTablesToUpdate) {
 
                                 if (sTablename == arrTablesToUpdate[nTable]) {
-                                    bDisabled = false;
+//                                    bDisabled = false;
                                 }
                             }
 
