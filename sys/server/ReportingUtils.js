@@ -40,7 +40,7 @@ function simpleSelectSql(sSql, coreApi, fnFailed, fnDone) {
 //
 function getPeriodSubQuery(sPeriodStart, sPeriodEnd) {
 
-    return '(JobAppointmentDateTime > #' + sPeriodStart + ' 00:00# AND JobAppointmentDateTime < #' + sPeriodEnd + ' 23:59#)';
+    return '(jobs.JobDate > #' + sPeriodStart + ' 00:00# AND jobs.JobDate < #' + sPeriodEnd + ' 23:59#)';
 }
 
 //

@@ -8,8 +8,16 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone) {
 
     var sPeriodSubQuery = utils.getPeriodSubQuery(sPeriodStart, sPeriodEnd);
 
-    var sSql = 'SELECT JobID, Notes FROM jobs'
-             + ' WHERE status="Cancelled" AND ' + sPeriodSubQuery + ' ORDER BY JobEntryDateTime';
+    var arrCancels = [6, 19, 49, 7, 8, 21, 2];
+
+    var sStatusSubQuery = arrCancels.map(function(nStatus) {
+        return 'JobStatus.JobStatusLevel = ' + nStatus;
+    }).join(' OR ');
+
+    var sSql = 'SELECT jobs.JobID, jobs.Notes, JobStatus.LongDescription FROM '
+             + '((jobs LEFT OUTER JOIN JobAttribute ON Jobs.JobID = JobAttribute.JobID) '
+             + 'LEFT OUTER JOIN JobStatus ON JobAttribute.AttributeLevel = JobStatus.JobStatusLevel)'
+             + ' WHERE (' + sStatusSubQuery + ') AND ' + sPeriodSubQuery + ' ORDER BY Jobs.enteredAt';
 
     utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
 
@@ -35,6 +43,7 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone) {
                   + '    <table>                                 \r\n'
                   + '        <TR>                                \r\n'
                   + '            <TH>JobID</TH>                  \r\n'
+                  + '            <TH>Status</TH>                 \r\n'
                   + '            <TH>Notes</TH>                  \r\n'
                   + '            <TH>By<BR>client</TH>           \r\n'
                   + '            <TH>By<BR>hospital</TH>         \r\n'
@@ -47,10 +56,12 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone) {
         for (var nRow = 0; nRow < oResult['records'].length; ++nRow) {
 
             var sJobID = oResult['records'][nRow]['JobID'];
+            var sStatus = oResult['records'][nRow]['LongDescription'];
             var sNotes = oResult['records'][nRow]['Notes'];
-
+            
             sHtml += '<TR>\r\n';
             sHtml += '    <TD>' + sJobID + '</TD>\r\n';
+            sHtml += '    <TD>' + sStatus + '</TD>\r\n';
             sHtml += '    <TD>' + sNotes + '</TD>\r\n';
             sHtml += '    <TD>&nbsp;</TD>        \r\n';
             sHtml += '    <TD>&nbsp;</TD>        \r\n';
