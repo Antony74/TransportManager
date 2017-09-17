@@ -24,7 +24,7 @@ function generateReport(arrSpans, coreApi, fnDone) {
     // Cache the destination types
     //
 
-    utils.simpleSelectSql('SELECT DestinationTypeID, DestinationLevel1 FROM DestinationType', coreApi, fnFailed, function(oResult) {
+    utils.simpleSelectSql('SELECT ID as DestinationTypeID, Description as DestinationLevel1 FROM DestinationCategory', coreApi, fnFailed, function(oResult) {
 
         var oDestinationTypes = {};
 
@@ -84,17 +84,21 @@ function generateReport(arrSpans, coreApi, fnDone) {
 
         var sPeriodSubQuery = utils.getPeriodSubQuery(sPeriodStart, sPeriodEnd);
 
-        var sStatusQuery = 'SELECT status FROM jobs WHERE ' + sPeriodSubQuery;
-
+        var sStatusQuery = 'SELECT JobStatus.LongDescription as status FROM '
+                    + '((jobs LEFT OUTER JOIN JobAttribute ON Jobs.JobID = JobAttribute.JobID) '
+                    + 'LEFT OUTER JOIN JobStatus ON JobAttribute.AttributeLevel = JobStatus.JobStatusLevel)'
+                    + ' WHERE ' + sPeriodSubQuery + ' ORDER BY Jobs.enteredAt, JobAttribute.AttributeLevel DESC';
+        
         utils.simpleSelectSql(sStatusQuery, coreApi, fnFailed, function(oResult) {
 
             oJsonReport.jobStatus.push(reportCountValues(oResult.records, 'status'));
 
-            var sSql = 'SELECT JobIsDVOWheelchair OR Clients.IsWheelchair AS Wheelchair, IsJobOneWay, Destinations.TypeID AS DestinationTypeID'
-                     + ' FROM (jobs'
-                     + ' INNER JOIN Clients ON jobs.ClientID = Clients.ClientID)'
-                     + ' INNER JOIN Destinations ON jobs.DestinationID = Destinations.DestinationID'
-                     + ' WHERE status="Closed" AND ' + sPeriodSubQuery;
+            var sSql = 'SELECT DVCWheelChairNeeded OR Client.isWheelchair AS Wheelchair, Destination.DestinationTypeID AS DestinationTypeID'
+                     + ' FROM (((jobs'
+                     + ' INNER JOIN Client ON jobs.ClientID = Client.ClientID)'
+                     + ' INNER JOIN JobLegs ON jobs.JobID = JobLegs.JobID)'
+                     + ' INNER JOIN Destination ON JobLegs.DestinationEndID = Destination.DestinationID)'
+                     + ' WHERE ' + sPeriodSubQuery;
 
             utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
 
@@ -132,9 +136,9 @@ function generateReport(arrSpans, coreApi, fnDone) {
     //
     function reportUniqueClients(oJsonReport, fnFailed, fnDone) {
 
-        var sSql = 'SELECT Clients.ClientID, Title, Gender, DateofBirth, Firstname, Initial, Surname FROM (Clients'
-                 + ' LEFT OUTER JOIN ClientsEx ON Clients.ClientID = ClientsEx.ClientID)'
-                 + ' WHERE Clients.ClientID IN (SELECT ClientID FROM jobs WHERE ';
+        var sSql = 'SELECT ClientID, Title.Description, DateofBirth, Forename, Middlename, Surname FROM (Client'
+                 + ' INNER JOIN Title ON Client.TitleID = Title.ID)'
+                 + ' WHERE Client.ClientID IN (SELECT ClientID FROM jobs WHERE ';
 
         var arrPeriodSubQueries = [];
         for (var nPeriod = 0; nPeriod < oJsonReport.periodStart.length; ++nPeriod) {
