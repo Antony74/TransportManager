@@ -136,7 +136,7 @@ function generateReport(arrSpans, coreApi, fnDone) {
     //
     function reportUniqueClients(oJsonReport, fnFailed, fnDone) {
 
-        var sSql = 'SELECT ClientID, Title.Description, DateofBirth, Forename, Middlename, Surname FROM (Client'
+        var sSql = 'SELECT ClientID, Title.Description as Title, DateofBirth, Forename, Middlename, Surname FROM (Client'
                  + ' INNER JOIN Title ON Client.TitleID = Title.ID)'
                  + ' WHERE Client.ClientID IN (SELECT ClientID FROM jobs WHERE ';
 
@@ -180,21 +180,18 @@ function generateReport(arrSpans, coreApi, fnDone) {
                     }
 
                     for (var nRecord = 0; nRecord < oResult.records.length; ++nRecord) {
-                        // Where gender is not specified, see if we can infer it from title
-                        if (oResult.records[nRecord]['Gender'] == null) {
-                            var sTitle = oResult.records[nRecord]['Title'];
+                        var sTitle = oResult.records[nRecord]['Title'];
 
-                            if (sTitle == 'Mr.') {
-                                oResult.records[nRecord]['Gender'] = 'M';
-                            } else if (sTitle == 'Mrs.' || sTitle == 'Miss.' || sTitle == 'Ms.') {
-                                oResult.records[nRecord]['Gender'] = 'F';
-                            } else {
-                                oResult.records[nRecord]['Gender'] = 'Unknown';
+                        if (sTitle === 'Mr.' || sTitle === 'Dr.' || sTitle === 'Revd.') {
+                            oResult.records[nRecord]['Gender'] = 'M';
+                        } else if (sTitle == 'Mrs.' || sTitle == 'Miss' || sTitle == 'Ms.' || sTitle == 'Revd Ms' || sTitle == 'Dr Ms') {
+                            oResult.records[nRecord]['Gender'] = 'F';
+                        } else {
+                            oResult.records[nRecord]['Gender'] = 'Unknown';
 
-                                sLog += '<A href="#' + oResult.records[nRecord]['ClientID'] + '">';
-                                sLog += 'Could not infer gender of ' + getFullName(oResult.records[nRecord]);
-                                sLog += '</A><BR>\n';
-                            }
+                            sLog += '<A href="#' + oResult.records[nRecord]['ClientID'] + '">';
+                            sLog += 'Could not infer gender of ' + getFullName(oResult.records[nRecord]);
+                            sLog += '</A><BR>\n';
                         }
 
                         // Find age-band
