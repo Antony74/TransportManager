@@ -10,13 +10,15 @@ function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone) {
 
     var sPeriodSubQuery = utils.getPeriodSubQuery(utils.formatdate(dateFrom), utils.formatdate(dateTo));
 
-    var sSql = 'SELECT Drivers.DriverID, Drivers.Title, Drivers.Firstname, Drivers.Surname, JobPickUpDateTime, Clients.Title, Clients.Firstname, Clients.Initial, Clients.Surname, Clients.Postcode, Destinations.Name AS DestinationName'
-             + ' FROM (((jobs'
-             + ' INNER JOIN Drivers ON jobs.DriverID = Drivers.DriverID)'
-             + ' INNER JOIN Clients ON jobs.ClientID = Clients.ClientID)'
-             + ' INNER JOIN Destinations ON jobs.DestinationID = Destinations.DestinationID)'
-             + ' WHERE status="Closed" AND ' + sPeriodSubQuery
-             + ' ORDER BY Drivers.Surname, Drivers.FirstName, JobPickUpDateTime';
+    var sSql = 'SELECT Driver.DriverID, Driver.Forename, Driver.Surname, Jobs.JobDate, '
+             + 'Client.Forename, Client.MiddleName, Client.Surname, Client.Postcode, Destination.DestName AS DestinationName'
+             + ' FROM ((((JobLegs'
+             + ' INNER JOIN jobs ON JobLegs.JobID = Jobs.JobID)'
+             + ' INNER JOIN Driver ON JobLegs.DriverID = Driver.DriverID)'
+             + ' INNER JOIN Client ON jobs.ClientID = Client.ClientID)'
+             + ' INNER JOIN Destination ON JobLegs.DestinationEndID = Destination.DestinationID)'
+             + ' WHERE ' + sPeriodSubQuery
+             + ' ORDER BY Driver.Surname, Driver.Forename, Jobs.JobDate';
 
     utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
 
@@ -78,7 +80,7 @@ function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone) {
                 sHtml += '<TR>\r\n';
 
                 sHtml += '<TD><B>Driver name:</B></TD>';
-                sHtml += '<TD>' + oRecord['Drivers.Title'] + ' ' + oRecord['Drivers.Firstname'] + ' ' + oRecord['Drivers.Surname'] + '</TD>';
+                sHtml += '<TD>' + oRecord['Driver.Forename'] + ' ' + oRecord['Driver.Surname'] + '</TD>';
                 sHtml += '<TD><B>Journeys:</B></TD>';
                 sHtml += '<TD>' + oDriverToDriveCount[oRecord['DriverID']] + '</TD>';
 
@@ -95,8 +97,8 @@ function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone) {
                 nPreviousDriverID = oRecord['DriverID'];
             }
 
-            var sClientName = oRecord['Clients.Title'] + ' ' + oRecord['Clients.Firstname'] + ' ' + oRecord['Initial'] + ' ' + oRecord['Clients.Surname'];
-            var jobDate = new Date(oRecord['JobPickUpDateTime']);
+            var sClientName = oRecord['Client.Forename'] + ' ' + oRecord['Client.MiddleName'] + ' ' + oRecord['Client.Surname'];
+            var jobDate = new Date(oRecord['JobDate']);
 
             if (!bSummaryOnly) {
 
