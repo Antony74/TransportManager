@@ -17,7 +17,7 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone) {
     var sSql = 'SELECT jobs.JobID, jobs.Notes, JobStatus.LongDescription FROM '
              + '((jobs LEFT OUTER JOIN JobAttribute ON Jobs.JobID = JobAttribute.JobID) '
              + 'LEFT OUTER JOIN JobStatus ON JobAttribute.AttributeLevel = JobStatus.JobStatusLevel)'
-             + ' WHERE (' + sStatusSubQuery + ') AND ' + sPeriodSubQuery + ' ORDER BY Jobs.enteredAt';
+             + ' WHERE (' + sStatusSubQuery + ') AND ' + sPeriodSubQuery + ' ORDER BY Jobs.enteredAt, JobAttribute.AttributeLevel DESC';
 
     utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
 
@@ -52,13 +52,20 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone) {
                   + '            <TH>Operator<BR>error</TH>      \r\n'
                   + '        </TR>                               \r\n';
 
+        var jobIds = {};
 
         for (var nRow = 0; nRow < oResult['records'].length; ++nRow) {
 
             var sJobID = oResult['records'][nRow]['JobID'];
             var sStatus = oResult['records'][nRow]['LongDescription'];
             var sNotes = oResult['records'][nRow]['Notes'];
-            
+
+            if (jobIds[sJobID]) {
+                continue; // Ignore duplicates, the higher status level will have got in first
+            }
+
+            jobIds[sJobID] = true;
+
             sHtml += '<TR>\r\n';
             sHtml += '    <TD>' + sJobID + '</TD>\r\n';
             sHtml += '    <TD>' + sStatus + '</TD>\r\n';
