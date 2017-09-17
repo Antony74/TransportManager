@@ -24,13 +24,18 @@ function generateReport(arrSpans, coreApi, fnDone) {
     // Cache the destination types
     //
 
-    utils.simpleSelectSql('SELECT ID as DestinationTypeID, Description as DestinationLevel1 FROM DestinationCategory', coreApi, fnFailed, function(oResult) {
+    var sSql = 'SELECT DestinationType.ID as DestinationTypeID, '
+             + 'DestinationType.Description AS DestinationType, '
+             + 'DestinationCategory.Description AS Purpose '
+             + 'FROM DestinationType INNER JOIN DestinationCategory ON DestinationType.CategoryID = DestinationCategory.ID';
+
+    utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
 
         var oDestinationTypes = {};
 
         for (var n = 0; n < oResult.records.length; ++n) {
             var oRecord = oResult.records[n];
-            oDestinationTypes[oRecord.DestinationTypeID] = oRecord.DestinationLevel1;
+            oDestinationTypes[oRecord.DestinationTypeID] = oRecord;
         }
 
         //
@@ -88,7 +93,7 @@ function generateReport(arrSpans, coreApi, fnDone) {
 
             oJsonReport.jobStatus.push(reportCountValues(oResult.records, 'Outcome'));
 
-            var sSql = 'SELECT DVCWheelChairNeeded OR Client.isWheelchair AS Wheelchair, Destination.DestinationTypeID AS DestinationTypeID'
+            var sSql = 'SELECT DVCWheelChairNeeded OR Client.isWheelchair AS Wheelchair, Destination.DestinationTypeID AS DestinationTypeID '
                      + ' FROM (((jobs'
                      + ' INNER JOIN Client ON jobs.ClientID = Client.ClientID)'
                      + ' INNER JOIN JobLegs ON jobs.JobID = JobLegs.JobID)'
@@ -99,7 +104,14 @@ function generateReport(arrSpans, coreApi, fnDone) {
 
                 for (var n = 0; n < oResult.records.length; ++n) {
                     var oRecord = oResult.records[n];
-                    oRecord.DestinationTypeID = oDestinationTypes[oRecord.DestinationTypeID];
+                    var oType = oDestinationTypes[oRecord.DestinationTypeID];
+                    if (oType) {
+                        oRecord.DestinationType = oType.DestinationType;
+                        oRecord.Purpose = oType.Purpose;
+                    } else {
+                        oRecord.DestinationType = oRecord.DestinationTypeID;
+                        oRecord.Purpose = oRecord.DestinationTypeID;
+                    }
                 }
 
                 var oSummaryIsJobOneWay = reportCountValues(oResult.records, 'IsJobOneWay');
@@ -112,15 +124,9 @@ function generateReport(arrSpans, coreApi, fnDone) {
                 oJsonReport.isOneWay.push(oSummaryIsJobOneWay);
                 oJsonReport.involvesWheelchair.push(reportCountValues(oResult.records, 'Wheelchair'));
 
-                var oSummaryDestinations = reportCountValues(oResult.records, 'DestinationTypeID');
-                var oPurposeOfJourney = JSON.parse(JSON.stringify(oSummaryDestinations)); // Clone oSummaryDestinations
-                oJsonReport.typeOfDestination.push(oSummaryDestinations);
-
-                combineSummaryRecords(oPurposeOfJourney, ['Shops', 'Social/Leisure', 'Visiting'], 'Shopping/Social');
-                combineSummaryRecords(oPurposeOfJourney, ['Primary Medical Care', 'Secondary Medical Care'], 'Medical/Hospital');
-                combineSummaryRecords(oPurposeOfJourney, ['Miscellaneous', '- New Destination -'], 'Other');
-                oJsonReport.purposeOfJourney.push(oPurposeOfJourney);
-
+                oJsonReport.typeOfDestination.push(reportCountValues(oResult.records, 'DestinationType'));
+                oJsonReport.purposeOfJourney.push(reportCountValues(oResult.records, 'Purpose'));
+                
                 fnDone();
             });
         });
@@ -446,7 +452,7 @@ function generateReport(arrSpans, coreApi, fnDone) {
         sHtml += reportSubHeading('Jobs in period', nColCount);
         sHtml += reportHtmlRow(oJsonReport.jobStatus, bShowTotals);
 
-        sHtml += reportSubHeading('Now considering only "Closed" jobs', nColCount);
+        sHtml += reportSubHeading('Now considering only completed jobs', nColCount);
 
 //        sHtml += reportSubHeading('Job is one way?', nColCount);
 //        sHtml += reportHtmlRow(oJsonReport.isOneWay, bShowTotals);
