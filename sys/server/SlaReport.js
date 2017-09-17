@@ -84,14 +84,9 @@ function generateReport(arrSpans, coreApi, fnDone) {
 
         var sPeriodSubQuery = utils.getPeriodSubQuery(sPeriodStart, sPeriodEnd);
 
-        var sStatusQuery = 'SELECT JobStatus.LongDescription as status FROM '
-                    + '((jobs LEFT OUTER JOIN JobAttribute ON Jobs.JobID = JobAttribute.JobID) '
-                    + 'LEFT OUTER JOIN JobStatus ON JobAttribute.AttributeLevel = JobStatus.JobStatusLevel)'
-                    + ' WHERE ' + sPeriodSubQuery + ' ORDER BY Jobs.enteredAt, JobAttribute.AttributeLevel DESC';
-        
-        utils.simpleSelectSql(sStatusQuery, coreApi, fnFailed, function(oResult) {
+        utils.queryJobOutcomes(coreApi, sPeriodStart, sPeriodEnd, fnFailed, function(oResult) {
 
-            oJsonReport.jobStatus.push(reportCountValues(oResult.records, 'status'));
+            oJsonReport.jobStatus.push(reportCountValues(oResult.records, 'Outcome'));
 
             var sSql = 'SELECT DVCWheelChairNeeded OR Client.isWheelchair AS Wheelchair, Destination.DestinationTypeID AS DestinationTypeID'
                      + ' FROM (((jobs'
@@ -258,7 +253,7 @@ function generateReport(arrSpans, coreApi, fnDone) {
 
             var sThingToCount = arrRecords[n][sFieldname];
 
-            if (sThingToCount == true || sThingToCount == '65535') {
+            if (sThingToCount == true || sThingToCount == '65535' || sThingToCount == -1) {
                 sThingToCount = 'Yes';
             } else if (sThingToCount == false || sThingToCount == '0') {
                 sThingToCount = 'No';
@@ -453,8 +448,8 @@ function generateReport(arrSpans, coreApi, fnDone) {
 
         sHtml += reportSubHeading('Now considering only "Closed" jobs', nColCount);
 
-        sHtml += reportSubHeading('Job is one way?', nColCount);
-        sHtml += reportHtmlRow(oJsonReport.isOneWay, bShowTotals);
+//        sHtml += reportSubHeading('Job is one way?', nColCount);
+//        sHtml += reportHtmlRow(oJsonReport.isOneWay, bShowTotals);
 
         sHtml += reportSubHeading('Job involves a wheelchair?', nColCount);
         sHtml += reportHtmlRow(oJsonReport.involvesWheelchair, bShowTotals);
