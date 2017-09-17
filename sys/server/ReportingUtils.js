@@ -3,6 +3,7 @@ exports.simpleSelectSql = simpleSelectSql;
 exports.getPeriodSubQuery = getPeriodSubQuery;
 exports.formatdate = formatdate;
 exports.reverseDateFormat = reverseDateFormat;
+exports.queryJobOutcomes = queryJobOutcomes;
 
 //
 // simpleSelectSql
@@ -68,5 +69,19 @@ function asTwoCharacterString(n) {
 //
 function reverseDateFormat(sDate) {
     return sDate.split('/').reverse().join('/');
+}
+
+//
+// queryJobOutcomes
+//
+function queryJobOutcomes(coreApi, sPeriodStart, sPeriodEnd, fnFailed, fnDone) {
+
+    var sSql = 'SELECT JobID, CancellationId, AttributeText AS Outcome FROM '
+             + 'JobAttribute INNER JOIN Attributes ON JobAttribute.AttributeID = Attributes.ID '
+             + 'WHERE (CancellationID > 50 AND JobID IN ('
+             + 'SELECT Jobs.JobID FROM Jobs WHERE ' + getPeriodSubQuery(sPeriodStart, sPeriodEnd)
+             + '))';
+
+    simpleSelectSql(sSql, coreApi, fnFailed, fnDone);
 }
 

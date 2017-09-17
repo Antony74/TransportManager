@@ -6,20 +6,7 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone) {
     var sPeriodStart = utils.formatdate(dateFrom);
     var sPeriodEnd   = utils.formatdate(dateTo);
 
-    var sPeriodSubQuery = utils.getPeriodSubQuery(sPeriodStart, sPeriodEnd);
-
-    var arrCancels = [6, 19, 49, 7, 8, 21, 2];
-
-    var sStatusSubQuery = arrCancels.map(function(nStatus) {
-        return 'JobStatus.JobStatusLevel = ' + nStatus;
-    }).join(' OR ');
-
-    var sSql = 'SELECT jobs.JobID, jobs.Notes, JobStatus.LongDescription FROM '
-             + '((jobs LEFT OUTER JOIN JobAttribute ON Jobs.JobID = JobAttribute.JobID) '
-             + 'LEFT OUTER JOIN JobStatus ON JobAttribute.AttributeLevel = JobStatus.JobStatusLevel)'
-             + ' WHERE (' + sStatusSubQuery + ') AND ' + sPeriodSubQuery + ' ORDER BY Jobs.enteredAt, JobAttribute.AttributeLevel DESC';
-
-    utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
+    utils.queryJobOutcomes(coreApi, sPeriodStart, sPeriodEnd, fnFailed, function(oResult) {
 
         var sHtml = '<!DOCTYPE html>                             \r\n'
                   + '<html>                                      \r\n'
@@ -44,37 +31,20 @@ function generateReport(dateFrom, dateTo, coreApi, fnDone) {
                   + '        <TR>                                \r\n'
                   + '            <TH>JobID</TH>                  \r\n'
                   + '            <TH>Status</TH>                 \r\n'
-                  + '            <TH>Notes</TH>                  \r\n'
-                  + '            <TH>By<BR>client</TH>           \r\n'
-                  + '            <TH>By<BR>hospital</TH>         \r\n'
-                  + '            <TH>Not<BR>enough<BR>notice</TH>\r\n'
-                  + '            <TH>Unable<BR>to find<BR>driver</TH> \r\n'
-                  + '            <TH>Operator<BR>error</TH>      \r\n'
                   + '        </TR>                               \r\n';
-
-        var jobIds = {};
 
         for (var nRow = 0; nRow < oResult['records'].length; ++nRow) {
 
             var sJobID = oResult['records'][nRow]['JobID'];
-            var sStatus = oResult['records'][nRow]['LongDescription'];
-            var sNotes = oResult['records'][nRow]['Notes'];
+            var sStatus = oResult['records'][nRow]['Outcome'];
 
-            if (jobIds[sJobID]) {
-                continue; // Ignore duplicates, the higher status level will have got in first
+            if (sStatus === 'JOB COMPLETE') { // This report is just about cancellations
+                continue;
             }
-
-            jobIds[sJobID] = true;
 
             sHtml += '<TR>\r\n';
             sHtml += '    <TD>' + sJobID + '</TD>\r\n';
             sHtml += '    <TD>' + sStatus + '</TD>\r\n';
-            sHtml += '    <TD>' + sNotes + '</TD>\r\n';
-            sHtml += '    <TD>&nbsp;</TD>        \r\n';
-            sHtml += '    <TD>&nbsp;</TD>        \r\n';
-            sHtml += '    <TD>&nbsp;</TD>        \r\n';
-            sHtml += '    <TD>&nbsp;</TD>        \r\n';
-            sHtml += '    <TD>&nbsp;</TD>        \r\n';
             sHtml += '</TR>\r\n';
         }
 
