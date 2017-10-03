@@ -308,6 +308,8 @@ function updateDatabase(obj, fnDone) {
 
 function ensureShortcutExists() {
 
+    function noop() {}
+
     // Ensure we have a shortcut to make it easier to run this program.  Obviously
     // it's annoying having to run once without a shortcut, but it has to contain
     // an absolute path which we can't know in advance.  Also it can't contain
@@ -318,18 +320,18 @@ function ensureShortcutExists() {
     var sVBScript = 'Set shell = CreateObject("Wscript.Shell")\n';
     sVBScript    += 'shell.CurrentDirectory = "' + __dirname + '"\n';
     sVBScript    += 'shell.Run "npm start", 0' + '\n';
-    fs.writeFile(sVBSFile, sVBScript);
+    fs.writeFile(sVBSFile, sVBScript, noop);
 
     var sBatchFile =  __dirname + '/TransportManager.bat';
     var sBatchScript = 'start cscript ' + __dirname + '/TransportManager.vbs';
-    fs.writeFile(sBatchFile, sBatchScript);
+    fs.writeFile(sBatchFile, sBatchScript, noop);
 
     var sShortcutFile = __dirname + '/../../Tr-Man- Reports.url';
     fs.writeFile(sShortcutFile, '[InternetShortcut]\r\n'
                               + 'URL=file://' + __dirname + '\\TransportManager.bat\r\n'
                               + 'WorkingDir=' + __dirname + '\r\n'
                               + 'IconFile=' + __dirname + '\\..\\htdocs\\icons\\Car.ico\r\n'
-                              + 'IconIndex=0\r\n');
+                              + 'IconIndex=0\r\n', noop);
 }
 
 //
