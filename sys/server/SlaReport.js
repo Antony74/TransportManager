@@ -148,18 +148,13 @@ function generateReport(arrSpans, coreApi, fnDone) {
             arrPeriodSubQueries.push(sPeriodSubQuery);
         }
 
-        // If there's more than one then we also need the total
-        if (arrPeriodSubQueries.length > 1) {
-            arrPeriodSubQueries.push(arrPeriodSubQueries.join(' OR '));
-        }
-
         subquery();
 
         function subquery() {
 
             if (arrPeriodSubQueries.length) {
 
-                var sSubquery = arrPeriodSubQueries.pop();
+                var sSubquery = arrPeriodSubQueries.shift();
 
                 utils.simpleSelectSql(sSql + sSubquery + ')', coreApi, fnFailed, function(oResult) {
 
