@@ -97,7 +97,7 @@ function generateReport(dateFrom, dateTo, bSummaryOnly, coreApi, fnDone) {
                 nPreviousDriverID = oRecord['DriverID'];
             }
 
-            var sClientName = oRecord['Client.Forename'] + ' ' + oRecord['Client.MiddleName'] + ' ' + oRecord['Client.Surname'];
+            var sClientName = oRecord['Client.Forename'] + ' ' + (oRecord['Client.MiddleName'] ? oRecord['Client.MiddleName'] : '') + ' ' + oRecord['Client.Surname'];
             var jobDate = new Date(oRecord['JobDate']);
 
             if (!bSummaryOnly) {
