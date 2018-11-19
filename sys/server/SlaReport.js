@@ -442,27 +442,24 @@ function generateReport(arrSpans, coreApi, fnDone) {
         sHtml += '        </tr>\r\n';
 
         sHtml += reportSubHeading('Client gender', nColCount);
-        sHtml += reportHtmlRow(oJsonReport.clientGender, bShowTotals);
+        sHtml += reportHtmlRow(oJsonReport.clientGender, bShowTotals, false);
 
         sHtml += reportSubHeading('Client age', nColCount);
-        sHtml += reportHtmlRow(oJsonReport.clientAge, bShowTotals);
+        sHtml += reportHtmlRow(oJsonReport.clientAge, bShowTotals, false);
 
         sHtml += reportSubHeading('Jobs in period', nColCount);
-        sHtml += reportHtmlRow(oJsonReport.jobStatus, bShowTotals);
+        sHtml += reportHtmlRow(oJsonReport.jobStatus, bShowTotals, bShowTotals);
 
         sHtml += reportSubHeading('Now considering only completed jobs', nColCount);
 
-//        sHtml += reportSubHeading('Job is one way?', nColCount);
-//        sHtml += reportHtmlRow(oJsonReport.isOneWay, bShowTotals);
-
         sHtml += reportSubHeading('Job involves a wheelchair?', nColCount);
-        sHtml += reportHtmlRow(oJsonReport.involvesWheelchair, bShowTotals);
+        sHtml += reportHtmlRow(oJsonReport.involvesWheelchair, bShowTotals, bShowTotals);
 
         sHtml += reportSubHeading('Type of destination', nColCount);
-        sHtml += reportHtmlRow(oJsonReport.typeOfDestination, bShowTotals);
+        sHtml += reportHtmlRow(oJsonReport.typeOfDestination, bShowTotals, bShowTotals);
 
         sHtml += reportSubHeading('Purpose of journey', nColCount);
-        sHtml += reportHtmlRow(oJsonReport.purposeOfJourney, bShowTotals);
+        sHtml += reportHtmlRow(oJsonReport.purposeOfJourney, bShowTotals, bShowTotals);
 
         //
         // And now just finish off
@@ -489,7 +486,7 @@ function generateReport(arrSpans, coreApi, fnDone) {
     //
     // reportHtmlRow
     //
-    function reportHtmlRow(arrSummaryRecords, bShowTotals) {
+    function reportHtmlRow(arrSummaryRecords, bShowTotalColumn, bShowTotals) {
 
         var oRowHeadings = {};
 
@@ -537,8 +534,12 @@ function generateReport(arrSpans, coreApi, fnDone) {
                 nTotal += nValue;
             }
 
-            if (bShowTotals) {
-                sHtml += '            <td>' + nTotal + '</td>\r\n';
+            if (bShowTotalColumn) {
+                if (bShowTotals) {
+                    sHtml += '            <td>' + nTotal + '</td>\r\n';
+                } else {
+                    sHtml += '            <td>&nbsp;</td>\r\n';
+                }
             }
 
             sHtml += '        </tr>\r\n';
