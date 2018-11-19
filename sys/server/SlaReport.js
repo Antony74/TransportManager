@@ -93,14 +93,17 @@ function generateReport(arrSpans, coreApi, fnDone) {
 
             oJsonReport.jobStatus.push(reportCountValues(oResult.records, 'Outcome'));
 
-            var sSql = 'SELECT DVCWheelChairNeeded OR Client.isWheelchair AS Wheelchair, Destination.DestinationTypeID AS DestinationTypeID '
+            var sSql = 'SELECT DVCWheelChairNeeded OR Client.isWheelchair AS Wheelchair,'
+                     + ' Destination.DestinationTypeID AS DestinationTypeID,'
+                     + ' jobs.JobID'
                      + ' FROM (((jobs'
                      + ' INNER JOIN Client ON jobs.ClientID = Client.ClientID)'
                      + ' INNER JOIN JobLegs ON jobs.JobID = JobLegs.JobID)'
-                     + ' INNER JOIN Destination ON JobLegs.DestinationEndID = Destination.DestinationID)'
-                     + ' WHERE ' + sPeriodSubQuery;
+                     + ' INNER JOIN JobAttribute ON jobs.JobID = JobAttribute.JobID)'
+                     + ' LEFT JOIN Destination ON JobLegs.DestinationEndID = Destination.DestinationID'
+                     + ' WHERE JobAttribute.AttributeID=57 AND (' + sPeriodSubQuery + ')';
 
-            utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
+            utils.simpleSelectSql(sSql, coreApi, fnFailed, utils.createDedupeFn(function(oResult) {
 
                 for (var n = 0; n < oResult.records.length; ++n) {
                     var oRecord = oResult.records[n];
@@ -128,7 +131,7 @@ function generateReport(arrSpans, coreApi, fnDone) {
                 oJsonReport.purposeOfJourney.push(reportCountValues(oResult.records, 'Purpose'));
                 
                 fnDone();
-            });
+            }));
         });
     }
 

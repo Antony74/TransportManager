@@ -4,6 +4,7 @@ exports.getPeriodSubQuery = getPeriodSubQuery;
 exports.formatdate = formatdate;
 exports.reverseDateFormat = reverseDateFormat;
 exports.queryJobOutcomes = queryJobOutcomes;
+exports.createDedupeFn = createDedupeFn;
 
 //
 // simpleSelectSql
@@ -71,10 +72,31 @@ function reverseDateFormat(sDate) {
     return sDate.split('/').reverse().join('/');
 }
 
+function createDedupeFn(fnDone) {
+    return function(oResult) {
+        var jobIds = {};
+        var uniqueRecords = [];
+
+        for (var n = 0; n < oResult.records.length; ++n) {
+            var record = oResult.records[n];
+            if (jobIds[record.JobID] === undefined) {
+                jobIds[record.JobID] = true;
+                uniqueRecords.push(record);
+            }
+        }
+
+        oResult.records = uniqueRecords;
+
+        fnDone(oResult);
+    };
+}
+
 //
 // queryJobOutcomes
 //
 function queryJobOutcomes(coreApi, sPeriodStart, sPeriodEnd, fnFailed, fnDone) {
+
+    var dedupe = createDedupeFn(fnDone);
 
     var sSql = 'SELECT JobID, CancellationId, AttributeText AS Outcome FROM '
              + 'JobAttribute INNER JOIN Attributes ON JobAttribute.AttributeID = Attributes.ID '
@@ -82,6 +104,6 @@ function queryJobOutcomes(coreApi, sPeriodStart, sPeriodEnd, fnFailed, fnDone) {
              + 'SELECT Jobs.JobID FROM Jobs WHERE ' + getPeriodSubQuery(sPeriodStart, sPeriodEnd)
              + '))';
 
-    simpleSelectSql(sSql, coreApi, fnFailed, fnDone);
+    simpleSelectSql(sSql, coreApi, fnFailed, dedupe);
 }
 
