@@ -130,6 +130,16 @@ function generateReport(arrSpans, coreApi, fnDone) {
                 oJsonReport.typeOfDestination.push(reportCountValues(oResult.records, 'DestinationType'));
                 oJsonReport.purposeOfJourney.push(reportCountValues(oResult.records, 'Purpose'));
                 
+                // Make the totals match
+                var totalCompleted = oJsonReport.purposeOfJourney[oJsonReport.purposeOfJourney.length - 1].Total;
+                var outcomeTotalCompleted = oJsonReport.jobStatus[oJsonReport.jobStatus.length - 1]['JOB COMPLETE'];
+
+                if (outcomeTotalCompleted && outcomeTotalCompleted < totalCompleted) {
+                    var diff = totalCompleted - outcomeTotalCompleted;
+                    oJsonReport.jobStatus[oJsonReport.jobStatus.length - 1]['JOB COMPLETE'] += diff;
+                    oJsonReport.jobStatus[oJsonReport.jobStatus.length - 1]['Total'] += diff;
+                }
+
                 fnDone();
             }));
         });
