@@ -101,7 +101,8 @@ function queryJobOutcomes(coreApi, sPeriodStart, sPeriodEnd, fnFailed, fnDone) {
     var sSql = 'SELECT JobID, CancellationId, AttributeText AS Outcome FROM '
              + 'JobAttribute INNER JOIN Attributes ON JobAttribute.AttributeID = Attributes.ID '
              + 'WHERE (CancellationID > 50 AND JobID IN ('
-             + 'SELECT Jobs.JobID FROM Jobs WHERE ' + getPeriodSubQuery(sPeriodStart, sPeriodEnd)
+             + 'SELECT Jobs.JobID FROM (Jobs INNER JOIN Client ON jobs.ClientID = Client.ClientID)'
+             + ' WHERE ' + getPeriodSubQuery(sPeriodStart, sPeriodEnd)
              + '))';
 
     simpleSelectSql(sSql, coreApi, fnFailed, dedupe);
