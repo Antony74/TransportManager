@@ -21,6 +21,25 @@ function generateReport(arrSpans, coreApi, fnDone) {
     }
 
     //
+    // Cache the destinations
+    //
+    function cacheDestinations(fnFailed, fnDone) {
+
+        var sSql = 'SELECT * from Destination';
+
+        utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
+            var oDestinations = {};
+
+            for (var n = 0; n < oResult.records.length; ++n) {
+                var oRecord = oResult.records[n];
+                oDestinations[oRecord.DestinationID] = oRecord;
+            }
+
+            fnDone(oDestinations);
+        });
+    }
+
+    //
     // Cache the destination types
     //
 
@@ -29,6 +48,7 @@ function generateReport(arrSpans, coreApi, fnDone) {
              + 'DestinationCategory.Description AS Purpose '
              + 'FROM DestinationType INNER JOIN DestinationCategory ON DestinationType.CategoryID = DestinationCategory.ID';
 
+    cacheDestinations(fnFailed, function (oDestinations) {
     utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
 
         var oDestinationTypes = {};
@@ -61,7 +81,7 @@ function generateReport(arrSpans, coreApi, fnDone) {
 
                 var oSpan = arrSpans.shift();
 
-                reportGeneratePeriod(utils.formatdate(oSpan.dateFrom), utils.formatdate(oSpan.dateTo), oJsonReport, fnFailed, nextSpan, oDestinationTypes);
+                reportGeneratePeriod(utils.formatdate(oSpan.dateFrom), utils.formatdate(oSpan.dateTo), oJsonReport, fnFailed, nextSpan, oDestinations, oDestinationTypes);
 
             } else {
 
@@ -77,6 +97,7 @@ function generateReport(arrSpans, coreApi, fnDone) {
         }
 
         nextSpan();
+    });
     });
 
     //
@@ -110,7 +131,7 @@ function generateReport(arrSpans, coreApi, fnDone) {
     //
     // reportGeneratePeriod
     //
-    function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, fnFailed, fnDone, oDestinationTypes) {
+    function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, fnFailed, fnDone, oDestinations, oDestinationTypes) {
 
         oJsonReport.periodStart.push(sPeriodStart);
         oJsonReport.periodEnd.push(sPeriodEnd);
@@ -122,13 +143,13 @@ function generateReport(arrSpans, coreApi, fnDone) {
             oJsonReport.jobStatus.push(reportCountValues(oResult.records, 'Outcome'));
 
             var sSql = 'SELECT DVCWheelChairNeeded OR Client.isWheelchair AS Wheelchair,'
-                     + ' Destination.DestinationTypeID AS DestinationTypeID,'
+                     + ' JobLegs.DestinationStartID AS DestinationStartID,'
+                     + ' JobLegs.DestinationEndID AS DestinationEndID,'
                      + ' jobs.JobID'
                      + ' FROM (((jobs'
                      + ' INNER JOIN Client ON jobs.ClientID = Client.ClientID)'
                      + ' INNER JOIN JobLegs ON jobs.JobID = JobLegs.JobID)'
                      + ' INNER JOIN JobAttribute ON jobs.JobID = JobAttribute.JobID)'
-                     + ' LEFT JOIN Destination ON JobLegs.DestinationEndID = Destination.DestinationID'
                      + ' WHERE JobAttribute.AttributeID=57 AND (' + sPeriodSubQuery + ')';
 
             utils.simpleSelectSql(sSql, coreApi, fnFailed, utils.createDedupeFn(function(oResult) {
@@ -137,13 +158,14 @@ function generateReport(arrSpans, coreApi, fnDone) {
 
                 for (var n = 0; n < oResult.records.length; ++n) {
                     var oRecord = oResult.records[n];
-                    var oType = oDestinationTypes[oRecord.DestinationTypeID];
+                    var destinationTypeID = oRecord.DestinationEndID ? oRecord.DestinationEndID : oRecord.DestinationStartID;
+                    var oType = oDestinationTypes[destinationTypeID];
                     if (oType) {
                         oRecord.DestinationType = oType.DestinationType;
                         oRecord.Purpose = oType.Purpose;
                     } else {
-                        oRecord.DestinationType = oRecord.DestinationTypeID;
-                        oRecord.Purpose = oRecord.DestinationTypeID;
+                        oRecord.DestinationType = destinationTypeID;
+                        oRecord.Purpose = destinationTypeID;
                     }
 
                     if (oRecord.DestinationType === null) {
