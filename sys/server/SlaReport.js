@@ -80,6 +80,34 @@ function generateReport(arrSpans, coreApi, fnDone) {
     });
 
     //
+    // handleNulls
+    //
+
+    var oNullRecords = [];
+
+    function handleNulls(fnDone, fnFailed) {
+        if (!oNullRecords.length) {
+            fnDone();
+        } else {
+            var record = oNullRecords.shift();
+ 
+            var sSql = 'SELECT * FROM (Jobs '
+                     + ' INNER JOIN Client ON jobs.ClientID = Client.ClientID)'
+                     + ' WHERE JobID = ' + record.JobID;
+
+            utils.simpleSelectSql(sSql, coreApi, fnFailed, function(oResult) {
+                var record = oResult.records[0];
+                var sLine = '';
+                sLine +='Null destination type in job ' + record.JobID + ', ';
+                sLine += record.JobDate.split('T')[0] + ', ';
+                sLine += record.Forename + ' ' + record.Surname + '.';
+                sLog += '<pre>' + sLine + '</pre>';
+                handleNulls(fnDone);
+            });
+        }
+    }
+
+    //
     // reportGeneratePeriod
     //
     function reportGeneratePeriod(sPeriodStart, sPeriodEnd, oJsonReport, fnFailed, fnDone, oDestinationTypes) {
@@ -105,6 +133,8 @@ function generateReport(arrSpans, coreApi, fnDone) {
 
             utils.simpleSelectSql(sSql, coreApi, fnFailed, utils.createDedupeFn(function(oResult) {
 
+                oNullRecords = [];
+
                 for (var n = 0; n < oResult.records.length; ++n) {
                     var oRecord = oResult.records[n];
                     var oType = oDestinationTypes[oRecord.DestinationTypeID];
@@ -114,6 +144,10 @@ function generateReport(arrSpans, coreApi, fnDone) {
                     } else {
                         oRecord.DestinationType = oRecord.DestinationTypeID;
                         oRecord.Purpose = oRecord.DestinationTypeID;
+                    }
+
+                    if (oRecord.DestinationType === null) {
+                        oNullRecords.push(oRecord);
                     }
                 }
 
@@ -140,7 +174,7 @@ function generateReport(arrSpans, coreApi, fnDone) {
                     oJsonReport.jobStatus[oJsonReport.jobStatus.length - 1]['Total'] += diff;
                 }
 
-                fnDone();
+                handleNulls(fnDone, fnFailed);
             }));
         });
     }
