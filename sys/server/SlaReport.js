@@ -158,8 +158,9 @@ function generateReport(arrSpans, coreApi, fnDone) {
 
                 for (var n = 0; n < oResult.records.length; ++n) {
                     var oRecord = oResult.records[n];
-                    var destinationTypeID = oRecord.DestinationEndID ? oRecord.DestinationEndID : oRecord.DestinationStartID;
-                    var oType = oDestinationTypes[destinationTypeID];
+                    var destinationID = oRecord.DestinationEndID ? oRecord.DestinationEndID : oRecord.DestinationStartID;
+                    var destinationTypeID = oDestinations[destinationID] ? oDestinations[destinationID].DestinationTypeID : null;
+                    var oType = destinationTypeID ? oDestinationTypes[destinationTypeID] : null;
                     if (oType) {
                         oRecord.DestinationType = oType.DestinationType;
                         oRecord.Purpose = oType.Purpose;
